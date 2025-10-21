@@ -15,6 +15,7 @@ import { EmploymentHistory } from '@/components/profile/EmploymentHistory';
 import { SkillsManagement } from '@/components/profile/SkillsManagement';
 import { EducationManagement } from '@/components/profile/EducationManagement';
 import { CertificationsManagement } from '@/components/profile/CertificationsManagement';
+import { SpecialProjectsManagement } from '@/components/profile/SpecialProjectsManagement';
 
 const Profile = () => {
   const { user, refreshProfile } = useAuth();
@@ -502,15 +503,17 @@ const Profile = () => {
               </Card>
             </TabsContent>
 
-            {/* Projects Tab - Placeholder */}
+            {/* Projects Tab */}
             <TabsContent value="projects" className="animate-fade-in">
               <Card>
                 <CardHeader>
-                  <CardTitle>Projects</CardTitle>
-                  <CardDescription>Showcase your special projects</CardDescription>
+                  <CardTitle>Special Projects</CardTitle>
+                  <CardDescription>
+                    Showcase your notable projects, side work, and achievements
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Projects section coming soon...</p>
+                  <SpecialProjectsManagement />
                 </CardContent>
               </Card>
             </TabsContent>
