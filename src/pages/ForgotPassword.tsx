@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ForgotPassword = () => {
   const { toast } = useToast();
@@ -36,60 +38,70 @@ const ForgotPassword = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="w-full max-w-md space-y-6 text-center">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold">Check your email</h1>
-            <p className="text-muted-foreground">
-              We've sent password reset instructions to <strong>{email}</strong>
-            </p>
-            <p className="text-sm text-muted-foreground mt-4">
-              The reset link will expire in 15 minutes.
-            </p>
-          </div>
-          <Link to="/login">
-            <Button variant="outline" className="w-full">
-              Back to login
-            </Button>
-          </Link>
+      <div className="min-h-screen flex flex-col">
+        <Navigation />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md text-center">
+            <CardHeader>
+              <CardTitle className="text-3xl font-display">Check your email</CardTitle>
+              <CardDescription>
+                We've sent password reset instructions to <strong>{email}</strong>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                The reset link will expire in 15 minutes.
+              </p>
+              <Link to="/login">
+                <Button variant="outline" className="w-full">
+                  Back to login
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Reset your password</h1>
-          <p className="text-muted-foreground mt-2">
-            Enter your email and we'll send you reset instructions
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-display">Reset Password</CardTitle>
+            <CardDescription>
+              Enter your email and we'll send you a reset link
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send Reset Link'}
+              </Button>
+            </form>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Sending...' : 'Send reset link'}
-          </Button>
-        </form>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Remember your password?{' '}
-          <Link to="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Remember your password?{' '}
+              <Link to="/login" className="text-primary hover:underline font-medium">
+                Sign in
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

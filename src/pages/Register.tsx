@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -74,14 +76,16 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Create your account</h1>
-          <p className="text-muted-foreground mt-2">Get started with your professional profile</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-display">Create Your Account</CardTitle>
+            <CardDescription>Get started with ProfileForge today</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
             <Input
@@ -130,17 +134,19 @@ const Register = () => {
             {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create account'}
-          </Button>
-        </form>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Creating account...' : 'Create Account'}
+              </Button>
+            </form>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Already have an account?{' '}
+              <Link to="/login" className="text-primary hover:underline font-medium">
+                Sign in
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

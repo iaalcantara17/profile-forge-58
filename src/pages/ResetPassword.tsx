@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { Navigation } from '@/components/Navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -62,42 +64,49 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Set new password</h1>
-          <p className="text-muted-foreground mt-2">Enter your new password below</p>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-display">Set New Password</CardTitle>
+            <CardDescription>Enter your new password below</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="password">New Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className={errors.password ? 'border-destructive' : ''}
+                />
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                <p className="text-xs text-muted-foreground">
+                  Must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number
+                </p>
+              </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="password">New Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className={errors.password ? 'border-destructive' : ''}
-            />
-            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  className={errors.confirmPassword ? 'border-destructive' : ''}
+                />
+                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className={errors.confirmPassword ? 'border-destructive' : ''}
-            />
-            {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Resetting...' : 'Reset password'}
-          </Button>
-        </form>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Resetting...' : 'Reset Password'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
