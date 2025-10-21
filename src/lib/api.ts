@@ -28,6 +28,12 @@ export interface UserProfile {
   name: string;
   email: string;
   profile?: {
+    phone?: string;
+    location?: string;
+    headline?: string;
+    bio?: string;
+    industry?: string;
+    experienceLevel?: string;
     employment?: string;
     skills?: string[];
     education?: string;
