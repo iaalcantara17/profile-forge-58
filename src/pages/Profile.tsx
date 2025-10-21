@@ -7,14 +7,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { api } from '@/lib/api';
-import { Loader2, Save, User, Briefcase, GraduationCap, Award, FolderOpen } from 'lucide-react';
+import { Loader2, Save, User, Briefcase, GraduationCap, Award, FolderOpen, Camera, X } from 'lucide-react';
+import { EmploymentHistory } from '@/components/profile/EmploymentHistory';
+import { SkillsManagement } from '@/components/profile/SkillsManagement';
 
 const Profile = () => {
   const { user, refreshProfile } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   
   const [basicInfo, setBasicInfo] = useState({
     name: user?.name || '',
@@ -39,8 +45,107 @@ const Profile = () => {
         industry: '',
         experienceLevel: '',
       });
+      // TODO: Load profile picture from user.profile.profilePicture when backend is ready
+      // setProfilePicture(user.profile?.profilePicture || null);
     }
   }, [user]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload a JPG, PNG, or GIF image',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate file size (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: 'File too large',
+        description: 'Image must be less than 5MB',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePicture(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadPicture = async () => {
+    if (!selectedFile) return;
+
+    setUploadProgress(0);
+    
+    // TODO: Implement actual upload when backend endpoint is ready
+    // const formData = new FormData();
+    // formData.append('profilePicture', selectedFile);
+    
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      setUploadProgress(100);
+      toast({
+        title: 'Upload Ready',
+        description: 'Profile picture upload will be available once backend endpoint is configured.',
+      });
+      setSelectedFile(null);
+      setUploadProgress(0);
+    }, 1000);
+
+    // Actual implementation:
+    // try {
+    //   const response = await fetch('http://34.207.119.121:5000/api/users/me/picture', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+    //     },
+    //     body: formData,
+    //   });
+    //   
+    //   if (response.ok) {
+    //     await refreshProfile();
+    //     toast({ title: 'Success', description: 'Profile picture updated' });
+    //   }
+    // } catch (error) {
+    //   toast({ title: 'Error', description: 'Failed to upload', variant: 'destructive' });
+    // }
+  };
+
+  const handleRemovePicture = () => {
+    setProfilePicture(null);
+    setSelectedFile(null);
+    
+    // TODO: Call API to remove picture from backend
+    toast({
+      title: 'Picture removed',
+      description: 'Profile picture has been removed',
+    });
+  };
 
   const handleSaveBasicInfo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,14 +212,18 @@ const Profile = () => {
           </div>
 
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="basic" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">Basic</span>
               </TabsTrigger>
               <TabsTrigger value="employment" className="flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
-                <span className="hidden sm:inline">Employment</span>
+                <span className="hidden sm:inline">Work</span>
+              </TabsTrigger>
+              <TabsTrigger value="skills" className="flex items-center gap-2">
+                <Award className="h-4 w-4" />
+                <span className="hidden sm:inline">Skills</span>
               </TabsTrigger>
               <TabsTrigger value="education" className="flex items-center gap-2">
                 <GraduationCap className="h-4 w-4" />
@@ -132,6 +241,78 @@ const Profile = () => {
 
             {/* Basic Information Tab */}
             <TabsContent value="basic" className="space-y-6 animate-fade-in">
+              {/* Profile Picture Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Picture</CardTitle>
+                  <CardDescription>
+                    Upload a professional photo (JPG, PNG, or GIF, max 5MB)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <div className="relative">
+                      <Avatar className="h-32 w-32">
+                        <AvatarImage src={profilePicture || undefined} alt={user?.name} />
+                        <AvatarFallback className="text-3xl bg-primary/10 text-primary">
+                          {user?.name?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      {profilePicture && (
+                        <Button
+                          size="icon"
+                          variant="destructive"
+                          className="absolute -top-2 -right-2 h-8 w-8 rounded-full"
+                          onClick={handleRemovePicture}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="flex-1 space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="relative">
+                          <input
+                            type="file"
+                            id="profile-picture"
+                            accept="image/jpeg,image/png,image/gif"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                          />
+                          <Label htmlFor="profile-picture">
+                            <Button type="button" variant="outline" asChild>
+                              <span className="cursor-pointer">
+                                <Camera className="mr-2 h-4 w-4" />
+                                {profilePicture ? 'Change Picture' : 'Upload Picture'}
+                              </span>
+                            </Button>
+                          </Label>
+                        </div>
+                        
+                        {selectedFile && (
+                          <Button onClick={handleUploadPicture} disabled={uploadProgress > 0}>
+                            {uploadProgress > 0 ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Uploading... {uploadProgress}%
+                              </>
+                            ) : (
+                              'Save Picture'
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                      
+                      <p className="text-sm text-muted-foreground">
+                        Your profile picture helps employers recognize you. Choose a professional headshot for best results.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Basic Information Form */}
               <Card>
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
@@ -259,15 +440,32 @@ const Profile = () => {
               </Card>
             </TabsContent>
 
-            {/* Employment Tab - Placeholder */}
+            {/* Employment Tab */}
             <TabsContent value="employment" className="animate-fade-in">
               <Card>
                 <CardHeader>
                   <CardTitle>Employment History</CardTitle>
-                  <CardDescription>Manage your work experience</CardDescription>
+                  <CardDescription>
+                    Document your work experience in reverse chronological order
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Employment history section coming soon...</p>
+                  <EmploymentHistory />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Skills Tab */}
+            <TabsContent value="skills" className="animate-fade-in">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skills</CardTitle>
+                  <CardDescription>
+                    Add and organize your skills by category and proficiency level
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SkillsManagement />
                 </CardContent>
               </Card>
             </TabsContent>
