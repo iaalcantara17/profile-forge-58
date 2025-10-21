@@ -45,6 +45,8 @@ const Login = () => {
       });
       navigate('/dashboard');
     } else {
+      // Clear password field on failed login
+      setFormData({ ...formData, password: '' });
       toast({
         title: 'Login failed',
         description: result.error,

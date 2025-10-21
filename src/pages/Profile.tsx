@@ -13,6 +13,8 @@ import { api } from '@/lib/api';
 import { Loader2, Save, User, Briefcase, GraduationCap, Award, FolderOpen, Camera, X } from 'lucide-react';
 import { EmploymentHistory } from '@/components/profile/EmploymentHistory';
 import { SkillsManagement } from '@/components/profile/SkillsManagement';
+import { EducationManagement } from '@/components/profile/EducationManagement';
+import { CertificationsManagement } from '@/components/profile/CertificationsManagement';
 
 const Profile = () => {
   const { user, refreshProfile } = useAuth();
@@ -470,28 +472,32 @@ const Profile = () => {
               </Card>
             </TabsContent>
 
-            {/* Education Tab - Placeholder */}
+            {/* Education Tab */}
             <TabsContent value="education" className="animate-fade-in">
               <Card>
                 <CardHeader>
                   <CardTitle>Education</CardTitle>
-                  <CardDescription>Manage your educational background</CardDescription>
+                  <CardDescription>
+                    Document your academic achievements and qualifications
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Education section coming soon...</p>
+                  <EducationManagement />
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Certifications Tab - Placeholder */}
+            {/* Certifications Tab */}
             <TabsContent value="certifications" className="animate-fade-in">
               <Card>
                 <CardHeader>
                   <CardTitle>Certifications</CardTitle>
-                  <CardDescription>Manage your professional certifications</CardDescription>
+                  <CardDescription>
+                    Track your professional certifications and credentials
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Certifications section coming soon...</p>
+                  <CertificationsManagement />
                 </CardContent>
               </Card>
             </TabsContent>

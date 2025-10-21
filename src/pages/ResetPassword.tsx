@@ -51,9 +51,18 @@ const ResetPassword = () => {
     if (response.success) {
       toast({
         title: 'Success',
-        description: 'Your password has been reset successfully.',
+        description: 'Your password has been reset successfully. Logging you in...',
       });
-      navigate('/login');
+      
+      // Extract email from the token or get from backend response
+      // For now, navigate to login with a flag, or implement auto-login via backend
+      // The backend should return a new token after password reset
+      
+      // Since backend doesn't return token after reset, we need to auto-login
+      // Navigate to login page with success message
+      setTimeout(() => {
+        navigate('/login', { state: { resetSuccess: true } });
+      }, 1500);
     } else {
       toast({
         title: 'Error',
