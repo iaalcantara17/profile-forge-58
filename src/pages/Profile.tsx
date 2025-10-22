@@ -451,6 +451,34 @@ const Profile = () => {
                   </form>
                 </CardContent>
               </Card>
+
+              {/* Account Deletion Section */}
+              <Card className="border-destructive/50">
+                <CardHeader>
+                  <CardTitle className="text-destructive">Danger Zone</CardTitle>
+                  <CardDescription>
+                    Permanently delete your account and all associated data
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Once you delete your account, there is no going back. Please be certain.
+                    </p>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => {
+                        toast({
+                          title: 'Feature Coming Soon',
+                          description: 'Account deletion will be available once the backend endpoint is configured.',
+                        });
+                      }}
+                    >
+                      Delete Account
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Employment Tab */}
