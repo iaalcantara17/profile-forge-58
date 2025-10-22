@@ -16,6 +16,7 @@ import { SkillsManagement } from '@/components/profile/SkillsManagement';
 import { EducationManagement } from '@/components/profile/EducationManagement';
 import { CertificationsManagement } from '@/components/profile/CertificationsManagement';
 import { SpecialProjectsManagement } from '@/components/profile/SpecialProjectsManagement';
+import { ProfileOverview } from '@/components/profile/ProfileOverview';
 
 const Profile = () => {
   const { user, refreshProfile } = useAuth();
@@ -214,8 +215,12 @@ const Profile = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-7">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Overview</span>
+              </TabsTrigger>
               <TabsTrigger value="basic" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">Basic</span>
@@ -241,6 +246,11 @@ const Profile = () => {
                 <span className="hidden sm:inline">Projects</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* Overview Tab - NEW */}
+            <TabsContent value="overview" className="space-y-6 animate-fade-in">
+              <ProfileOverview />
+            </TabsContent>
 
             {/* Basic Information Tab */}
             <TabsContent value="basic" className="space-y-6 animate-fade-in">

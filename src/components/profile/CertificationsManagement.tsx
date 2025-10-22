@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,8 +20,18 @@ interface Certification {
   documentUrl: string;
 }
 
+const STORAGE_KEY = 'profile_certifications';
+
 export const CertificationsManagement = () => {
-  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Persist to localStorage whenever certifications change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(certifications));
+  }, [certifications]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
