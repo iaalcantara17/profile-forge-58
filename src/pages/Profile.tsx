@@ -42,12 +42,12 @@ const Profile = () => {
       setBasicInfo({
         name: user.name || '',
         email: user.email || '',
-        phone: '',
-        location: '',
-        headline: '',
-        bio: '',
-        industry: '',
-        experienceLevel: '',
+        phone: user.profile?.phone || '',
+        location: user.profile?.location || '',
+        headline: user.profile?.headline || '',
+        bio: user.profile?.bio || '',
+        industry: user.profile?.industry || '',
+        experienceLevel: user.profile?.experienceLevel || '',
       });
       // TODO: Load profile picture from user.profile.profilePicture when backend is ready
       // setProfilePicture(user.profile?.profilePicture || null);

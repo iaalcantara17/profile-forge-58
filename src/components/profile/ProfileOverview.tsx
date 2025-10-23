@@ -18,7 +18,7 @@ export const ProfileOverview = () => {
 
   const calculateSectionCompletion = (): ProfileSection[] => {
     // Basic Information Section
-    const basicFields = ['name', 'phone', 'location', 'headline', 'bio', 'industry', 'experienceLevel'];
+    const basicFields = ['Name', 'Phone', 'Location', 'Headline', 'Bio', 'Industry', 'Experience Level'];
     const basicCompleted = [
       user?.name,
       user?.profile?.phone,
