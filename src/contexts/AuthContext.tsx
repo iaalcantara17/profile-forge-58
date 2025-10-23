@@ -25,10 +25,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
+    console.log('🔵 Fetching profile from server...');
     const response = await api.getProfile();
+    console.log('🔵 Profile fetch response:', response);
+    
     if (response.success && response.data) {
+      console.log('🔵 Setting user data:', response.data);
       setUser(response.data);
     } else {
+      console.error('❌ Profile fetch failed, clearing auth');
       // Token invalid, clear auth
       localStorage.removeItem('auth_token');
       setToken(null);

@@ -156,7 +156,7 @@ const Profile = () => {
     setIsSaving(true);
 
     try {
-      const response = await api.updateProfile({
+      const profileData = {
         name: basicInfo.name,
         profile: {
           phone: basicInfo.phone,
@@ -166,15 +166,23 @@ const Profile = () => {
           industry: basicInfo.industry,
           experienceLevel: basicInfo.experienceLevel,
         }
-      });
+      };
+      
+      console.log('🔵 Sending profile update:', profileData);
+      const response = await api.updateProfile(profileData);
+      console.log('🔵 Profile update response:', response);
 
       if (response.success) {
+        console.log('🔵 Refreshing profile from server...');
         await refreshProfile();
+        console.log('🔵 Profile after refresh:', user);
+        
         toast({
           title: 'Profile updated',
           description: 'Your basic information has been saved successfully.',
         });
       } else {
+        console.error('❌ Profile update failed:', response.error);
         toast({
           title: 'Update failed',
           description: response.error?.message || 'Failed to update profile',
@@ -182,6 +190,7 @@ const Profile = () => {
         });
       }
     } catch (error) {
+      console.error('❌ Exception during profile update:', error);
       toast({
         title: 'Error',
         description: 'An unexpected error occurred',
