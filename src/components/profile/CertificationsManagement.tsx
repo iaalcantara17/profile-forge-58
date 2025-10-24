@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,7 @@ interface Certification {
 }
 
 export const CertificationsManagement = () => {
+  const { refreshProfile } = useAuth();
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -87,6 +89,7 @@ export const CertificationsManagement = () => {
         const response = await api.updateCertification(editingId, formData);
         if (response.success) {
           await fetchCertifications();
+          await refreshProfile();
           toast({
             title: 'Certification updated',
             description: 'Your certification has been updated successfully.',
@@ -103,6 +106,7 @@ export const CertificationsManagement = () => {
         const response = await api.addCertification(formData);
         if (response.success) {
           await fetchCertifications();
+          await refreshProfile();
           toast({
             title: 'Certification added',
             description: 'Your certification has been added successfully.',
@@ -148,6 +152,7 @@ export const CertificationsManagement = () => {
     const response = await api.deleteCertification(deleteId);
     if (response.success) {
       await fetchCertifications();
+      await refreshProfile();
       toast({
         title: 'Certification deleted',
         description: 'The certification has been removed from your profile.',

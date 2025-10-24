@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,7 @@ interface EmploymentEntry {
 }
 
 export const EmploymentHistory = () => {
+  const { refreshProfile } = useAuth();
   const [entries, setEntries] = useState<EmploymentEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -87,6 +89,7 @@ export const EmploymentHistory = () => {
         const response = await api.updateEmployment(editingId, formData);
         if (response.success) {
           await fetchEmploymentHistory();
+          await refreshProfile();
           toast({
             title: 'Employment updated',
             description: 'Your work experience has been updated successfully.',
@@ -104,6 +107,7 @@ export const EmploymentHistory = () => {
         const response = await api.addEmployment(formData);
         if (response.success) {
           await fetchEmploymentHistory();
+          await refreshProfile();
           toast({
             title: 'Employment added',
             description: 'Your work experience has been added successfully.',
@@ -149,6 +153,7 @@ export const EmploymentHistory = () => {
     const response = await api.deleteEmployment(deleteId);
     if (response.success) {
       await fetchEmploymentHistory();
+      await refreshProfile();
       toast({
         title: 'Employment deleted',
         description: 'The entry has been removed from your profile.',

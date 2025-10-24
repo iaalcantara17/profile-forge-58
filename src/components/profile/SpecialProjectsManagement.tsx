@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +25,7 @@ interface ProjectEntry {
 }
 
 export const SpecialProjectsManagement = () => {
+  const { refreshProfile } = useAuth();
   const [entries, setEntries] = useState<ProjectEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -107,6 +109,7 @@ export const SpecialProjectsManagement = () => {
         const response = await api.updateProject(editingId, formData);
         if (response.success) {
           await fetchProjects();
+          await refreshProfile();
           toast({
             title: 'Project updated',
             description: 'Your project has been updated successfully.',
@@ -123,6 +126,7 @@ export const SpecialProjectsManagement = () => {
         const response = await api.addProject(formData);
         if (response.success) {
           await fetchProjects();
+          await refreshProfile();
           toast({
             title: 'Project added',
             description: 'Your project has been added successfully.',
@@ -170,6 +174,7 @@ export const SpecialProjectsManagement = () => {
     const response = await api.deleteProject(deleteId);
     if (response.success) {
       await fetchProjects();
+      await refreshProfile();
       toast({
         title: 'Project deleted',
         description: 'The project has been removed from your profile.',

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +31,7 @@ const proficiencyColors = {
 };
 
 export const SkillsManagement = () => {
+  const { refreshProfile } = useAuth();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -88,6 +90,7 @@ export const SkillsManagement = () => {
         const response = await api.updateSkill(editingId, formData);
         if (response.success) {
           await fetchSkills();
+          await refreshProfile();
           toast({
             title: 'Skill updated',
             description: 'Your skill has been updated successfully',
@@ -104,6 +107,7 @@ export const SkillsManagement = () => {
         const response = await api.addSkill(formData);
         if (response.success) {
           await fetchSkills();
+          await refreshProfile();
           toast({
             title: 'Skill added',
             description: 'New skill has been added to your profile',
@@ -143,6 +147,7 @@ export const SkillsManagement = () => {
     const response = await api.deleteSkill(id);
     if (response.success) {
       await fetchSkills();
+      await refreshProfile();
       toast({
         title: 'Skill removed',
         description: 'The skill has been removed from your profile',

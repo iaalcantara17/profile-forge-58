@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,6 +36,7 @@ const educationLevels = [
 ];
 
 export const EducationManagement = () => {
+  const { refreshProfile } = useAuth();
   const [entries, setEntries] = useState<EducationEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -95,6 +97,7 @@ export const EducationManagement = () => {
         const response = await api.updateEducation(editingId, formData);
         if (response.success) {
           await fetchEducation();
+          await refreshProfile();
           toast({
             title: 'Education updated',
             description: 'Your education entry has been updated successfully.',
@@ -111,6 +114,7 @@ export const EducationManagement = () => {
         const response = await api.addEducation(formData);
         if (response.success) {
           await fetchEducation();
+          await refreshProfile();
           toast({
             title: 'Education added',
             description: 'Your education entry has been added successfully.',
@@ -158,6 +162,7 @@ export const EducationManagement = () => {
     const response = await api.deleteEducation(deleteId);
     if (response.success) {
       await fetchEducation();
+      await refreshProfile();
       toast({
         title: 'Education deleted',
         description: 'The entry has been removed from your profile.',

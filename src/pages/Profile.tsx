@@ -27,31 +27,54 @@ const Profile = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   
   const [basicInfo, setBasicInfo] = useState({
+    id: '',
     name: user?.name || '',
     email: user?.email || '',
-    phone: '',
+    phoneNumber: '',
     location: '',
-    headline: '',
+    professionalHeadline: '',
     bio: '',
     industry: '',
     experienceLevel: '',
   });
 
   useEffect(() => {
-    if (user) {
-      setBasicInfo({
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        location: user.location || '',
-        headline: user.headline || '',
-        bio: user.bio || '',
-        industry: user.industry || '',
-        experienceLevel: user.experienceLevel || '',
-      });
-      // TODO: Load profile picture from user.profilePicture when backend is ready
-      // setProfilePicture(user.profilePicture || null);
-    }
+    const loadBasicInfo = async () => {
+      if (user) {
+        // Fetch basic info from the backend
+        const response = await api.getBasicInfo();
+        
+        if (response.success && response.data && response.data.length > 0) {
+          const info = response.data[0]; // Use first entry
+          setBasicInfo({
+            id: info.id,
+            name: user.name || '',
+            email: user.email || '',
+            phoneNumber: info.phoneNumber || '',
+            location: info.location || '',
+            professionalHeadline: info.professionalHeadline || '',
+            bio: info.bio || '',
+            industry: info.industry || '',
+            experienceLevel: info.experienceLevel || '',
+          });
+        } else {
+          // No basic info yet, set defaults from user
+          setBasicInfo({
+            id: '',
+            name: user.name || '',
+            email: user.email || '',
+            phoneNumber: '',
+            location: '',
+            professionalHeadline: '',
+            bio: '',
+            industry: '',
+            experienceLevel: '',
+          });
+        }
+      }
+    };
+    
+    loadBasicInfo();
   }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,31 +179,39 @@ const Profile = () => {
     setIsSaving(true);
 
     try {
-      const profileData = {
-        name: basicInfo.name,
-        phone: basicInfo.phone,
+      // First update the user's name
+      await api.updateProfile({ name: basicInfo.name });
+      
+      // Then handle basic info (create or update)
+      const basicInfoData = {
+        phoneNumber: basicInfo.phoneNumber,
         location: basicInfo.location,
-        headline: basicInfo.headline,
+        professionalHeadline: basicInfo.professionalHeadline,
         bio: basicInfo.bio,
         industry: basicInfo.industry,
         experienceLevel: basicInfo.experienceLevel,
       };
       
-      console.log('🔵 Sending profile update:', profileData);
-      const response = await api.updateProfile(profileData);
-      console.log('🔵 Profile update response:', response);
+      let response;
+      if (basicInfo.id) {
+        // Update existing basic info
+        response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
+      } else {
+        // Create new basic info
+        response = await api.createBasicInfo(basicInfoData);
+        if (response.success && response.data) {
+          setBasicInfo(prev => ({ ...prev, id: response.data.id }));
+        }
+      }
 
       if (response.success) {
-        console.log('🔵 Refreshing profile from server...');
         await refreshProfile();
-        console.log('🔵 Profile after refresh:', user);
         
         toast({
           title: 'Profile updated',
           description: 'Your basic information has been saved successfully.',
         });
       } else {
-        console.error('❌ Profile update failed:', response.error);
         toast({
           title: 'Update failed',
           description: response.error?.message || 'Failed to update profile',
@@ -371,8 +402,8 @@ const Profile = () => {
                           id="phone"
                           type="tel"
                           placeholder="+1 (555) 123-4567"
-                          value={basicInfo.phone}
-                          onChange={(e) => setBasicInfo({ ...basicInfo, phone: e.target.value })}
+                          value={basicInfo.phoneNumber}
+                          onChange={(e) => setBasicInfo({ ...basicInfo, phoneNumber: e.target.value })}
                         />
                       </div>
 
@@ -392,9 +423,13 @@ const Profile = () => {
                       <Input
                         id="headline"
                         placeholder="e.g., Full Stack Developer | React & Node.js Specialist"
-                        value={basicInfo.headline}
-                        onChange={(e) => setBasicInfo({ ...basicInfo, headline: e.target.value })}
+                        value={basicInfo.professionalHeadline}
+                        onChange={(e) => setBasicInfo({ ...basicInfo, professionalHeadline: e.target.value })}
+                        maxLength={120}
                       />
+                      <p className="text-xs text-muted-foreground text-right">
+                        {basicInfo.professionalHeadline.length}/120 characters
+                      </p>
                     </div>
 
                     <div className="space-y-2">
@@ -405,10 +440,10 @@ const Profile = () => {
                         value={basicInfo.bio}
                         onChange={(e) => setBasicInfo({ ...basicInfo, bio: e.target.value })}
                         rows={5}
-                        maxLength={500}
+                        maxLength={1000}
                       />
                       <p className="text-xs text-muted-foreground text-right">
-                        {basicInfo.bio.length}/500 characters
+                        {basicInfo.bio.length}/1000 characters
                       </p>
                     </div>
 
@@ -432,8 +467,8 @@ const Profile = () => {
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           <option value="">Select level</option>
-                          <option value="Entry">Entry Level</option>
-                          <option value="Mid">Mid Level</option>
+                          <option value="Entry Level">Entry Level</option>
+                          <option value="Mid Level">Mid Level</option>
                           <option value="Senior">Senior</option>
                           <option value="Executive">Executive</option>
                         </select>

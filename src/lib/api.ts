@@ -96,6 +96,13 @@ class ApiClient {
     return this.request('/auth/logout', { method: 'POST' });
   }
 
+  async deleteAccount(password: string) {
+    return this.request<void>('/auth/delete-account', {
+      method: 'DELETE',
+      body: JSON.stringify({ password }),
+    });
+  }
+
   async forgotPassword(email: string) {
     return this.request('/auth/forgot-password', {
       method: 'POST',
@@ -119,6 +126,31 @@ class ApiClient {
     return this.request<UserProfile>('/users/me', {
       method: 'PUT',
       body: JSON.stringify(profileData),
+    });
+  }
+
+  // Basic Info endpoints
+  async getBasicInfo() {
+    return this.request<any[]>('/users/me/basic-info');
+  }
+
+  async createBasicInfo(data: any) {
+    return this.request<any>('/users/me/basic-info', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBasicInfo(id: string, data: any) {
+    return this.request<any>(`/users/me/basic-info/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteBasicInfo(id: string) {
+    return this.request<null>(`/users/me/basic-info/${id}`, {
+      method: 'DELETE',
     });
   }
 
