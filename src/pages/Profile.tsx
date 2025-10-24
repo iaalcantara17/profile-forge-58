@@ -42,15 +42,15 @@ const Profile = () => {
       setBasicInfo({
         name: user.name || '',
         email: user.email || '',
-        phone: user.profile?.phone || '',
-        location: user.profile?.location || '',
-        headline: user.profile?.headline || '',
-        bio: user.profile?.bio || '',
-        industry: user.profile?.industry || '',
-        experienceLevel: user.profile?.experienceLevel || '',
+        phone: user.phone || '',
+        location: user.location || '',
+        headline: user.headline || '',
+        bio: user.bio || '',
+        industry: user.industry || '',
+        experienceLevel: user.experienceLevel || '',
       });
-      // TODO: Load profile picture from user.profile.profilePicture when backend is ready
-      // setProfilePicture(user.profile?.profilePicture || null);
+      // TODO: Load profile picture from user.profilePicture when backend is ready
+      // setProfilePicture(user.profilePicture || null);
     }
   }, [user]);
 
@@ -158,14 +158,12 @@ const Profile = () => {
     try {
       const profileData = {
         name: basicInfo.name,
-        profile: {
-          phone: basicInfo.phone,
-          location: basicInfo.location,
-          headline: basicInfo.headline,
-          bio: basicInfo.bio,
-          industry: basicInfo.industry,
-          experienceLevel: basicInfo.experienceLevel,
-        }
+        phone: basicInfo.phone,
+        location: basicInfo.location,
+        headline: basicInfo.headline,
+        bio: basicInfo.bio,
+        industry: basicInfo.industry,
+        experienceLevel: basicInfo.experienceLevel,
       };
       
       console.log('🔵 Sending profile update:', profileData);

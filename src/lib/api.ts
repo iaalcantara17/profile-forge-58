@@ -24,23 +24,24 @@ export interface LoginData {
 }
 
 export interface UserProfile {
+  _id?: string;
   user_id: string;
   name: string;
   email: string;
-  profile?: {
-    phone?: string;
-    location?: string;
-    headline?: string;
-    bio?: string;
-    industry?: string;
-    experienceLevel?: string;
-    employment?: string;
-    skills?: string[];
-    education?: string;
-    projects?: string[];
-  };
+  phone?: string;
+  location?: string;
+  headline?: string;
+  bio?: string;
+  industry?: string;
+  experienceLevel?: string;
+  employmentHistory?: any[];
+  skills?: any[];
+  education?: any[];
+  certifications?: any[];
+  projects?: any[];
   createdAt: string;
   updatedAt: string;
+  __v?: number;
 }
 
 class ApiClient {

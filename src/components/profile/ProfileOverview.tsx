@@ -21,12 +21,12 @@ export const ProfileOverview = () => {
     const basicFields = ['Name', 'Phone', 'Location', 'Headline', 'Bio', 'Industry', 'Experience Level'];
     const basicCompleted = [
       user?.name,
-      user?.profile?.phone,
-      user?.profile?.location,
-      user?.profile?.headline,
-      user?.profile?.bio,
-      user?.profile?.industry,
-      user?.profile?.experienceLevel,
+      user?.phone,
+      user?.location,
+      user?.headline,
+      user?.bio,
+      user?.industry,
+      user?.experienceLevel,
     ].filter(Boolean);
 
     // Employment Section
