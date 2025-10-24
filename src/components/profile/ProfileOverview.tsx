@@ -29,25 +29,20 @@ export const ProfileOverview = () => {
       user?.experienceLevel,
     ].filter(Boolean);
 
-    // Employment Section
-    const employmentData = localStorage.getItem('profile_employment_history');
-    const hasEmployment = employmentData && JSON.parse(employmentData).length > 0;
+    // Employment Section - fetch from API via user context
+    const hasEmployment = user?.employmentHistory && user.employmentHistory.length > 0;
 
-    // Skills Section
-    const skillsData = localStorage.getItem('profile_skills');
-    const hasSkills = skillsData && JSON.parse(skillsData).length > 0;
+    // Skills Section - fetch from API via user context
+    const hasSkills = user?.skills && user.skills.length > 0;
 
-    // Education Section
-    const educationData = localStorage.getItem('profile_education');
-    const hasEducation = educationData && JSON.parse(educationData).length > 0;
+    // Education Section - fetch from API via user context
+    const hasEducation = user?.education && user.education.length > 0;
 
-    // Certifications Section
-    const certificationsData = localStorage.getItem('profile_certifications');
-    const hasCertifications = certificationsData && JSON.parse(certificationsData).length > 0;
+    // Certifications Section - fetch from API via user context
+    const hasCertifications = user?.certifications && user.certifications.length > 0;
 
-    // Projects Section
-    const projectsData = localStorage.getItem('profile_projects');
-    const hasProjects = projectsData && JSON.parse(projectsData).length > 0;
+    // Projects Section - fetch from API via user context
+    const hasProjects = user?.projects && user.projects.length > 0;
 
     return [
       {

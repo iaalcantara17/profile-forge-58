@@ -25,24 +25,30 @@ const Dashboard = () => {
                 className="hover-scale cursor-pointer"
               />
             </Link>
-            <InfoCard
-              icon={Briefcase}
-              title="Employment"
-              description="Track your work experience and career history"
-              className="hover-scale cursor-pointer"
-            />
-            <InfoCard
-              icon={GraduationCap}
-              title="Education"
-              description="Document your academic achievements"
-              className="hover-scale cursor-pointer"
-            />
-            <InfoCard
-              icon={FolderOpen}
-              title="Projects"
-              description="Showcase your special projects and work"
-              className="hover-scale cursor-pointer"
-            />
+            <Link to="/profile?section=employment">
+              <InfoCard
+                icon={Briefcase}
+                title="Employment"
+                description="Track your work experience and career history"
+                className="hover-scale cursor-pointer"
+              />
+            </Link>
+            <Link to="/profile?section=education">
+              <InfoCard
+                icon={GraduationCap}
+                title="Education"
+                description="Document your academic achievements"
+                className="hover-scale cursor-pointer"
+              />
+            </Link>
+            <Link to="/profile?section=projects">
+              <InfoCard
+                icon={FolderOpen}
+                title="Projects"
+                description="Showcase your special projects and work"
+                className="hover-scale cursor-pointer"
+              />
+            </Link>
           </div>
         </div>
       </div>
