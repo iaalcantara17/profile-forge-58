@@ -6,8 +6,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Award, Calendar, Building2, FileText, Upload, ExternalLink } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { Plus, Edit, Trash2, Award, Calendar, Building2, FileText, ExternalLink, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 
 interface Certification {
   id: string;
@@ -20,21 +21,13 @@ interface Certification {
   documentUrl: string;
 }
 
-const STORAGE_KEY = 'profile_certifications';
-
 export const CertificationsManagement = () => {
-  const [certifications, setCertifications] = useState<Certification[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Persist to localStorage whenever certifications change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(certifications));
-  }, [certifications]);
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState<Omit<Certification, 'id'>>({
     name: '',
@@ -47,6 +40,19 @@ export const CertificationsManagement = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetchCertifications();
+  }, []);
+
+  const fetchCertifications = async () => {
+    setIsLoading(true);
+    const response = await api.getCertifications();
+    if (response.success && response.data) {
+      setCertifications(response.data);
+    }
+    setIsLoading(false);
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -69,33 +75,57 @@ export const CertificationsManagement = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
 
-    if (editingId) {
-      setCertifications(certifications.map(cert => 
-        cert.id === editingId ? { ...formData, id: editingId } : cert
-      ));
-      toast({
-        title: 'Certification updated',
-        description: 'Your certification has been updated successfully.',
-      });
-      setEditingId(null);
-    } else {
-      const newCertification: Certification = {
-        ...formData,
-        id: Date.now().toString(),
-      };
-      setCertifications([...certifications, newCertification]);
-      toast({
-        title: 'Certification added',
-        description: 'Your certification has been added successfully.',
-      });
-    }
+    setIsSaving(true);
 
-    resetForm();
+    try {
+      if (editingId) {
+        const response = await api.updateCertification(editingId, formData);
+        if (response.success) {
+          await fetchCertifications();
+          toast({
+            title: 'Certification updated',
+            description: 'Your certification has been updated successfully.',
+          });
+          setEditingId(null);
+        } else {
+          toast({
+            title: 'Update failed',
+            description: response.error?.message || 'Failed to update certification',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        const response = await api.addCertification(formData);
+        if (response.success) {
+          await fetchCertifications();
+          toast({
+            title: 'Certification added',
+            description: 'Your certification has been added successfully.',
+          });
+        } else {
+          toast({
+            title: 'Add failed',
+            description: response.error?.message || 'Failed to add certification',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      resetForm();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEdit = (cert: Certification) => {
@@ -112,15 +142,24 @@ export const CertificationsManagement = () => {
     setIsAdding(true);
   };
 
-  const handleDelete = () => {
-    if (deleteId) {
-      setCertifications(certifications.filter(cert => cert.id !== deleteId));
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    const response = await api.deleteCertification(deleteId);
+    if (response.success) {
+      await fetchCertifications();
       toast({
         title: 'Certification deleted',
         description: 'The certification has been removed from your profile.',
       });
-      setDeleteId(null);
+    } else {
+      toast({
+        title: 'Delete failed',
+        description: response.error?.message || 'Failed to delete certification',
+        variant: 'destructive',
+      });
     }
+    setDeleteId(null);
   };
 
   const resetForm = () => {
@@ -160,6 +199,14 @@ export const CertificationsManagement = () => {
   const sortedCertifications = [...certifications].sort((a, b) => {
     return new Date(b.dateEarned).getTime() - new Date(a.dateEarned).getTime();
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -256,11 +303,18 @@ export const CertificationsManagement = () => {
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} disabled={isSaving}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingId ? 'Update Certification' : 'Add Certification'}
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    editingId ? 'Update Certification' : 'Add Certification'
+                  )}
                 </Button>
               </div>
             </form>

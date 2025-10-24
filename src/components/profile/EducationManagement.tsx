@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, GraduationCap, Calendar, Award } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { Plus, Edit, Trash2, GraduationCap, Calendar, Award, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 
 interface EducationEntry {
   id: string;
@@ -17,37 +18,29 @@ interface EducationEntry {
   graduationDate: string;
   gpa: string;
   showGpa: boolean;
-  isCurrentlyEnrolled: boolean;
+  currentlyEnrolled: boolean;
   educationLevel: string;
   achievements: string;
 }
 
 const educationLevels = [
   'High School',
-  'Associate Degree',
-  "Bachelor's Degree",
-  "Master's Degree",
-  'PhD/Doctorate',
-  'Professional Certification',
+  'Associate',
+  'Bachelor',
+  'Master',
+  'Doctorate',
+  'Certificate',
   'Bootcamp',
   'Other'
 ];
 
-const STORAGE_KEY = 'profile_education';
-
 export const EducationManagement = () => {
-  const [entries, setEntries] = useState<EducationEntry[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Persist to localStorage whenever entries change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  }, [entries]);
+  const [entries, setEntries] = useState<EducationEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState<Omit<EducationEntry, 'id'>>({
     institution: '',
@@ -56,12 +49,25 @@ export const EducationManagement = () => {
     graduationDate: '',
     gpa: '',
     showGpa: true,
-    isCurrentlyEnrolled: false,
-    educationLevel: "Bachelor's Degree",
+    currentlyEnrolled: false,
+    educationLevel: 'Bachelor',
     achievements: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetchEducation();
+  }, []);
+
+  const fetchEducation = async () => {
+    setIsLoading(true);
+    const response = await api.getEducation();
+    if (response.success && response.data) {
+      setEntries(response.data);
+    }
+    setIsLoading(false);
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -69,7 +75,7 @@ export const EducationManagement = () => {
     if (!formData.institution.trim()) newErrors.institution = 'Institution name is required';
     if (!formData.degree.trim()) newErrors.degree = 'Degree is required';
     if (!formData.fieldOfStudy.trim()) newErrors.fieldOfStudy = 'Field of study is required';
-    if (!formData.isCurrentlyEnrolled && !formData.graduationDate) {
+    if (!formData.currentlyEnrolled && !formData.graduationDate) {
       newErrors.graduationDate = 'Graduation date is required for completed education';
     }
 
@@ -77,33 +83,57 @@ export const EducationManagement = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
 
-    if (editingId) {
-      setEntries(entries.map(entry => 
-        entry.id === editingId ? { ...formData, id: editingId } : entry
-      ));
-      toast({
-        title: 'Education updated',
-        description: 'Your education entry has been updated successfully.',
-      });
-      setEditingId(null);
-    } else {
-      const newEntry: EducationEntry = {
-        ...formData,
-        id: Date.now().toString(),
-      };
-      setEntries([...entries, newEntry]);
-      toast({
-        title: 'Education added',
-        description: 'Your education entry has been added successfully.',
-      });
-    }
+    setIsSaving(true);
 
-    resetForm();
+    try {
+      if (editingId) {
+        const response = await api.updateEducation(editingId, formData);
+        if (response.success) {
+          await fetchEducation();
+          toast({
+            title: 'Education updated',
+            description: 'Your education entry has been updated successfully.',
+          });
+          setEditingId(null);
+        } else {
+          toast({
+            title: 'Update failed',
+            description: response.error?.message || 'Failed to update education',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        const response = await api.addEducation(formData);
+        if (response.success) {
+          await fetchEducation();
+          toast({
+            title: 'Education added',
+            description: 'Your education entry has been added successfully.',
+          });
+        } else {
+          toast({
+            title: 'Add failed',
+            description: response.error?.message || 'Failed to add education',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      resetForm();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEdit = (entry: EducationEntry) => {
@@ -114,7 +144,7 @@ export const EducationManagement = () => {
       graduationDate: entry.graduationDate,
       gpa: entry.gpa,
       showGpa: entry.showGpa,
-      isCurrentlyEnrolled: entry.isCurrentlyEnrolled,
+      currentlyEnrolled: entry.currentlyEnrolled,
       educationLevel: entry.educationLevel,
       achievements: entry.achievements,
     });
@@ -122,15 +152,24 @@ export const EducationManagement = () => {
     setIsAdding(true);
   };
 
-  const handleDelete = () => {
-    if (deleteId) {
-      setEntries(entries.filter(entry => entry.id !== deleteId));
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    const response = await api.deleteEducation(deleteId);
+    if (response.success) {
+      await fetchEducation();
       toast({
         title: 'Education deleted',
         description: 'The entry has been removed from your profile.',
       });
-      setDeleteId(null);
+    } else {
+      toast({
+        title: 'Delete failed',
+        description: response.error?.message || 'Failed to delete education',
+        variant: 'destructive',
+      });
     }
+    setDeleteId(null);
   };
 
   const resetForm = () => {
@@ -141,8 +180,8 @@ export const EducationManagement = () => {
       graduationDate: '',
       gpa: '',
       showGpa: true,
-      isCurrentlyEnrolled: false,
-      educationLevel: "Bachelor's Degree",
+      currentlyEnrolled: false,
+      educationLevel: 'Bachelor',
       achievements: '',
     });
     setErrors({});
@@ -157,10 +196,18 @@ export const EducationManagement = () => {
   };
 
   const sortedEntries = [...entries].sort((a, b) => {
-    if (a.isCurrentlyEnrolled && !b.isCurrentlyEnrolled) return -1;
-    if (!a.isCurrentlyEnrolled && b.isCurrentlyEnrolled) return 1;
+    if (a.currentlyEnrolled && !b.currentlyEnrolled) return -1;
+    if (!a.currentlyEnrolled && b.currentlyEnrolled) return 1;
     return new Date(b.graduationDate).getTime() - new Date(a.graduationDate).getTime();
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -226,7 +273,7 @@ export const EducationManagement = () => {
                     type="month"
                     value={formData.graduationDate}
                     onChange={(e) => setFormData({ ...formData, graduationDate: e.target.value })}
-                    disabled={formData.isCurrentlyEnrolled}
+                    disabled={formData.currentlyEnrolled}
                     className={errors.graduationDate ? 'border-destructive' : ''}
                   />
                   {errors.graduationDate && <p className="text-sm text-destructive">{errors.graduationDate}</p>}
@@ -244,13 +291,13 @@ export const EducationManagement = () => {
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="isCurrentlyEnrolled"
-                    checked={formData.isCurrentlyEnrolled}
+                    id="currentlyEnrolled"
+                    checked={formData.currentlyEnrolled}
                     onCheckedChange={(checked) => 
-                      setFormData({ ...formData, isCurrentlyEnrolled: checked as boolean, graduationDate: checked ? '' : formData.graduationDate })
+                      setFormData({ ...formData, currentlyEnrolled: checked as boolean, graduationDate: checked ? '' : formData.graduationDate })
                     }
                   />
-                  <Label htmlFor="isCurrentlyEnrolled" className="cursor-pointer">
+                  <Label htmlFor="currentlyEnrolled" className="cursor-pointer">
                     Currently enrolled
                   </Label>
                 </div>
@@ -283,11 +330,18 @@ export const EducationManagement = () => {
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} disabled={isSaving}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingId ? 'Update Entry' : 'Add Entry'}
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    editingId ? 'Update Entry' : 'Add Entry'
+                  )}
                 </Button>
               </div>
             </form>
@@ -318,8 +372,8 @@ export const EducationManagement = () => {
                         <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            {entry.isCurrentlyEnrolled ? 'Expected ' : ''}{formatDate(entry.graduationDate) || 'In Progress'}
-                            {entry.isCurrentlyEnrolled && (
+                            {entry.currentlyEnrolled ? 'Expected ' : ''}{formatDate(entry.graduationDate) || 'In Progress'}
+                            {entry.currentlyEnrolled && (
                               <span className="ml-2 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
                                 Current
                               </span>

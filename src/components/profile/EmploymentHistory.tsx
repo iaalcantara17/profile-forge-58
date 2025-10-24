@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Briefcase, Calendar, MapPin } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { Plus, Edit, Trash2, Briefcase, Calendar, MapPin, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 
 interface EmploymentEntry {
   id: string;
@@ -16,25 +17,17 @@ interface EmploymentEntry {
   location: string;
   startDate: string;
   endDate: string;
-  isCurrent: boolean;
+  currentlyWorking: boolean;
   description: string;
 }
 
-const STORAGE_KEY = 'profile_employment_history';
-
 export const EmploymentHistory = () => {
-  const [entries, setEntries] = useState<EmploymentEntry[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Persist to localStorage whenever entries change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  }, [entries]);
+  const [entries, setEntries] = useState<EmploymentEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState<Omit<EmploymentEntry, 'id'>>({
     jobTitle: '',
@@ -42,11 +35,25 @@ export const EmploymentHistory = () => {
     location: '',
     startDate: '',
     endDate: '',
-    isCurrent: false,
+    currentlyWorking: false,
     description: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Fetch employment history on mount
+  useEffect(() => {
+    fetchEmploymentHistory();
+  }, []);
+
+  const fetchEmploymentHistory = async () => {
+    setIsLoading(true);
+    const response = await api.getEmploymentHistory();
+    if (response.success && response.data) {
+      setEntries(response.data);
+    }
+    setIsLoading(false);
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -54,10 +61,10 @@ export const EmploymentHistory = () => {
     if (!formData.jobTitle.trim()) newErrors.jobTitle = 'Job title is required';
     if (!formData.company.trim()) newErrors.company = 'Company name is required';
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.isCurrent && !formData.endDate) {
+    if (!formData.currentlyWorking && !formData.endDate) {
       newErrors.endDate = 'End date is required for past positions';
     }
-    if (formData.startDate && formData.endDate && !formData.isCurrent) {
+    if (formData.startDate && formData.endDate && !formData.currentlyWorking) {
       if (new Date(formData.endDate) < new Date(formData.startDate)) {
         newErrors.endDate = 'End date must be after start date';
       }
@@ -67,35 +74,59 @@ export const EmploymentHistory = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
 
-    if (editingId) {
-      // Update existing entry
-      setEntries(entries.map(entry => 
-        entry.id === editingId ? { ...formData, id: editingId } : entry
-      ));
-      toast({
-        title: 'Employment updated',
-        description: 'Your work experience has been updated successfully.',
-      });
-      setEditingId(null);
-    } else {
-      // Add new entry
-      const newEntry: EmploymentEntry = {
-        ...formData,
-        id: Date.now().toString(),
-      };
-      setEntries([...entries, newEntry]);
-      toast({
-        title: 'Employment added',
-        description: 'Your work experience has been added successfully.',
-      });
-    }
+    setIsSaving(true);
 
-    resetForm();
+    try {
+      if (editingId) {
+        // Update existing entry
+        const response = await api.updateEmployment(editingId, formData);
+        if (response.success) {
+          await fetchEmploymentHistory();
+          toast({
+            title: 'Employment updated',
+            description: 'Your work experience has been updated successfully.',
+          });
+          setEditingId(null);
+        } else {
+          toast({
+            title: 'Update failed',
+            description: response.error?.message || 'Failed to update employment',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        // Add new entry
+        const response = await api.addEmployment(formData);
+        if (response.success) {
+          await fetchEmploymentHistory();
+          toast({
+            title: 'Employment added',
+            description: 'Your work experience has been added successfully.',
+          });
+        } else {
+          toast({
+            title: 'Add failed',
+            description: response.error?.message || 'Failed to add employment',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      resetForm();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEdit = (entry: EmploymentEntry) => {
@@ -105,22 +136,31 @@ export const EmploymentHistory = () => {
       location: entry.location,
       startDate: entry.startDate,
       endDate: entry.endDate,
-      isCurrent: entry.isCurrent,
+      currentlyWorking: entry.currentlyWorking,
       description: entry.description,
     });
     setEditingId(entry.id);
     setIsAdding(true);
   };
 
-  const handleDelete = () => {
-    if (deleteId) {
-      setEntries(entries.filter(entry => entry.id !== deleteId));
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    const response = await api.deleteEmployment(deleteId);
+    if (response.success) {
+      await fetchEmploymentHistory();
       toast({
         title: 'Employment deleted',
         description: 'The entry has been removed from your profile.',
       });
-      setDeleteId(null);
+    } else {
+      toast({
+        title: 'Delete failed',
+        description: response.error?.message || 'Failed to delete employment',
+        variant: 'destructive',
+      });
     }
+    setDeleteId(null);
   };
 
   const resetForm = () => {
@@ -130,7 +170,7 @@ export const EmploymentHistory = () => {
       location: '',
       startDate: '',
       endDate: '',
-      isCurrent: false,
+      currentlyWorking: false,
       description: '',
     });
     setErrors({});
@@ -146,10 +186,18 @@ export const EmploymentHistory = () => {
 
   // Sort entries by start date (most recent first)
   const sortedEntries = [...entries].sort((a, b) => {
-    if (a.isCurrent && !b.isCurrent) return -1;
-    if (!a.isCurrent && b.isCurrent) return 1;
+    if (a.currentlyWorking && !b.currentlyWorking) return -1;
+    if (!a.currentlyWorking && b.currentlyWorking) return 1;
     return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -215,7 +263,7 @@ export const EmploymentHistory = () => {
                     type="month"
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    disabled={formData.isCurrent}
+                    disabled={formData.currentlyWorking}
                     className={errors.endDate ? 'border-destructive' : ''}
                   />
                   {errors.endDate && <p className="text-sm text-destructive">{errors.endDate}</p>}
@@ -223,13 +271,13 @@ export const EmploymentHistory = () => {
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="isCurrent"
-                    checked={formData.isCurrent}
+                    id="currentlyWorking"
+                    checked={formData.currentlyWorking}
                     onCheckedChange={(checked) => 
-                      setFormData({ ...formData, isCurrent: checked as boolean, endDate: checked ? '' : formData.endDate })
+                      setFormData({ ...formData, currentlyWorking: checked as boolean, endDate: checked ? '' : formData.endDate })
                     }
                   />
-                  <Label htmlFor="isCurrent" className="cursor-pointer">
+                  <Label htmlFor="currentlyWorking" className="cursor-pointer">
                     I currently work here
                   </Label>
                 </div>
@@ -251,11 +299,18 @@ export const EmploymentHistory = () => {
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} disabled={isSaving}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingId ? 'Update Entry' : 'Add Entry'}
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    editingId ? 'Update Entry' : 'Add Entry'
+                  )}
                 </Button>
               </div>
             </form>
@@ -286,8 +341,8 @@ export const EmploymentHistory = () => {
                         <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            {formatDate(entry.startDate)} - {entry.isCurrent ? 'Present' : formatDate(entry.endDate)}
-                            {entry.isCurrent && (
+                            {formatDate(entry.startDate)} - {entry.currentlyWorking ? 'Present' : formatDate(entry.endDate)}
+                            {entry.currentlyWorking && (
                               <span className="ml-2 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
                                 Current
                               </span>

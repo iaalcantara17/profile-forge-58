@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, X, Code, MessageSquare, Languages, Wrench } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { Plus, X, Code, MessageSquare, Languages, Wrench, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 
 interface Skill {
   id: string;
@@ -28,20 +29,12 @@ const proficiencyColors = {
   'Expert': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
 };
 
-const STORAGE_KEY = 'profile_skills';
-
 export const SkillsManagement = () => {
-  const [skills, setSkills] = useState<Skill[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Persist to localStorage whenever skills change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(skills));
-  }, [skills]);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -49,7 +42,20 @@ export const SkillsManagement = () => {
     category: 'Technical' as Skill['category'],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetchSkills();
+  }, []);
+
+  const fetchSkills = async () => {
+    setIsLoading(true);
+    const response = await api.getSkills();
+    if (response.success && response.data) {
+      setSkills(response.data);
+    }
+    setIsLoading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
@@ -75,32 +81,52 @@ export const SkillsManagement = () => {
       return;
     }
 
-    if (editingId) {
-      // Update existing skill
-      setSkills(skills.map(skill =>
-        skill.id === editingId
-          ? { ...formData, id: editingId }
-          : skill
-      ));
-      toast({
-        title: 'Skill updated',
-        description: 'Your skill has been updated successfully',
-      });
-      setEditingId(null);
-    } else {
-      // Add new skill
-      const newSkill: Skill = {
-        ...formData,
-        id: Date.now().toString(),
-      };
-      setSkills([...skills, newSkill]);
-      toast({
-        title: 'Skill added',
-        description: 'New skill has been added to your profile',
-      });
-    }
+    setIsSaving(true);
 
-    resetForm();
+    try {
+      if (editingId) {
+        const response = await api.updateSkill(editingId, formData);
+        if (response.success) {
+          await fetchSkills();
+          toast({
+            title: 'Skill updated',
+            description: 'Your skill has been updated successfully',
+          });
+          setEditingId(null);
+        } else {
+          toast({
+            title: 'Update failed',
+            description: response.error?.message || 'Failed to update skill',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        const response = await api.addSkill(formData);
+        if (response.success) {
+          await fetchSkills();
+          toast({
+            title: 'Skill added',
+            description: 'New skill has been added to your profile',
+          });
+        } else {
+          toast({
+            title: 'Add failed',
+            description: response.error?.message || 'Failed to add skill',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      resetForm();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEdit = (skill: Skill) => {
@@ -113,12 +139,21 @@ export const SkillsManagement = () => {
     setIsAdding(true);
   };
 
-  const handleDelete = (id: string) => {
-    setSkills(skills.filter(skill => skill.id !== id));
-    toast({
-      title: 'Skill removed',
-      description: 'The skill has been removed from your profile',
-    });
+  const handleDelete = async (id: string) => {
+    const response = await api.deleteSkill(id);
+    if (response.success) {
+      await fetchSkills();
+      toast({
+        title: 'Skill removed',
+        description: 'The skill has been removed from your profile',
+      });
+    } else {
+      toast({
+        title: 'Delete failed',
+        description: response.error?.message || 'Failed to delete skill',
+        variant: 'destructive',
+      });
+    }
   };
 
   const resetForm = () => {
@@ -140,8 +175,15 @@ export const SkillsManagement = () => {
     return acc;
   }, {} as Record<string, Skill[]>);
 
-  // Sort categories
   const sortedCategories = Object.keys(groupedSkills).sort();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -193,11 +235,18 @@ export const SkillsManagement = () => {
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} disabled={isSaving}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingId ? 'Update Skill' : 'Add Skill'}
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    editingId ? 'Update Skill' : 'Add Skill'
+                  )}
                 </Button>
               </div>
             </form>

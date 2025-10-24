@@ -121,6 +121,131 @@ class ApiClient {
       body: JSON.stringify(profileData),
     });
   }
+
+  // Employment History endpoints
+  async getEmploymentHistory() {
+    return this.request<any[]>('/users/me/employment');
+  }
+
+  async addEmployment(data: any) {
+    return this.request<any>('/users/me/employment', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateEmployment(id: string, data: any) {
+    return this.request<any>(`/users/me/employment/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteEmployment(id: string) {
+    return this.request<null>(`/users/me/employment/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Skills endpoints
+  async getSkills() {
+    return this.request<any[]>('/users/me/skills');
+  }
+
+  async addSkill(data: any) {
+    return this.request<any>('/users/me/skills', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateSkill(id: string, data: any) {
+    return this.request<any>(`/users/me/skills/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSkill(id: string) {
+    return this.request<null>(`/users/me/skills/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Education endpoints
+  async getEducation() {
+    return this.request<any[]>('/users/me/education');
+  }
+
+  async addEducation(data: any) {
+    return this.request<any>('/users/me/education', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateEducation(id: string, data: any) {
+    return this.request<any>(`/users/me/education/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteEducation(id: string) {
+    return this.request<null>(`/users/me/education/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Certifications endpoints
+  async getCertifications() {
+    return this.request<any[]>('/users/me/certifications');
+  }
+
+  async addCertification(data: any) {
+    return this.request<any>('/users/me/certifications', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateCertification(id: string, data: any) {
+    return this.request<any>(`/users/me/certifications/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteCertification(id: string) {
+    return this.request<null>(`/users/me/certifications/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Projects endpoints
+  async getProjects() {
+    return this.request<any[]>('/users/me/projects');
+  }
+
+  async addProject(data: any) {
+    return this.request<any>('/users/me/projects', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateProject(id: string, data: any) {
+    return this.request<any>(`/users/me/projects/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteProject(id: string) {
+    return this.request<null>(`/users/me/projects/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const api = new ApiClient();

@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Folder, Calendar, Link as LinkIcon, Github, Code2 } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { Plus, Edit, Trash2, Folder, Calendar, Link as LinkIcon, Github, Code2, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 
 interface ProjectEntry {
   id: string;
@@ -17,26 +18,18 @@ interface ProjectEntry {
   technologies: string;
   startDate: string;
   endDate: string;
-  isOngoing: boolean;
+  ongoing: boolean;
   projectUrl: string;
   repositoryUrl: string;
 }
 
-const STORAGE_KEY = 'profile_projects';
-
 export const SpecialProjectsManagement = () => {
-  const [entries, setEntries] = useState<ProjectEntry[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Persist to localStorage whenever entries change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  }, [entries]);
+  const [entries, setEntries] = useState<ProjectEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [formData, setFormData] = useState<Omit<ProjectEntry, 'id'>>({
     name: '',
@@ -45,12 +38,25 @@ export const SpecialProjectsManagement = () => {
     technologies: '',
     startDate: '',
     endDate: '',
-    isOngoing: false,
+    ongoing: false,
     projectUrl: '',
     repositoryUrl: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    const response = await api.getProjects();
+    if (response.success && response.data) {
+      setEntries(response.data);
+    }
+    setIsLoading(false);
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -61,10 +67,10 @@ export const SpecialProjectsManagement = () => {
     if (!formData.role.trim()) newErrors.role = 'Your role is required';
     if (!formData.technologies.trim()) newErrors.technologies = 'Technologies are required';
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.isOngoing && !formData.endDate) {
+    if (!formData.ongoing && !formData.endDate) {
       newErrors.endDate = 'End date is required for completed projects';
     }
-    if (formData.startDate && formData.endDate && !formData.isOngoing) {
+    if (formData.startDate && formData.endDate && !formData.ongoing) {
       if (new Date(formData.endDate) < new Date(formData.startDate)) {
         newErrors.endDate = 'End date must be after start date';
       }
@@ -89,33 +95,57 @@ export const SpecialProjectsManagement = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
 
-    if (editingId) {
-      setEntries(entries.map(entry => 
-        entry.id === editingId ? { ...formData, id: editingId } : entry
-      ));
-      toast({
-        title: 'Project updated',
-        description: 'Your project has been updated successfully.',
-      });
-      setEditingId(null);
-    } else {
-      const newEntry: ProjectEntry = {
-        ...formData,
-        id: Date.now().toString(),
-      };
-      setEntries([...entries, newEntry]);
-      toast({
-        title: 'Project added',
-        description: 'Your project has been added successfully.',
-      });
-    }
+    setIsSaving(true);
 
-    resetForm();
+    try {
+      if (editingId) {
+        const response = await api.updateProject(editingId, formData);
+        if (response.success) {
+          await fetchProjects();
+          toast({
+            title: 'Project updated',
+            description: 'Your project has been updated successfully.',
+          });
+          setEditingId(null);
+        } else {
+          toast({
+            title: 'Update failed',
+            description: response.error?.message || 'Failed to update project',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        const response = await api.addProject(formData);
+        if (response.success) {
+          await fetchProjects();
+          toast({
+            title: 'Project added',
+            description: 'Your project has been added successfully.',
+          });
+        } else {
+          toast({
+            title: 'Add failed',
+            description: response.error?.message || 'Failed to add project',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      resetForm();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEdit = (entry: ProjectEntry) => {
@@ -126,7 +156,7 @@ export const SpecialProjectsManagement = () => {
       technologies: entry.technologies,
       startDate: entry.startDate,
       endDate: entry.endDate,
-      isOngoing: entry.isOngoing,
+      ongoing: entry.ongoing,
       projectUrl: entry.projectUrl,
       repositoryUrl: entry.repositoryUrl,
     });
@@ -134,15 +164,24 @@ export const SpecialProjectsManagement = () => {
     setIsAdding(true);
   };
 
-  const handleDelete = () => {
-    if (deleteId) {
-      setEntries(entries.filter(entry => entry.id !== deleteId));
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    const response = await api.deleteProject(deleteId);
+    if (response.success) {
+      await fetchProjects();
       toast({
         title: 'Project deleted',
         description: 'The project has been removed from your profile.',
       });
-      setDeleteId(null);
+    } else {
+      toast({
+        title: 'Delete failed',
+        description: response.error?.message || 'Failed to delete project',
+        variant: 'destructive',
+      });
     }
+    setDeleteId(null);
   };
 
   const resetForm = () => {
@@ -153,7 +192,7 @@ export const SpecialProjectsManagement = () => {
       technologies: '',
       startDate: '',
       endDate: '',
-      isOngoing: false,
+      ongoing: false,
       projectUrl: '',
       repositoryUrl: '',
     });
@@ -169,10 +208,18 @@ export const SpecialProjectsManagement = () => {
   };
 
   const sortedEntries = [...entries].sort((a, b) => {
-    if (a.isOngoing && !b.isOngoing) return -1;
-    if (!a.isOngoing && b.isOngoing) return 1;
+    if (a.ongoing && !b.ongoing) return -1;
+    if (!a.ongoing && b.ongoing) return 1;
     return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -252,7 +299,7 @@ export const SpecialProjectsManagement = () => {
                     type="month"
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    disabled={formData.isOngoing}
+                    disabled={formData.ongoing}
                     className={errors.endDate ? 'border-destructive' : ''}
                   />
                   {errors.endDate && <p className="text-sm text-destructive">{errors.endDate}</p>}
@@ -260,13 +307,13 @@ export const SpecialProjectsManagement = () => {
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="isOngoing"
-                    checked={formData.isOngoing}
+                    id="ongoing"
+                    checked={formData.ongoing}
                     onCheckedChange={(checked) => 
-                      setFormData({ ...formData, isOngoing: checked as boolean, endDate: checked ? '' : formData.endDate })
+                      setFormData({ ...formData, ongoing: checked as boolean, endDate: checked ? '' : formData.endDate })
                     }
                   />
-                  <Label htmlFor="isOngoing" className="cursor-pointer">
+                  <Label htmlFor="ongoing" className="cursor-pointer">
                     Ongoing project
                   </Label>
                 </div>
@@ -299,11 +346,18 @@ export const SpecialProjectsManagement = () => {
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} disabled={isSaving}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingId ? 'Update Project' : 'Add Project'}
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    editingId ? 'Update Project' : 'Add Project'
+                  )}
                 </Button>
               </div>
             </form>
@@ -333,8 +387,8 @@ export const SpecialProjectsManagement = () => {
                         <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            {formatDate(entry.startDate)} - {entry.isOngoing ? 'Present' : formatDate(entry.endDate)}
-                            {entry.isOngoing && (
+                            {formatDate(entry.startDate)} - {entry.ongoing ? 'Present' : formatDate(entry.endDate)}
+                            {entry.ongoing && (
                               <span className="ml-2 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
                                 Ongoing
                               </span>
