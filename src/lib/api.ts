@@ -34,6 +34,14 @@ export interface UserProfile {
   bio?: string;
   industry?: string;
   experienceLevel?: string;
+  basicInfo?: {
+    phoneNumber?: string;
+    location?: string;
+    professionalHeadline?: string;
+    bio?: string;
+    industry?: string;
+    experienceLevel?: string;
+  };
   employmentHistory?: any[];
   skills?: any[];
   education?: any[];

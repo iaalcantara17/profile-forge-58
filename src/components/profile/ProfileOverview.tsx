@@ -21,12 +21,12 @@ export const ProfileOverview = () => {
     const basicFields = ['Name', 'Phone', 'Location', 'Headline', 'Bio', 'Industry', 'Experience Level'];
     const basicCompleted = [
       user?.name,
-      user?.phone,
-      user?.location,
-      user?.headline,
-      user?.bio,
-      user?.industry,
-      user?.experienceLevel,
+      user?.basicInfo?.phoneNumber,
+      user?.basicInfo?.location,
+      user?.basicInfo?.professionalHeadline,
+      user?.basicInfo?.bio,
+      user?.basicInfo?.industry,
+      user?.basicInfo?.experienceLevel,
     ].filter(Boolean);
 
     // Employment Section - fetch from API via user context
