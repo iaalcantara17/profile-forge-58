@@ -245,34 +245,25 @@ const Profile = () => {
       // First update the user's name
       await api.updateProfile({ name: basicInfo.name });
       
-      // Then handle basic info (create or update) - only send fields that have values
-      const basicInfoData: any = {};
-      if (basicInfo.phoneNumber) basicInfoData.phoneNumber = basicInfo.phoneNumber;
-      if (basicInfo.location) basicInfoData.location = basicInfo.location;
-      if (basicInfo.professionalHeadline) basicInfoData.professionalHeadline = basicInfo.professionalHeadline;
-      if (basicInfo.bio) basicInfoData.bio = basicInfo.bio;
-      if (basicInfo.industry) basicInfoData.industry = basicInfo.industry;
-      if (basicInfo.experienceLevel) basicInfoData.experienceLevel = basicInfo.experienceLevel;
+      // Then handle basic info (create or update) - send all fields including empty ones
+      const basicInfoData: any = {
+        phoneNumber: basicInfo.phoneNumber || '',
+        location: basicInfo.location || '',
+        professionalHeadline: basicInfo.professionalHeadline || '',
+        bio: basicInfo.bio || '',
+        industry: basicInfo.industry || '',
+        experienceLevel: basicInfo.experienceLevel || '',
+      };
       
       let response;
       if (basicInfo.id) {
-        // Update existing basic info - API supports partial updates
+        // Update existing basic info
         response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
       } else {
-        // Create new basic info - only if we have at least one field
-        if (Object.keys(basicInfoData).length > 0) {
-          response = await api.createBasicInfo(basicInfoData);
-          if (response.success && response.data) {
-            setBasicInfo(prev => ({ ...prev, id: response.data.id }));
-          }
-        } else {
-          // No data to save
-          toast({
-            title: 'No changes',
-            description: 'Please fill in at least one field.',
-          });
-          setIsSaving(false);
-          return;
+        // Create new basic info
+        response = await api.createBasicInfo(basicInfoData);
+        if (response.success && response.data) {
+          setBasicInfo(prev => ({ ...prev, id: response.data.id }));
         }
       }
 
