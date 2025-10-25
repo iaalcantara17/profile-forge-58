@@ -31,7 +31,7 @@ import {
 
 const Profile = () => {
   const { user, refreshProfile, deleteAccount } = useAuth();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -43,6 +43,10 @@ const Profile = () => {
   
   // Get the active tab from URL query parameter, default to 'overview'
   const activeTab = searchParams.get('section') || 'overview';
+  
+  const handleTabChange = (value: string) => {
+    setSearchParams({ section: value });
+  };
   
   const [basicInfo, setBasicInfo] = useState({
     id: '',
@@ -321,7 +325,7 @@ const Profile = () => {
             </p>
           </div>
 
-          <Tabs value={activeTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
