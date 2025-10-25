@@ -17,14 +17,27 @@ import { EducationManagement } from '@/components/profile/EducationManagement';
 import { CertificationsManagement } from '@/components/profile/CertificationsManagement';
 import { SpecialProjectsManagement } from '@/components/profile/SpecialProjectsManagement';
 import { ProfileOverview } from '@/components/profile/ProfileOverview';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const Profile = () => {
-  const { user, refreshProfile } = useAuth();
+  const { user, refreshProfile, deleteAccount } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const [basicInfo, setBasicInfo] = useState({
     id: '',
@@ -174,6 +187,47 @@ const Profile = () => {
     });
   };
 
+  const handleDeleteAccount = async () => {
+    if (!deletePassword.trim()) {
+      toast({
+        title: 'Password required',
+        description: 'Please enter your password to confirm account deletion.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsDeleting(true);
+    
+    try {
+      const result = await deleteAccount(deletePassword);
+      
+      if (result.success) {
+        toast({
+          title: 'Account deleted',
+          description: 'Your account has been permanently deleted.',
+        });
+        // The AuthContext will handle redirecting to login
+      } else {
+        toast({
+          title: 'Deletion failed',
+          description: result.error || 'Failed to delete account. Please check your password.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+      setDeletePassword('');
+    }
+  };
+
   const handleSaveBasicInfo = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -182,25 +236,34 @@ const Profile = () => {
       // First update the user's name
       await api.updateProfile({ name: basicInfo.name });
       
-      // Then handle basic info (create or update)
-      const basicInfoData = {
-        phoneNumber: basicInfo.phoneNumber,
-        location: basicInfo.location,
-        professionalHeadline: basicInfo.professionalHeadline,
-        bio: basicInfo.bio,
-        industry: basicInfo.industry,
-        experienceLevel: basicInfo.experienceLevel,
-      };
+      // Then handle basic info (create or update) - only send fields that have values
+      const basicInfoData: any = {};
+      if (basicInfo.phoneNumber) basicInfoData.phoneNumber = basicInfo.phoneNumber;
+      if (basicInfo.location) basicInfoData.location = basicInfo.location;
+      if (basicInfo.professionalHeadline) basicInfoData.professionalHeadline = basicInfo.professionalHeadline;
+      if (basicInfo.bio) basicInfoData.bio = basicInfo.bio;
+      if (basicInfo.industry) basicInfoData.industry = basicInfo.industry;
+      if (basicInfo.experienceLevel) basicInfoData.experienceLevel = basicInfo.experienceLevel;
       
       let response;
       if (basicInfo.id) {
-        // Update existing basic info
+        // Update existing basic info - API supports partial updates
         response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
       } else {
-        // Create new basic info
-        response = await api.createBasicInfo(basicInfoData);
-        if (response.success && response.data) {
-          setBasicInfo(prev => ({ ...prev, id: response.data.id }));
+        // Create new basic info - only if we have at least one field
+        if (Object.keys(basicInfoData).length > 0) {
+          response = await api.createBasicInfo(basicInfoData);
+          if (response.success && response.data) {
+            setBasicInfo(prev => ({ ...prev, id: response.data.id }));
+          }
+        } else {
+          // No data to save
+          toast({
+            title: 'No changes',
+            description: 'Please fill in at least one field.',
+          });
+          setIsSaving(false);
+          return;
         }
       }
 
@@ -509,12 +572,7 @@ const Profile = () => {
                     </p>
                     <Button 
                       variant="destructive" 
-                      onClick={() => {
-                        toast({
-                          title: 'Feature Coming Soon',
-                          description: 'Account deletion will be available once the backend endpoint is configured.',
-                        });
-                      }}
+                      onClick={() => setShowDeleteDialog(true)}
                     >
                       Delete Account
                     </Button>
@@ -600,6 +658,52 @@ const Profile = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All your data including profile, employment history, 
+              skills, education, certifications, and projects will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <Label htmlFor="delete-password">Confirm your password</Label>
+            <Input
+              id="delete-password"
+              type="password"
+              placeholder="Enter your password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              className="mt-2"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setDeletePassword('');
+              setShowDeleteDialog(false);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete Account'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
