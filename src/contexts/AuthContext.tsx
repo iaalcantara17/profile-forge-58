@@ -31,8 +31,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🔵 Profile fetch response:', response);
     
     if (response.success && response.data) {
-      console.log('🔵 Setting user data:', response.data);
-      setUser(response.data);
+      // Also fetch basic info and merge it into user data
+      const basicInfoResponse = await api.getBasicInfo();
+      let userData = response.data;
+      
+      if (basicInfoResponse.success && basicInfoResponse.data && basicInfoResponse.data.length > 0) {
+        // Merge the first basic info entry into the user data
+        userData = {
+          ...response.data,
+          basicInfo: basicInfoResponse.data[0]
+        };
+      }
+      
+      console.log('🔵 Setting user data:', userData);
+      setUser(userData);
     } else {
       console.error('❌ Profile fetch failed, clearing auth');
       // Token invalid, clear auth
