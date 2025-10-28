@@ -12,7 +12,7 @@ import { Github, Linkedin, Apple } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginWithToken } = useAuth();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   
@@ -33,16 +33,20 @@ const Login = () => {
   const handleOAuthToken = async (token: string) => {
     setIsLoading(true);
     try {
-      // Store the token directly since it's already verified by backend
-      localStorage.setItem('auth_token', token);
+      // Use the loginWithToken function to properly update AuthContext
+      const result = await loginWithToken(token);
       
-      toast({
-        title: 'Welcome!',
-        description: 'You have successfully logged in via OAuth.',
-      });
-      
-      // Redirect to dashboard
-      navigate('/dashboard');
+      if (result.success) {
+        toast({
+          title: 'Welcome!',
+          description: 'You have successfully logged in via OAuth.',
+        });
+        
+        // Redirect to dashboard
+        navigate('/dashboard');
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       toast({
         title: 'Authentication failed',
