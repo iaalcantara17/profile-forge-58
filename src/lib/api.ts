@@ -153,7 +153,7 @@ class ApiClient {
 
   // Basic Info endpoints
   async getBasicInfo() {
-    return this.request<any[]>('/users/me/basic-info');
+    return this.request<any | any[]>('/users/me/basic-info');
   }
 
   async createBasicInfo(data: any) {

@@ -36,12 +36,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const basicInfoResponse = await api.getBasicInfo();
       let userData = response.data;
       
-      if (basicInfoResponse.success && basicInfoResponse.data && basicInfoResponse.data.length > 0) {
-        // Merge the first basic info entry into the user data
-        userData = {
-          ...response.data,
-          basicInfo: basicInfoResponse.data[0]
-        };
+      if (basicInfoResponse.success) {
+        const payload = basicInfoResponse.data as any;
+        const basic = Array.isArray(payload)
+          ? (payload[0] ?? null)
+          : (payload && typeof payload === 'object' ? payload : null);
+        if (basic) {
+          userData = {
+            ...response.data,
+            basicInfo: basic
+          };
+        }
       }
       
       console.log('🔵 Setting user data:', userData);

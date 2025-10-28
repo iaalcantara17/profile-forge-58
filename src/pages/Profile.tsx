@@ -67,32 +67,44 @@ const Profile = () => {
         // Fetch basic info from the backend
         const response = await api.getBasicInfo();
         
-        if (response.success && response.data && response.data.length > 0) {
-          const info = response.data[0]; // Use first entry
-          setBasicInfo({
-            id: info.id,
-            name: user.name || '',
-            email: user.email || '',
-            phoneNumber: info.phoneNumber || '',
-            location: info.location || '',
-            professionalHeadline: info.professionalHeadline || '',
-            bio: info.bio || '',
-            industry: info.industry || '',
-            experienceLevel: info.experienceLevel || '',
-          });
+        if (response.success) {
+          const payload = response.data as any;
+          const info = Array.isArray(payload)
+            ? (payload[0] ?? null)
+            : (payload && typeof payload === 'object' ? payload : null);
+
+          if (info) {
+            setBasicInfo({
+              id: info.id || '',
+              name: user.name || '',
+              email: user.email || '',
+              phoneNumber: info.phoneNumber || '',
+              location: info.location || '',
+              professionalHeadline: info.professionalHeadline || '',
+              bio: info.bio || '',
+              industry: info.industry || '',
+              experienceLevel: info.experienceLevel || '',
+            });
+          } else {
+            setBasicInfo({
+              id: '',
+              name: user.name || '',
+              email: user.email || '',
+              phoneNumber: '',
+              location: '',
+              professionalHeadline: '',
+              bio: '',
+              industry: '',
+              experienceLevel: '',
+            });
+          }
         } else {
-          // No basic info yet, set defaults from user
-          setBasicInfo({
-            id: '',
+          // On error, keep defaults from user
+          setBasicInfo((prev) => ({
+            ...prev,
             name: user.name || '',
             email: user.email || '',
-            phoneNumber: '',
-            location: '',
-            professionalHeadline: '',
-            bio: '',
-            industry: '',
-            experienceLevel: '',
-          });
+          }));
         }
         
         // Check if user is OAuth
@@ -280,27 +292,21 @@ const Profile = () => {
         experienceLevel: basicInfo.experienceLevel?.trim() || '',
       };
       
-      let response;
-      if (basicInfo.id) {
-        // Update existing basic info
-        response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
-      } else {
-        // Create new basic info
-        response = await api.createBasicInfo(basicInfoData);
-      }
+      const response = await api.createBasicInfo(basicInfoData);
 
       if (response.success && response.data) {
+        const data = response.data;
         // Update state directly from API response
         setBasicInfo({
-          id: response.data.id,
+          id: data.id || basicInfo.id,
           name: basicInfo.name,
           email: basicInfo.email,
-          phoneNumber: response.data.phoneNumber || '',
-          location: response.data.location || '',
-          professionalHeadline: response.data.professionalHeadline || '',
-          bio: response.data.bio || '',
-          industry: response.data.industry || '',
-          experienceLevel: response.data.experienceLevel || '',
+          phoneNumber: data.phoneNumber || '',
+          location: data.location || '',
+          professionalHeadline: data.professionalHeadline || '',
+          bio: data.bio || '',
+          industry: data.industry || '',
+          experienceLevel: data.experienceLevel || '',
         });
         
         toast({
