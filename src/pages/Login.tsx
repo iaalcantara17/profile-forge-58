@@ -62,7 +62,7 @@ const Login = () => {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-display">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your ProfileForge account</CardDescription>
+            <CardDescription>Sign in to your JibbitATS account</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">

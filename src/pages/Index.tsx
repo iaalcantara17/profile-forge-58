@@ -15,7 +15,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight">
             Empower Your Job Search with{" "}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">ProfileForge</span>
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">JibbitATS</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
             The modern ATS platform designed for candidates. Build, manage, and showcase your professional profile with ease.
@@ -45,7 +45,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-      <footer className="border-t py-8"><div className="container text-center text-sm text-muted-foreground"><p>&copy; 2025 ProfileForge. All rights reserved.</p></div></footer>
+      <footer className="border-t py-8"><div className="container text-center text-sm text-muted-foreground"><p>&copy; 2025 JibbitATS. All rights reserved.</p></div></footer>
     </div>
   );
 };

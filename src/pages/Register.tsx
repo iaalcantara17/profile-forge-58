@@ -94,7 +94,7 @@ const Register = () => {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-display">Create Your Account</CardTitle>
-            <CardDescription>Get started with ProfileForge today</CardDescription>
+            <CardDescription>Get started with JibbitATS today</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
