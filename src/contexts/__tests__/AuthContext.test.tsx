@@ -1,11 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import * as RTL from '@testing-library/react';
 import { AuthProvider, useAuth } from '../AuthContext';
 import { api } from '@/lib/api';
 import React from 'react';
 
-const waitFor = RTL.waitFor;
+const waitFor = async (callback: () => void, options?: { timeout?: number }) => {
+  const timeout = options?.timeout || 1000;
+  const startTime = Date.now();
+  
+  while (Date.now() - startTime < timeout) {
+    try {
+      callback();
+      return;
+    } catch (e) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  }
+  callback();
+};
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({
