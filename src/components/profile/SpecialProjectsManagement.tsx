@@ -614,7 +614,7 @@ export const SpecialProjectsManagement = () => {
                 </div>
               </CardContent>
             </Card>
-          ))
+          ))}
         </div>
       ) : (
         !isAdding && (
