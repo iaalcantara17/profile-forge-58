@@ -276,48 +276,78 @@ const Profile = () => {
     setIsSaving(true);
 
     try {
-      // First update the user's name in auth context
-      const nameUpdateResponse = await api.updateProfile({ name: basicInfo.name });
-      if (!nameUpdateResponse.success) {
-        throw new Error(nameUpdateResponse.error?.message || 'Failed to update name');
+      // 1) Update name only if it actually changed and is non-empty
+      const trimmedName = basicInfo.name?.trim() || '';
+      const currentName = (user?.name || '').trim();
+      let nameUpdated = false;
+
+      if (trimmedName && trimmedName !== currentName) {
+        const nameUpdateResponse = await api.updateProfile({ name: trimmedName });
+        if (!nameUpdateResponse.success) {
+          // Don't abort the whole save – inform the user but continue with basic info
+          toast({
+            title: 'Name not updated',
+            description: nameUpdateResponse.error?.message || 'We could not update your name right now.',
+            variant: 'destructive',
+          });
+        } else {
+          nameUpdated = true;
+        }
       }
-      
-      // Prepare basic info data
-      const basicInfoData = {
+
+      // 2) Build a partial payload: only send fields that are non-empty to allow true partial updates
+      const fields = {
         phoneNumber: basicInfo.phoneNumber?.trim() || '',
         location: basicInfo.location?.trim() || '',
         professionalHeadline: basicInfo.professionalHeadline?.trim() || '',
         bio: basicInfo.bio?.trim() || '',
         industry: basicInfo.industry?.trim() || '',
         experienceLevel: basicInfo.experienceLevel?.trim() || '',
-      };
-      
-      const response = await api.createBasicInfo(basicInfoData);
+      } as const;
 
-      if (response.success && response.data) {
-        const data = response.data;
-        // Update state directly from API response
-        setBasicInfo({
-          id: data.id || basicInfo.id,
-          name: basicInfo.name,
-          email: basicInfo.email,
-          phoneNumber: data.phoneNumber || '',
-          location: data.location || '',
-          professionalHeadline: data.professionalHeadline || '',
-          bio: data.bio || '',
-          industry: data.industry || '',
-          experienceLevel: data.experienceLevel || '',
-        });
-        
+      const partialPayload: Record<string, string> = {};
+      (Object.keys(fields) as Array<keyof typeof fields>).forEach((k) => {
+        const v = fields[k];
+        if (v) partialPayload[k] = v; // only include non-empty values
+      });
+
+      let basicUpdated = false;
+      let updatedData: any = null;
+
+      if (Object.keys(partialPayload).length > 0) {
+        const response = await api.createBasicInfo(partialPayload);
+        if (response.success && response.data) {
+          basicUpdated = true;
+          updatedData = response.data;
+
+          // Merge response back into local state (preserve existing values if API omits them)
+          setBasicInfo((prev) => ({
+            id: updatedData.id || prev.id,
+            name: trimmedName || prev.name,
+            email: prev.email,
+            phoneNumber: updatedData.phoneNumber ?? prev.phoneNumber,
+            location: updatedData.location ?? prev.location,
+            professionalHeadline: updatedData.professionalHeadline ?? prev.professionalHeadline,
+            bio: updatedData.bio ?? prev.bio,
+            industry: updatedData.industry ?? prev.industry,
+            experienceLevel: updatedData.experienceLevel ?? prev.experienceLevel,
+          }));
+        } else {
+          toast({
+            title: 'Update failed',
+            description: response.error?.message || 'Failed to update profile',
+            variant: 'destructive',
+          });
+        }
+      } else if (nameUpdated) {
+        // Only the name changed – reflect it locally
+        setBasicInfo((prev) => ({ ...prev, name: trimmedName }));
+      }
+
+      if (nameUpdated || basicUpdated) {
         toast({
           title: 'Profile updated',
           description: 'Your basic information has been saved successfully.',
-        });
-      } else {
-        toast({
-          title: 'Update failed',
-          description: response.error?.message || 'Failed to update profile',
-          variant: 'destructive',
         });
       }
     } catch (error) {
