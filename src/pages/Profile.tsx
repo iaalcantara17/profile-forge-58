@@ -264,56 +264,47 @@ const Profile = () => {
     setIsSaving(true);
 
     try {
-      // First update the user's name
+      // First update the user's name in auth context
       const nameUpdateResponse = await api.updateProfile({ name: basicInfo.name });
       if (!nameUpdateResponse.success) {
         throw new Error(nameUpdateResponse.error?.message || 'Failed to update name');
       }
       
+      // Update auth context with new name
+      await refreshProfile();
+      
+      // Prepare basic info data
+      const basicInfoData = {
+        phoneNumber: basicInfo.phoneNumber?.trim() || '',
+        location: basicInfo.location?.trim() || '',
+        professionalHeadline: basicInfo.professionalHeadline?.trim() || '',
+        bio: basicInfo.bio?.trim() || '',
+        industry: basicInfo.industry?.trim() || '',
+        experienceLevel: basicInfo.experienceLevel?.trim() || '',
+      };
+      
       let response;
       if (basicInfo.id) {
-        // Update existing basic info - send all fields to allow clearing
-        const basicInfoData: any = {
-          phoneNumber: basicInfo.phoneNumber?.trim() || '',
-          location: basicInfo.location?.trim() || '',
-          professionalHeadline: basicInfo.professionalHeadline?.trim() || '',
-          bio: basicInfo.bio?.trim() || '',
-          industry: basicInfo.industry?.trim() || '',
-          experienceLevel: basicInfo.experienceLevel?.trim() || '',
-        };
+        // Update existing basic info
         response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
       } else {
-        // Create new basic info - only send filled fields
-        const basicInfoData: any = {};
-        if (basicInfo.phoneNumber?.trim()) basicInfoData.phoneNumber = basicInfo.phoneNumber.trim();
-        if (basicInfo.location?.trim()) basicInfoData.location = basicInfo.location.trim();
-        if (basicInfo.professionalHeadline?.trim()) basicInfoData.professionalHeadline = basicInfo.professionalHeadline.trim();
-        if (basicInfo.bio?.trim()) basicInfoData.bio = basicInfo.bio.trim();
-        if (basicInfo.industry?.trim()) basicInfoData.industry = basicInfo.industry.trim();
-        if (basicInfo.experienceLevel?.trim()) basicInfoData.experienceLevel = basicInfo.experienceLevel.trim();
+        // Create new basic info
         response = await api.createBasicInfo(basicInfoData);
       }
 
-      if (response.success) {
-        // Fetch fresh data from backend - no local state manipulation
-        await refreshProfile();
-        
-        // Reload basic info from backend
-        const freshData = await api.getBasicInfo();
-        if (freshData.success && freshData.data && freshData.data.length > 0) {
-          const info = freshData.data[0];
-          setBasicInfo({
-            id: info.id,
-            name: user?.name || '',
-            email: user?.email || '',
-            phoneNumber: info.phoneNumber || '',
-            location: info.location || '',
-            professionalHeadline: info.professionalHeadline || '',
-            bio: info.bio || '',
-            industry: info.industry || '',
-            experienceLevel: info.experienceLevel || '',
-          });
-        }
+      if (response.success && response.data) {
+        // Update state directly from API response
+        setBasicInfo({
+          id: response.data.id,
+          name: basicInfo.name,
+          email: basicInfo.email,
+          phoneNumber: response.data.phoneNumber || '',
+          location: response.data.location || '',
+          professionalHeadline: response.data.professionalHeadline || '',
+          bio: response.data.bio || '',
+          industry: response.data.industry || '',
+          experienceLevel: response.data.experienceLevel || '',
+        });
         
         toast({
           title: 'Profile updated',
