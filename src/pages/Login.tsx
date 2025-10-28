@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,12 +14,45 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  // Handle OAuth token from URL parameter
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      handleOAuthToken(token);
+    }
+  }, [searchParams]);
+
+  const handleOAuthToken = async (token: string) => {
+    setIsLoading(true);
+    try {
+      // Store the token directly since it's already verified by backend
+      localStorage.setItem('auth_token', token);
+      
+      toast({
+        title: 'Welcome!',
+        description: 'You have successfully logged in via OAuth.',
+      });
+      
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      toast({
+        title: 'Authentication failed',
+        description: 'Invalid or expired OAuth token.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleOAuthLogin = (provider: string) => {
     toast({
