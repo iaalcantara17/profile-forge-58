@@ -118,10 +118,6 @@ class ApiClient {
     });
   }
 
-  async getProvider() {
-    return this.request<{ provider: string }>('/users/me/provider');
-  }
-
   async forgotPassword(email: string) {
     return this.request('/auth/forgot-password', {
       method: 'POST',
