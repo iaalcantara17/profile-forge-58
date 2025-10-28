@@ -55,13 +55,17 @@ const Login = () => {
   };
 
   const handleOAuthLogin = (provider: string) => {
-    toast({
-      title: 'OAuth Not Configured',
-      description: `${provider} authentication will be available once the backend is configured.`,
-      variant: 'default',
-    });
-    // TODO: Implement OAuth flow when backend is ready
-    // Example: window.location.href = `${API_BASE_URL}/auth/${provider}`;
+    if (provider === 'Google') {
+      // Redirect to backend Google OAuth endpoint
+      window.location.href = 'https://api.jibbit.app/api/auth/google';
+    } else {
+      // Other providers not yet configured
+      toast({
+        title: 'OAuth Not Configured',
+        description: `${provider} authentication will be available once the backend is configured.`,
+        variant: 'default',
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
