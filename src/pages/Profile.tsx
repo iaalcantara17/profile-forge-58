@@ -230,8 +230,8 @@ const Profile = () => {
     setIsDeleting(true);
     
     try {
-      // For OAuth users, send empty string as password
-      const result = await deleteAccount(isOAuthUser ? '' : deletePassword);
+      // For OAuth users, send the confirmation text as password; for local users, send actual password
+      const result = await deleteAccount(isOAuthUser ? 'DELETE MY ACCOUNT' : deletePassword);
       
       if (result.success) {
         toast({
@@ -282,21 +282,6 @@ const Profile = () => {
           experienceLevel: basicInfo.experienceLevel?.trim() || '',
         };
         response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
-        
-        // Update local state with response data
-        if (response.success && response.data) {
-          setBasicInfo({
-            id: response.data.id,
-            name: basicInfo.name,
-            email: basicInfo.email,
-            phoneNumber: response.data.phoneNumber || '',
-            location: response.data.location || '',
-            professionalHeadline: response.data.professionalHeadline || '',
-            bio: response.data.bio || '',
-            industry: response.data.industry || '',
-            experienceLevel: response.data.experienceLevel || '',
-          });
-        }
       } else {
         // Create new basic info - only send filled fields
         const basicInfoData: any = {};
@@ -307,26 +292,28 @@ const Profile = () => {
         if (basicInfo.industry?.trim()) basicInfoData.industry = basicInfo.industry.trim();
         if (basicInfo.experienceLevel?.trim()) basicInfoData.experienceLevel = basicInfo.experienceLevel.trim();
         response = await api.createBasicInfo(basicInfoData);
-        
-        // Update local state with response data including the new ID
-        if (response.success && response.data) {
-          setBasicInfo({
-            id: response.data.id,
-            name: basicInfo.name,
-            email: basicInfo.email,
-            phoneNumber: response.data.phoneNumber || '',
-            location: response.data.location || '',
-            professionalHeadline: response.data.professionalHeadline || '',
-            bio: response.data.bio || '',
-            industry: response.data.industry || '',
-            experienceLevel: response.data.experienceLevel || '',
-          });
-        }
       }
 
       if (response.success) {
-        // Update auth context in background without waiting
-        refreshProfile();
+        // Fetch fresh data from backend - no local state manipulation
+        await refreshProfile();
+        
+        // Reload basic info from backend
+        const freshData = await api.getBasicInfo();
+        if (freshData.success && freshData.data && freshData.data.length > 0) {
+          const info = freshData.data[0];
+          setBasicInfo({
+            id: info.id,
+            name: user?.name || '',
+            email: user?.email || '',
+            phoneNumber: info.phoneNumber || '',
+            location: info.location || '',
+            professionalHeadline: info.professionalHeadline || '',
+            bio: info.bio || '',
+            industry: info.industry || '',
+            experienceLevel: info.experienceLevel || '',
+          });
+        }
         
         toast({
           title: 'Profile updated',
