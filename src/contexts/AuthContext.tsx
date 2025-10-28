@@ -9,7 +9,7 @@ interface AuthContextType {
   loginWithToken: (token: string) => Promise<{ success: boolean; error?: string }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  deleteAccount: (password: string) => Promise<{ success: boolean; error?: string }>;
+  deleteAccount: (password: string, isOAuthUser?: boolean) => Promise<{ success: boolean; error?: string }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -114,8 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     api.logout();
   };
 
-  const deleteAccount = async (password: string) => {
-    const response = await api.deleteAccount(password);
+  const deleteAccount = async (password: string, isOAuthUser: boolean = false) => {
+    const response = await api.deleteAccount(password, isOAuthUser);
     
     if (response.success) {
       // Clear auth state after successful deletion

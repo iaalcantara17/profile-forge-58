@@ -104,10 +104,14 @@ class ApiClient {
     return this.request('/auth/logout', { method: 'POST' });
   }
 
-  async deleteAccount(password: string) {
+  async deleteAccount(password: string, isOAuthUser: boolean = false) {
     return this.request<void>('/auth/delete-account', {
       method: 'DELETE',
-      body: JSON.stringify({ password }),
+      body: JSON.stringify(
+        isOAuthUser 
+          ? { confirmationText: password }
+          : { password }
+      ),
     });
   }
 

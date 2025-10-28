@@ -242,8 +242,11 @@ const Profile = () => {
     setIsDeleting(true);
     
     try {
-      // For OAuth users, send the confirmation text as password; for local users, send actual password
-      const result = await deleteAccount(isOAuthUser ? 'DELETE MY ACCOUNT' : deletePassword);
+      // For OAuth users, send the confirmation text; for local users, send actual password
+      const result = await deleteAccount(
+        isOAuthUser ? 'DELETE MY ACCOUNT' : deletePassword,
+        isOAuthUser
+      );
       
       if (result.success) {
         toast({
