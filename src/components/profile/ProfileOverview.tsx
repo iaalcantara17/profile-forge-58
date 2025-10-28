@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Circle, AlertCircle, Plus, TrendingUp, Award, Download } from 'lucide-react';
+import { CheckCircle2, Circle, AlertCircle, Plus, TrendingUp, Award, Download, Clock, Briefcase, GraduationCap, Code, FolderKanban, Medal, Target, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'react-router-dom';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface ProfileSection {
   id: string;
@@ -141,6 +141,143 @@ Generated on ${new Date().toLocaleDateString()}
 
   const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
 
+  // Achievement badges based on milestones
+  const achievements = [
+    {
+      id: 'bronze',
+      name: 'Bronze Profile',
+      description: 'Complete basic information',
+      unlocked: overallCompletion >= 25,
+      icon: Medal,
+      color: 'text-amber-700',
+    },
+    {
+      id: 'silver',
+      name: 'Silver Profile',
+      description: 'Complete 50% of your profile',
+      unlocked: overallCompletion >= 50,
+      icon: Medal,
+      color: 'text-gray-400',
+    },
+    {
+      id: 'gold',
+      name: 'Gold Profile',
+      description: 'Complete 75% of your profile',
+      unlocked: overallCompletion >= 75,
+      icon: Medal,
+      color: 'text-yellow-500',
+    },
+    {
+      id: 'platinum',
+      name: 'Platinum Profile',
+      description: '100% profile completion',
+      unlocked: overallCompletion === 100,
+      icon: Award,
+      color: 'text-blue-400',
+    },
+    {
+      id: 'skilled',
+      name: 'Skilled Professional',
+      description: 'Add 10+ skills',
+      unlocked: (user?.skills?.length || 0) >= 10,
+      icon: Target,
+      color: 'text-purple-500',
+    },
+    {
+      id: 'experienced',
+      name: 'Experienced Professional',
+      description: 'Add 3+ employment entries',
+      unlocked: (user?.employmentHistory?.length || 0) >= 3,
+      icon: Briefcase,
+      color: 'text-green-500',
+    },
+  ];
+
+  // Industry standards comparison
+  const industryStandards = {
+    skills: { average: 8, excellent: 15 },
+    employment: { average: 2, excellent: 4 },
+    education: { average: 1, excellent: 2 },
+    projects: { average: 2, excellent: 5 },
+    certifications: { average: 1, excellent: 3 },
+  };
+
+  const userMetrics = {
+    skills: user?.skills?.length || 0,
+    employment: user?.employmentHistory?.length || 0,
+    education: user?.education?.length || 0,
+    projects: user?.projects?.length || 0,
+    certifications: user?.certifications?.length || 0,
+  };
+
+  const comparisonData = [
+    {
+      category: 'Skills',
+      you: userMetrics.skills,
+      average: industryStandards.skills.average,
+      excellent: industryStandards.skills.excellent,
+    },
+    {
+      category: 'Experience',
+      you: userMetrics.employment,
+      average: industryStandards.employment.average,
+      excellent: industryStandards.employment.excellent,
+    },
+    {
+      category: 'Education',
+      you: userMetrics.education,
+      average: industryStandards.education.average,
+      excellent: industryStandards.education.excellent,
+    },
+    {
+      category: 'Projects',
+      you: userMetrics.projects,
+      average: industryStandards.projects.average,
+      excellent: industryStandards.projects.excellent,
+    },
+    {
+      category: 'Certifications',
+      you: userMetrics.certifications,
+      average: industryStandards.certifications.average,
+      excellent: industryStandards.certifications.excellent,
+    },
+  ];
+
+  // Recent activity timeline
+  const recentActivity = [
+    ...(user?.employmentHistory?.slice(0, 2).map(job => ({
+      type: 'employment',
+      icon: Briefcase,
+      title: `Added ${job.title} at ${job.company}`,
+      date: new Date(job.startDate),
+    })) || []),
+    ...(user?.education?.slice(0, 2).map(edu => ({
+      type: 'education',
+      icon: GraduationCap,
+      title: `Added ${edu.degree} from ${edu.institution}`,
+      date: new Date(edu.graduationDate || edu.startDate),
+    })) || []),
+    ...(user?.skills?.slice(0, 3).map(() => ({
+      type: 'skills',
+      icon: Code,
+      title: 'Added new skills',
+      date: new Date(),
+    })) || []),
+    ...(user?.projects?.slice(0, 2).map(project => ({
+      type: 'project',
+      icon: FolderKanban,
+      title: `Added project: ${project.name}`,
+      date: new Date(project.startDate),
+    })) || []),
+  ]
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 5);
+
+  // Career timeline - chronological employment history
+  const careerTimeline = [...(user?.employmentHistory || [])]
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+    .slice(0, 5);
+
   return (
     <div className="space-y-6">
       {/* Profile Strength Card */}
@@ -228,6 +365,171 @@ Generated on ${new Date().toLocaleDateString()}
           </Card>
         ))}
       </div>
+
+      {/* Achievement Badges */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Award className="h-5 w-5" />
+            Achievement Badges
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {achievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className={`p-4 border rounded-lg text-center space-y-2 transition-all ${
+                  achievement.unlocked
+                    ? 'bg-primary/5 border-primary/20'
+                    : 'bg-muted/50 border-muted opacity-50'
+                }`}
+              >
+                <achievement.icon
+                  className={`h-8 w-8 mx-auto ${
+                    achievement.unlocked ? achievement.color : 'text-muted-foreground'
+                  }`}
+                />
+                <div>
+                  <p className="font-medium text-sm">{achievement.name}</p>
+                  <p className="text-xs text-muted-foreground">{achievement.description}</p>
+                </div>
+                {achievement.unlocked && (
+                  <Badge variant="default" className="text-xs">
+                    Unlocked
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Industry Standards Comparison */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Industry Standards Comparison
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              See how your profile compares to industry averages and excellent benchmarks.
+            </p>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={comparisonData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="category" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="you" fill="#8b5cf6" name="You" />
+                <Bar dataKey="average" fill="#3b82f6" name="Industry Average" />
+                <Bar dataKey="excellent" fill="#10b981" name="Excellent" />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="grid grid-cols-3 gap-2 pt-2">
+              <div className="text-center">
+                <div className="w-4 h-4 bg-purple-600 rounded mx-auto mb-1"></div>
+                <p className="text-xs text-muted-foreground">Your Profile</p>
+              </div>
+              <div className="text-center">
+                <div className="w-4 h-4 bg-blue-600 rounded mx-auto mb-1"></div>
+                <p className="text-xs text-muted-foreground">Industry Average</p>
+              </div>
+              <div className="text-center">
+                <div className="w-4 h-4 bg-green-600 rounded mx-auto mb-1"></div>
+                <p className="text-xs text-muted-foreground">Excellent</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Activity Timeline */}
+      {recentActivity.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-primary/10 rounded-lg">
+                    <activity.icon className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {activity.date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Career Timeline Visualization */}
+      {careerTimeline.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5" />
+              Career Timeline
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="relative space-y-6 pl-6 border-l-2 border-primary/20">
+              {careerTimeline.map((job, index) => (
+                <div key={index} className="relative">
+                  <div className="absolute -left-[29px] mt-1.5 h-4 w-4 rounded-full bg-primary border-4 border-background"></div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold">{job.title}</p>
+                      {job.currentlyWorking && (
+                        <Badge variant="default" className="text-xs">
+                          Current
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{job.company}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(job.startDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                      })}{' '}
+                      -{' '}
+                      {job.currentlyWorking
+                        ? 'Present'
+                        : new Date(job.endDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                          })}
+                    </p>
+                    {job.description && (
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        {job.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Skills Distribution Chart */}
       {skillsData.length > 0 && (
