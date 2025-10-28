@@ -265,7 +265,10 @@ const Profile = () => {
 
     try {
       // First update the user's name
-      await api.updateProfile({ name: basicInfo.name });
+      const nameUpdateResponse = await api.updateProfile({ name: basicInfo.name });
+      if (!nameUpdateResponse.success) {
+        throw new Error(nameUpdateResponse.error?.message || 'Failed to update name');
+      }
       
       let response;
       if (basicInfo.id) {
@@ -279,6 +282,21 @@ const Profile = () => {
           experienceLevel: basicInfo.experienceLevel?.trim() || '',
         };
         response = await api.updateBasicInfo(basicInfo.id, basicInfoData);
+        
+        // Update local state with response data
+        if (response.success && response.data) {
+          setBasicInfo({
+            id: response.data.id,
+            name: basicInfo.name,
+            email: basicInfo.email,
+            phoneNumber: response.data.phoneNumber || '',
+            location: response.data.location || '',
+            professionalHeadline: response.data.professionalHeadline || '',
+            bio: response.data.bio || '',
+            industry: response.data.industry || '',
+            experienceLevel: response.data.experienceLevel || '',
+          });
+        }
       } else {
         // Create new basic info - only send filled fields
         const basicInfoData: any = {};
@@ -289,13 +307,26 @@ const Profile = () => {
         if (basicInfo.industry?.trim()) basicInfoData.industry = basicInfo.industry.trim();
         if (basicInfo.experienceLevel?.trim()) basicInfoData.experienceLevel = basicInfo.experienceLevel.trim();
         response = await api.createBasicInfo(basicInfoData);
+        
+        // Update local state with response data including the new ID
         if (response.success && response.data) {
-          setBasicInfo(prev => ({ ...prev, id: response.data.id }));
+          setBasicInfo({
+            id: response.data.id,
+            name: basicInfo.name,
+            email: basicInfo.email,
+            phoneNumber: response.data.phoneNumber || '',
+            location: response.data.location || '',
+            professionalHeadline: response.data.professionalHeadline || '',
+            bio: response.data.bio || '',
+            industry: response.data.industry || '',
+            experienceLevel: response.data.experienceLevel || '',
+          });
         }
       }
 
       if (response.success) {
-        await refreshProfile();
+        // Update auth context in background without waiting
+        refreshProfile();
         
         toast({
           title: 'Profile updated',
@@ -312,7 +343,7 @@ const Profile = () => {
       console.error('❌ Exception during profile update:', error);
       toast({
         title: 'Error',
-        description: 'An unexpected error occurred',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
         variant: 'destructive',
       });
     } finally {
