@@ -270,9 +270,6 @@ const Profile = () => {
         throw new Error(nameUpdateResponse.error?.message || 'Failed to update name');
       }
       
-      // Update auth context with new name
-      await refreshProfile();
-      
       // Prepare basic info data
       const basicInfoData = {
         phoneNumber: basicInfo.phoneNumber?.trim() || '',
