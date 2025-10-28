@@ -1,5 +1,5 @@
 // API client for backend communication
-const API_BASE_URL = 'http://34.207.119.121:5000/api';
+const API_BASE_URL = 'https://api.jibbit.app/api';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -116,6 +116,10 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
+  }
+
+  async getProvider() {
+    return this.request<{ provider: string }>('/users/me/provider');
   }
 
   async forgotPassword(email: string) {
