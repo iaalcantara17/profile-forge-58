@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, X, Code, MessageSquare, Languages, Wrench, Loader2, Search, Download, GripVertical } from 'lucide-react';
 import { useProfileData } from './ProfileDataManager';
+import { toast } from 'sonner';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 interface Skill {
   id: string;
@@ -61,11 +63,7 @@ export const SkillsManagement = () => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      toast({
-        title: 'Skill name required',
-        description: 'Please enter a skill name',
-        variant: 'destructive',
-      });
+      toast.error('Please enter a skill name');
       return;
     }
 
@@ -74,11 +72,7 @@ export const SkillsManagement = () => {
     );
     
     if (duplicate) {
-      toast({
-        title: 'Duplicate skill',
-        description: 'This skill already exists in your profile',
-        variant: 'destructive',
-      });
+      toast.error('This skill already exists in your profile');
       return;
     }
 
@@ -90,29 +84,19 @@ export const SkillsManagement = () => {
         await updateProfileField('skills', updatedSkills);
         await fetchSkills();
         await refreshProfile();
-        toast({
-          title: 'Skill updated',
-          description: 'Your skill has been updated successfully',
-        });
+        toast.success('Skill updated successfully');
         setEditingId(null);
       } else {
         const newSkill = { ...formData, id: crypto.randomUUID() };
         await updateProfileField('skills', [...skills, newSkill]);
         await fetchSkills();
         await refreshProfile();
-        toast({
-          title: 'Skill added',
-          description: 'New skill has been added to your profile',
-        });
+        toast.success('Skill added successfully');
       }
 
       resetForm();
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'An unexpected error occurred',
-        variant: 'destructive',
-      });
+      toast.error('An unexpected error occurred');
     } finally {
       setIsSaving(false);
     }
@@ -133,10 +117,7 @@ export const SkillsManagement = () => {
     await updateProfileField('skills', updatedSkills);
     await fetchSkills();
     await refreshProfile();
-    toast({
-      title: 'Skill removed',
-      description: 'The skill has been removed from your profile',
-    });
+    toast.success('Skill removed from your profile');
   };
 
   const handleMoveToCategory = async (skillId: string, newCategory: Skill['category']) => {
@@ -144,10 +125,7 @@ export const SkillsManagement = () => {
     await updateProfileField('skills', updatedSkills);
     await fetchSkills();
     await refreshProfile();
-    toast({
-      title: 'Skill moved',
-      description: `Skill moved to ${newCategory}`,
-    });
+    toast.success(`Skill moved to ${newCategory}`);
   };
 
   const handleDragEnd = async (result: DropResult) => {
@@ -174,10 +152,7 @@ export const SkillsManagement = () => {
     a.click();
     window.URL.revokeObjectURL(url);
 
-    toast({
-      title: 'Skills exported',
-      description: 'Your skills have been exported to CSV',
-    });
+    toast.success('Your skills have been exported to CSV');
   };
 
   const resetForm = () => {

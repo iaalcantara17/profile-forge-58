@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const Profile = () => {
-  const { user, refreshProfile, deleteAccount } = useAuth();
+  const { user, profile: userProfile, refreshProfile, deleteAccount } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -63,15 +63,15 @@ const Profile = () => {
 
   useEffect(() => {
     const loadBasicInfo = async () => {
-      if (user) {
+      if (user && userProfile) {
         setBasicInfo({
-          id: profile?.id || '',
-          name: profile?.name || user.email || '',
+          id: userProfile?.id || '',
+          name: userProfile?.name || user.email || '',
           email: user.email || '',
-          phoneNumber: profile?.phone_number || '',
-          location: profile?.location || '',
-          professionalHeadline: profile?.professional_headline || '',
-          bio: profile?.bio || '',
+          phoneNumber: userProfile?.phone_number || '',
+          location: userProfile?.location || '',
+          professionalHeadline: userProfile?.professional_headline || '',
+          bio: userProfile?.bio || '',
           industry: '',
           experienceLevel: '',
         });
@@ -79,7 +79,7 @@ const Profile = () => {
     };
     
     loadBasicInfo();
-  }, [user, profile]);
+  }, [user, userProfile]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -240,13 +240,13 @@ const Profile = () => {
     setIsSaving(true);
 
     try {
-      const updateData = {
-        name: basicInfo.name?.trim() || profile?.name,
-        phone_number: basicInfo.phoneNumber?.trim(),
-        location: basicInfo.location?.trim(),
-        professional_headline: basicInfo.professionalHeadline?.trim(),
-        bio: basicInfo.bio?.trim(),
-      };
+        const updateData = {
+          name: basicInfo.name?.trim() || userProfile?.name,
+          phone_number: basicInfo.phoneNumber?.trim(),
+          location: basicInfo.location?.trim(),
+          professional_headline: basicInfo.professionalHeadline?.trim(),
+          bio: basicInfo.bio?.trim(),
+        };
 
       await api.profile.update(updateData);
       await refreshProfile();
@@ -341,7 +341,7 @@ const Profile = () => {
                   <div className="flex flex-col sm:flex-row items-center gap-6">
                     <div className="relative">
                       <Avatar className="h-32 w-32">
-                          {profile?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                          {userProfile?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                       </Avatar>
                       {profilePicture && (
                         <Button

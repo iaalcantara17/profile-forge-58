@@ -64,7 +64,7 @@ const Jobs = () => {
     if (!confirm('Are you sure you want to delete this job?')) return;
 
     try {
-      await api.jobs.delete(job.job_id || job.id!);
+      await api.jobs.delete(job.id!);
       toast.success('Job deleted successfully');
       fetchJobs();
     } catch (error) {
@@ -74,7 +74,7 @@ const Jobs = () => {
 
   const handleArchiveJob = async (job: Job) => {
     try {
-      await api.jobs.archive(job.job_id || job.id!);
+      await api.jobs.archive(job.id!);
       toast.success('Job archived successfully');
       fetchJobs();
     } catch (error) {

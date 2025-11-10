@@ -49,6 +49,7 @@ export interface ApplicationMaterials {
 }
 
 export interface Job {
+  id: string;
   job_id: string;
   user_id: string;
   jobTitle: string;
