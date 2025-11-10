@@ -193,8 +193,8 @@ export const api = {
     },
 
     generateContent: async (resumeId: string, jobId: string, sections: string[]) => {
-      const { data, error } = await supabase.functions.invoke('ai-resume-generate', {
-        body: { resumeId, jobId, sections }
+      const { data, error } = await supabase.functions.invoke('ai-resume-content', {
+        body: { jobId, sections }
       });
 
       if (error) throw error;
@@ -301,8 +301,32 @@ export const api = {
     },
 
     generate: async (jobId: string, tone?: string, template?: string) => {
-      const { data, error } = await supabase.functions.invoke('ai-cover-letter-generate', {
-        body: { jobId, tone, template }
+      const { data, error } = await supabase.functions.invoke('ai-cover-letter', {
+        body: { jobId, tone: tone || 'professional', template: template || 'formal' }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+  },
+
+  // Company research
+  company: {
+    research: async (companyName: string, companyWebsite?: string) => {
+      const { data, error } = await supabase.functions.invoke('ai-company-research', {
+        body: { companyName, companyWebsite }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+  },
+
+  // Job matching
+  matching: {
+    analyzeJob: async (jobId: string) => {
+      const { data, error } = await supabase.functions.invoke('ai-job-match', {
+        body: { jobId }
       });
 
       if (error) throw error;

@@ -11,3 +11,15 @@ verify_jwt = true
 
 [functions.ai-cover-letter-generate]
 verify_jwt = true
+
+[functions.ai-resume-content]
+verify_jwt = true
+
+[functions.ai-cover-letter]
+verify_jwt = true
+
+[functions.ai-company-research]
+verify_jwt = true
+
+[functions.ai-job-match]
+verify_jwt = true
