@@ -25,7 +25,7 @@ export function JobPipeline({ jobs, onJobUpdate }: JobPipelineProps) {
   const [isDragging, setIsDragging] = useState(false);
 
   const getJobsByStatus = (status: string) => {
-    return jobs.filter(job => job.status === status && !job.is_archived);
+    return jobs.filter(job => job.status === status && !job.isArchived);
   };
 
   const handleDragStart = () => {
@@ -82,7 +82,7 @@ export function JobPipeline({ jobs, onJobUpdate }: JobPipelineProps) {
                     }`}
                   >
                     {stageJobs.map((job, index) => (
-                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                      <Draggable key={job.job_id} draggableId={job.job_id} index={index}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
@@ -90,7 +90,7 @@ export function JobPipeline({ jobs, onJobUpdate }: JobPipelineProps) {
                             {...provided.dragHandleProps}
                             className={snapshot.isDragging ? 'opacity-50' : ''}
                           >
-                            <JobCard job={job} onUpdate={onJobUpdate} compact />
+                            <JobCard job={job} className="mb-2" />
                           </div>
                         )}
                       </Draggable>

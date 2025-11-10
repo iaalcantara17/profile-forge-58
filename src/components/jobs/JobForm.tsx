@@ -52,61 +52,29 @@ export const JobForm = ({ initialData, onSuccess, onCancel }: JobFormProps) => {
   const deadline = watch('applicationDeadline');
 
   const handleImportFromUrl = async () => {
-    if (!importUrl) {
-      toast.error('Please enter a job posting URL');
-      return;
-    }
-
-    setIsImporting(true);
-    try {
-      const response = await api.importJobFromUrl(importUrl);
-      if (response.success && response.data) {
-        const job = response.data;
-        setValue('title', job.title || '');
-        setValue('company', job.company || '');
-        setValue('location', job.location || '');
-        setValue('description', job.description || '');
-        setValue('industry', job.industry || '');
-        setValue('jobType', job.jobType || undefined);
-        setValue('salaryMin', job.salaryMin || undefined);
-        setValue('salaryMax', job.salaryMax || undefined);
-        toast.success('Job details imported successfully');
-      }
-    } catch (error) {
-      toast.error('Failed to import job details. Please enter manually.');
-    } finally {
-      setIsImporting(false);
-    }
+    toast.error('Job import feature coming soon. Please enter details manually for now.');
+    setImportUrl('');
   };
 
   const onSubmit = async (data: JobFormData) => {
     setIsSubmitting(true);
     try {
       const jobData = {
-        title: data.title || '',
-        company: data.company || '',
+        job_title: data.title || '',
+        company_name: data.company || '',
         location: data.location || '',
-        description: data.description || '',
-        salaryMin: data.salaryMin,
-        salaryMax: data.salaryMax,
-        jobPostingUrl: data.jobPostingUrl,
-        applicationDeadline: data.applicationDeadline?.toISOString(),
-        industry: data.industry,
-        jobType: data.jobType,
+        job_description: data.description || '',
+        salary_min: data.salaryMin,
+        salary_max: data.salaryMax,
+        job_url: data.jobPostingUrl,
+        application_deadline: data.applicationDeadline?.toISOString().split('T')[0],
         status: data.status || 'interested',
         notes: data.notes,
       };
 
-      const response = await api.createJob(jobData);
-      if (response.success) {
-        toast.success('Job added successfully');
-        onSuccess?.();
-      } else {
-        const errorMsg = typeof response.error === 'string' 
-          ? response.error 
-          : response.error?.message || 'Failed to add job';
-        toast.error(errorMsg);
-      }
+      await api.jobs.create(jobData);
+      toast.success('Job added successfully');
+      onSuccess?.();
     } catch (error) {
       toast.error('An error occurred while adding the job');
     } finally {

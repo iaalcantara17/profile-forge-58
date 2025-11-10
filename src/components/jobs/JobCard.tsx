@@ -15,6 +15,7 @@ interface JobCardProps {
   onArchive?: (job: Job) => void;
   onStatusChange?: (job: Job, status: Job['status']) => void;
   className?: string;
+  compact?: boolean;
 }
 
 const statusColors: Record<JobStatus, string> = {
@@ -43,6 +44,7 @@ export const JobCard = ({
   onArchive,
   onStatusChange,
   className,
+  compact,
 }: JobCardProps) => {
   const daysInStage = job.daysInStage || differenceInDays(new Date(), new Date(job.createdAt));
   const daysUntilDeadline = job.applicationDeadline

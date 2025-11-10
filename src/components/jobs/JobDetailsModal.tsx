@@ -45,14 +45,10 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await api.updateJob(job.job_id || job._id!, editedJob);
-      if (response.success) {
-        toast.success("Job updated successfully");
-        setIsEditing(false);
-        onUpdate();
-      } else {
-        toast.error(response.error?.message || "Failed to update job");
-      }
+      await api.jobs.update(job.job_id, editedJob);
+      toast.success("Job updated successfully");
+      setIsEditing(false);
+      onUpdate();
     } catch (error) {
       toast.error("An error occurred while updating the job");
     } finally {
