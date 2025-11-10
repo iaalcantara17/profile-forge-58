@@ -14,7 +14,281 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cover_letters: {
+        Row: {
+          ai_generated: Json | null
+          company_research: Json | null
+          content: string | null
+          created_at: string | null
+          id: string
+          is_archived: boolean | null
+          job_id: string | null
+          last_used: string | null
+          response_rate: number | null
+          style_preferences: Json | null
+          template: string | null
+          times_used: number | null
+          title: string
+          tone: string | null
+          updated_at: string | null
+          user_id: string
+          versions: Json | null
+        }
+        Insert: {
+          ai_generated?: Json | null
+          company_research?: Json | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          job_id?: string | null
+          last_used?: string | null
+          response_rate?: number | null
+          style_preferences?: Json | null
+          template?: string | null
+          times_used?: number | null
+          title: string
+          tone?: string | null
+          updated_at?: string | null
+          user_id: string
+          versions?: Json | null
+        }
+        Update: {
+          ai_generated?: Json | null
+          company_research?: Json | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          job_id?: string | null
+          last_used?: string | null
+          response_rate?: number | null
+          style_preferences?: Json | null
+          template?: string | null
+          times_used?: number | null
+          title?: string
+          tone?: string | null
+          updated_at?: string | null
+          user_id?: string
+          versions?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cover_letters_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          application_deadline: string | null
+          archive_reason: string | null
+          company_info: Json | null
+          company_name: string
+          contacts: Json | null
+          cover_letter_id: string | null
+          created_at: string | null
+          id: string
+          industry: string | null
+          interview_notes: string | null
+          is_archived: boolean | null
+          job_description: string | null
+          job_title: string
+          job_type: string | null
+          job_url: string | null
+          location: string | null
+          notes: string | null
+          resume_id: string | null
+          salary_max: number | null
+          salary_min: number | null
+          salary_notes: string | null
+          status: string
+          status_history: Json | null
+          status_updated_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          application_deadline?: string | null
+          archive_reason?: string | null
+          company_info?: Json | null
+          company_name: string
+          contacts?: Json | null
+          cover_letter_id?: string | null
+          created_at?: string | null
+          id?: string
+          industry?: string | null
+          interview_notes?: string | null
+          is_archived?: boolean | null
+          job_description?: string | null
+          job_title: string
+          job_type?: string | null
+          job_url?: string | null
+          location?: string | null
+          notes?: string | null
+          resume_id?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_notes?: string | null
+          status?: string
+          status_history?: Json | null
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          application_deadline?: string | null
+          archive_reason?: string | null
+          company_info?: Json | null
+          company_name?: string
+          contacts?: Json | null
+          cover_letter_id?: string | null
+          created_at?: string | null
+          id?: string
+          industry?: string | null
+          interview_notes?: string | null
+          is_archived?: boolean | null
+          job_description?: string | null
+          job_title?: string
+          job_type?: string | null
+          job_url?: string | null
+          location?: string | null
+          notes?: string | null
+          resume_id?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_notes?: string | null
+          status?: string
+          status_history?: Json | null
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          bio: string | null
+          certifications: Json | null
+          created_at: string | null
+          education: Json | null
+          email: string | null
+          employment_history: Json | null
+          github_url: string | null
+          id: string
+          linkedin_url: string | null
+          location: string | null
+          name: string | null
+          phone_number: string | null
+          portfolio_url: string | null
+          professional_headline: string | null
+          projects: Json | null
+          skills: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          certifications?: Json | null
+          created_at?: string | null
+          education?: Json | null
+          email?: string | null
+          employment_history?: Json | null
+          github_url?: string | null
+          id?: string
+          linkedin_url?: string | null
+          location?: string | null
+          name?: string | null
+          phone_number?: string | null
+          portfolio_url?: string | null
+          professional_headline?: string | null
+          projects?: Json | null
+          skills?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          certifications?: Json | null
+          created_at?: string | null
+          education?: Json | null
+          email?: string | null
+          employment_history?: Json | null
+          github_url?: string | null
+          id?: string
+          linkedin_url?: string | null
+          location?: string | null
+          name?: string | null
+          phone_number?: string | null
+          portfolio_url?: string | null
+          professional_headline?: string | null
+          projects?: Json | null
+          skills?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      resumes: {
+        Row: {
+          ai_generated: Json | null
+          created_at: string | null
+          id: string
+          is_archived: boolean | null
+          is_default: boolean | null
+          last_used: string | null
+          linked_jobs: Json | null
+          sections: Json | null
+          styling: Json | null
+          success_rate: number | null
+          template: string | null
+          times_used: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          versions: Json | null
+        }
+        Insert: {
+          ai_generated?: Json | null
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_default?: boolean | null
+          last_used?: string | null
+          linked_jobs?: Json | null
+          sections?: Json | null
+          styling?: Json | null
+          success_rate?: number | null
+          template?: string | null
+          times_used?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          versions?: Json | null
+        }
+        Update: {
+          ai_generated?: Json | null
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_default?: boolean | null
+          last_used?: string | null
+          linked_jobs?: Json | null
+          sections?: Json | null
+          styling?: Json | null
+          success_rate?: number | null
+          template?: string | null
+          times_used?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          versions?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
