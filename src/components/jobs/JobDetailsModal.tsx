@@ -26,12 +26,13 @@ import { SkillsGapAnalysis } from "./SkillsGapAnalysis";
 import { SalaryResearch } from "./SalaryResearch";
 import { InterviewInsights } from "./InterviewInsights";
 import { CompanyResearch } from "./CompanyResearch";
-import { InterviewScheduler } from "./InterviewScheduler";
+import { InterviewScheduler, InterviewData } from "./InterviewScheduler";
 import { format } from "date-fns";
 import { Job, JobContact } from "@/types/jobs";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
+import { useInterviews } from "@/hooks/useInterviews";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -45,6 +46,7 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
   const [isSaving, setIsSaving] = useState(false);
   const [editedJob, setEditedJob] = useState<Partial<Job>>({});
   const [newContact, setNewContact] = useState<JobContact>({});
+  const { interviews, createInterview, deleteInterview, loading: interviewsLoading } = useInterviews(job?.id);
 
   if (!job) return null;
 
@@ -76,6 +78,21 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
   const handleDeleteContact = (index: number) => {
     const updatedContacts = (editedJob.contacts || job.contacts || []).filter((_, i) => i !== index);
     setEditedJob({ ...editedJob, contacts: updatedContacts });
+  };
+
+  const handleScheduleInterview = async (interviewData: InterviewData) => {
+    const interviewDateTime = new Date(interviewData.date);
+    const [hours, minutes] = interviewData.time.split(':');
+    interviewDateTime.setHours(parseInt(hours), parseInt(minutes));
+
+    await createInterview({
+      job_id: job.id,
+      interview_type: interviewData.type,
+      interview_date: interviewDateTime.toISOString(),
+      location: interviewData.location,
+      interviewer_name: interviewData.interviewers,
+      notes: interviewData.notes,
+    });
   };
 
   const statusColors: Record<string, string> = {
@@ -182,10 +199,11 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
 
           {/* Tabbed Content */}
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-10 overflow-x-auto">
+            <TabsList className="grid w-full grid-cols-11 overflow-x-auto">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="notes">Notes</TabsTrigger>
               <TabsTrigger value="contacts">Contacts</TabsTrigger>
+              <TabsTrigger value="schedule">Schedule</TabsTrigger>
               <TabsTrigger value="interview">Interview</TabsTrigger>
               <TabsTrigger value="match">Match</TabsTrigger>
               <TabsTrigger value="skills">Skills</TabsTrigger>
@@ -327,6 +345,66 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
                   </p>
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="schedule" className="space-y-4">
+              <InterviewScheduler
+                jobId={job.id}
+                jobTitle={displayJob.jobTitle || displayJob.title || ''}
+                companyName={companyName || ''}
+                onSchedule={handleScheduleInterview}
+              />
+              
+              {interviewsLoading ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Loading interviews...</p>
+              ) : interviews.length > 0 ? (
+                <div className="space-y-3 mt-6">
+                  <h3 className="font-semibold">Scheduled Interviews</h3>
+                  {interviews.map((interview) => (
+                    <div key={interview.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">{interview.interview_type}</Badge>
+                            <span className="text-sm">
+                              {format(new Date(interview.interview_date), "PPP 'at' p")}
+                            </span>
+                          </div>
+                          {interview.location && (
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {interview.location}
+                            </p>
+                          )}
+                          {interview.interviewer_name && (
+                            <p className="text-sm">Interviewer: {interview.interviewer_name}</p>
+                          )}
+                          {interview.notes && (
+                            <p className="text-sm text-muted-foreground mt-2">{interview.notes}</p>
+                          )}
+                          {interview.calendar_event_id && (
+                            <Badge variant="secondary" className="mt-2">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              Synced to Calendar
+                            </Badge>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteInterview(interview.id, interview.calendar_event_id || undefined)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No interviews scheduled yet
+                </p>
+              )}
             </TabsContent>
 
             <TabsContent value="interview" className="space-y-4">
