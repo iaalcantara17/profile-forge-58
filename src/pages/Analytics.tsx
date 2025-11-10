@@ -42,9 +42,9 @@ export default function Analytics() {
 
   const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'];
 
-  const responseRate = stats?.byStatus ? 
+  const responseRate = stats?.byStatus && stats.byStatus.applied > 0 ? 
     ((stats.byStatus.phoneScreen + stats.byStatus.interview + stats.byStatus.offer) / 
-    Math.max(stats.byStatus.applied, 1) * 100).toFixed(1) : 0;
+    stats.byStatus.applied * 100).toFixed(1) : '0';
 
   return (
     <div className="min-h-screen bg-background">
@@ -130,7 +130,7 @@ export default function Analytics() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, value, percent }: any) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"

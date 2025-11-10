@@ -97,6 +97,17 @@ export const exportService = {
     URL.revokeObjectURL(url);
   },
 
+  // Export resume as text
+  exportResumeToText(resumeData: any, filename: string = 'resume.txt'): void {
+    const text = this.generateResumeText(resumeData);
+    this.exportAsText(text, filename);
+  },
+
+  // Export cover letter as text
+  exportCoverLetterToText(content: string, filename: string = 'cover-letter.txt'): void {
+    this.exportAsText(content, filename);
+  },
+
   // Generate plain text version of resume
   generateResumeText(resumeData: any): string {
     let text = '';

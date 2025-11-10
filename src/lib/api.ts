@@ -97,18 +97,47 @@ export const api = {
     updateStatus: async (id: string, status: string) => {
       const job = await api.jobs.get(id);
       const statusHistory = (job.status_history || []) as Array<any>;
-      
       statusHistory.push({
         status,
-        timestamp: new Date().toISOString(),
-        previousStatus: job.status,
+        changedAt: new Date().toISOString(),
       });
-
-      return api.jobs.update(id, {
-        status,
-        status_updated_at: new Date().toISOString(),
+      return api.jobs.update(id, { 
+        status, 
         status_history: statusHistory,
+        status_updated_at: new Date().toISOString()
       });
+    },
+
+    getStats: async () => {
+      const jobs = await api.jobs.getAll();
+      
+      const byStatus = {
+        interested: jobs.filter(j => j.status === 'interested').length,
+        applied: jobs.filter(j => j.status === 'applied').length,
+        phoneScreen: jobs.filter(j => j.status === 'phone_screen').length,
+        interview: jobs.filter(j => j.status === 'interview').length,
+        offer: jobs.filter(j => j.status === 'offer').length,
+        rejected: jobs.filter(j => j.status === 'rejected').length,
+      };
+
+      const upcomingDeadlines = jobs
+        .filter(j => j.application_deadline && !j.is_archived)
+        .map(j => ({
+          jobId: j.id,
+          jobTitle: j.job_title,
+          company: j.company_name,
+          deadline: j.application_deadline,
+          daysUntil: Math.ceil((new Date(j.application_deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+        }))
+        .filter(j => j.daysUntil >= 0)
+        .sort((a, b) => a.daysUntil - b.daysUntil)
+        .slice(0, 5);
+
+      return {
+        total: jobs.length,
+        byStatus,
+        upcomingDeadlines
+      };
     },
   },
 
