@@ -1,201 +1,297 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Packer } from 'docx';
+import { saveAs } from 'file-saver';
 
-export const exportService = {
-  // Export resume as PDF
-  async exportResumeToPDF(resumeData: any, filename: string = 'resume.pdf'): Promise<void> {
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 15;
-    let yPosition = margin;
+// Export resume to PDF
+export const exportResumeToPDF = async (resume: any, filename?: string): Promise<void> => {
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 15;
+  let yPosition = margin;
 
-    // Helper to add text with word wrap
-    const addText = (text: string, fontSize: number = 11, isBold: boolean = false) => {
-      pdf.setFontSize(fontSize);
-      if (isBold) pdf.setFont('helvetica', 'bold');
-      else pdf.setFont('helvetica', 'normal');
-      
-      const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
-      lines.forEach((line: string) => {
-        if (yPosition > pageHeight - margin) {
-          pdf.addPage();
-          yPosition = margin;
-        }
-        pdf.text(line, margin, yPosition);
-        yPosition += fontSize * 0.5;
-      });
-      yPosition += 3;
-    };
-
-    // Header
-    addText(resumeData.personal_info?.name || 'Resume', 18, true);
-    if (resumeData.personal_info?.email) {
-      addText(resumeData.personal_info.email, 10);
-    }
-    if (resumeData.personal_info?.phone) {
-      addText(resumeData.personal_info.phone, 10);
-    }
-    yPosition += 5;
-
-    // Sections
-    resumeData.sections?.forEach((section: any) => {
-      if (!section.isVisible) return;
-      
-      addText(section.title, 14, true);
-      addText(section.content, 11);
-      yPosition += 3;
-    });
-
-    pdf.save(filename);
-  },
-
-  // Export resume as plain text
-  exportResumeAsText(resumeData: any): string {
-    let text = '';
+  const addText = (text: string, fontSize: number = 11, isBold: boolean = false) => {
+    pdf.setFontSize(fontSize);
+    if (isBold) pdf.setFont('helvetica', 'bold');
+    else pdf.setFont('helvetica', 'normal');
     
-    // Header
-    if (resumeData.personal_info?.name) {
-      text += `${resumeData.personal_info.name.toUpperCase()}\n`;
-      text += '='.repeat(resumeData.personal_info.name.length) + '\n\n';
-    }
-    
-    if (resumeData.personal_info?.email) text += `Email: ${resumeData.personal_info.email}\n`;
-    if (resumeData.personal_info?.phone) text += `Phone: ${resumeData.personal_info.phone}\n`;
-    if (resumeData.personal_info?.location) text += `Location: ${resumeData.personal_info.location}\n`;
-    text += '\n';
-    
-    // Sections
-    resumeData.sections?.forEach((section: any) => {
-      if (!section.isVisible) return;
-      
-      text += `${section.title.toUpperCase()}\n`;
-      text += '-'.repeat(section.title.length) + '\n';
-      text += `${section.content}\n\n`;
-    });
-    
-    return text;
-  },
-
-  // Export cover letter as plain text
-  exportCoverLetterAsText(coverLetter: any): string {
-    let text = '';
-    
-    // Header
-    const date = new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-    text += `${date}\n\n`;
-    
-    if (coverLetter.title) {
-      text += `${coverLetter.title.toUpperCase()}\n`;
-      text += '='.repeat(coverLetter.title.length) + '\n\n';
-    }
-    
-    text += coverLetter.content || '';
-    text += '\n\n';
-    
-    if (coverLetter.user_info?.name) text += `Sincerely,\n${coverLetter.user_info.name}\n`;
-    
-    return text;
-  },
-
-  // Export cover letter as PDF
-  async exportCoverLetterToPDF(content: string, metadata: any, filename: string = 'cover-letter.pdf'): Promise<void> {
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 20;
-    let yPosition = margin;
-
-    pdf.setFontSize(11);
-    pdf.setFont('helvetica', 'normal');
-
-    // Add date
-    const date = new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-    pdf.text(date, margin, yPosition);
-    yPosition += 10;
-
-    // Add content with word wrap
-    const lines = pdf.splitTextToSize(content, pageWidth - 2 * margin);
+    const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
     lines.forEach((line: string) => {
       if (yPosition > pageHeight - margin) {
         pdf.addPage();
         yPosition = margin;
       }
       pdf.text(line, margin, yPosition);
-      yPosition += 6;
+      yPosition += fontSize * 0.5;
     });
+    yPosition += 3;
+  };
 
-    pdf.save(filename);
-  },
+  addText(resume.title || 'Resume', 18, true);
+  
+  const sections = resume.sections || [];
+  sections.forEach((section: any) => {
+    if (!section.isVisible) return;
+    addText(section.title || section.type, 14, true);
+    const content = typeof section.content === 'string' 
+      ? section.content 
+      : JSON.stringify(section.content);
+    addText(content, 11);
+  });
 
-  // Download text file
-  downloadTextFile(content: string, filename: string): void {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  },
+  pdf.save(filename || `resume-${resume.title || 'document'}.pdf`);
+};
 
-  // Export as plain text
-  exportAsText(content: string, filename: string): void {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  },
+// Export cover letter to PDF
+export const exportCoverLetterToPDF = async (coverLetter: any, filename?: string): Promise<void> => {
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  let yPosition = margin;
 
-  // Export resume to text file
-  downloadResumeAsText(resumeData: any, filename: string = 'resume.txt'): void {
-    const text = this.exportResumeAsText(resumeData);
-    this.exportAsText(text, filename);
-  },
+  pdf.setFontSize(11);
+  pdf.setFont('helvetica', 'normal');
 
-  // Export cover letter to text file  
-  downloadCoverLetterAsText(coverLetter: any, filename: string = 'cover-letter.txt'): void {
-    const text = this.exportCoverLetterAsText(coverLetter);
-    this.exportAsText(text, filename);
-  },
+  const date = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  pdf.text(date, margin, yPosition);
+  yPosition += 10;
 
-  // Export statistics to CSV
-  exportStatisticsToCSV(stats: any, filename: string = 'job-statistics.csv'): void {
-    const rows = [
-      ['Metric', 'Value'],
-      ['Total Jobs', stats.total || 0],
-      ['Interested', stats.byStatus?.interested || 0],
-      ['Applied', stats.byStatus?.applied || 0],
-      ['Phone Screen', stats.byStatus?.phoneScreen || 0],
-      ['Interview', stats.byStatus?.interview || 0],
-      ['Offer', stats.byStatus?.offer || 0],
-      ['Rejected', stats.byStatus?.rejected || 0],
-    ];
+  const content = typeof coverLetter === 'string' ? coverLetter : (coverLetter.content || '');
+  const lines = pdf.splitTextToSize(content, pageWidth - 2 * margin);
+  lines.forEach((line: string) => {
+    if (yPosition > pageHeight - margin) {
+      pdf.addPage();
+      yPosition = margin;
+    }
+    pdf.text(line, margin, yPosition);
+    yPosition += 6;
+  });
 
-    const csv = rows.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  },
+  pdf.save(filename || `cover-letter-${Date.now()}.pdf`);
+};
+
+// Export resume to plain text
+export const exportResumeToText = (resume: any, filename?: string): void => {
+  let text = `${resume.title || 'Resume'}\n${'='.repeat(50)}\n\n`;
+  
+  const sections = resume.sections || [];
+  sections.forEach((section: any) => {
+    if (!section.isVisible) return;
+    text += `${section.title || section.type}\n${'-'.repeat(30)}\n`;
+    const content = typeof section.content === 'string' 
+      ? section.content 
+      : JSON.stringify(section.content);
+    text += `${content}\n\n`;
+  });
+  
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || `resume-${resume.title || 'document'}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Export cover letter to plain text
+export const exportCoverLetterToText = (coverLetter: any, filename?: string): void => {
+  const content = typeof coverLetter === 'string' ? coverLetter : (coverLetter.content || '');
+  const text = `${content}\n\nGenerated by JobHuntr`;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || `cover-letter-${Date.now()}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Export resume to Word (.docx)
+export const exportResumeToWord = async (resume: any, filename?: string): Promise<void> => {
+  const sections = resume.sections || [];
+  const docParagraphs: Paragraph[] = [];
+
+  docParagraphs.push(
+    new Paragraph({
+      text: resume.title || 'Resume',
+      heading: HeadingLevel.HEADING_1,
+      alignment: AlignmentType.CENTER,
+    })
+  );
+
+  sections.forEach((section: any) => {
+    if (!section.isVisible) return;
+
+    docParagraphs.push(
+      new Paragraph({
+        text: section.title || section.type,
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 200, after: 100 },
+      })
+    );
+
+    const content = typeof section.content === 'string' 
+      ? section.content 
+      : JSON.stringify(section.content);
+    
+    docParagraphs.push(
+      new Paragraph({
+        text: content,
+        spacing: { after: 100 },
+      })
+    );
+  });
+
+  const doc = new Document({
+    sections: [{
+      properties: {},
+      children: docParagraphs,
+    }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, filename || `resume-${resume.title || 'document'}.docx`);
+};
+
+// Export cover letter to Word (.docx)
+export const exportCoverLetterToWord = async (coverLetter: any, filename?: string): Promise<void> => {
+  const content = typeof coverLetter === 'string' ? coverLetter : (coverLetter.content || '');
+  
+  const doc = new Document({
+    sections: [{
+      properties: {},
+      children: [
+        new Paragraph({
+          text: 'Cover Letter',
+          heading: HeadingLevel.HEADING_1,
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 200 },
+        }),
+        new Paragraph({
+          text: content,
+          spacing: { after: 100 },
+        }),
+        new Paragraph({
+          text: 'Generated by JobHuntr',
+          alignment: AlignmentType.RIGHT,
+          italics: true,
+        }),
+      ],
+    }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, filename || `cover-letter-${Date.now()}.docx`);
+};
+
+// Export resume to HTML
+export const exportResumeToHTML = (resume: any, filename?: string): void => {
+  const sections = resume.sections || [];
+  let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${resume.title || 'Resume'}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { text-align: center; color: #333; }
+    h2 { color: #555; border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 30px; }
+    p { line-height: 1.6; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>${resume.title || 'Resume'}</h1>`;
+
+  sections.forEach((section: any) => {
+    if (!section.isVisible) return;
+    html += `<h2>${section.title || section.type}</h2>`;
+    const content = typeof section.content === 'string' 
+      ? section.content 
+      : JSON.stringify(section.content);
+    html += `<p>${content.replace(/\n/g, '<br>')}</p>`;
+  });
+
+  html += `<p style="text-align: right; font-style: italic; margin-top: 40px;">Generated by JobHuntr</p>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || `resume-${resume.title || 'document'}.html`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Export cover letter to HTML
+export const exportCoverLetterToHTML = (coverLetter: any, filename?: string): void => {
+  const content = typeof coverLetter === 'string' ? coverLetter : (coverLetter.content || '');
+  
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Letter</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { text-align: center; color: #333; }
+    p { line-height: 1.6; color: #666; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Cover Letter</h1>
+  <p>${content}</p>
+  <p style="text-align: right; font-style: italic; margin-top: 40px;">Generated by JobHuntr</p>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || `cover-letter-${Date.now()}.html`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Export jobs to CSV
+export const exportJobsToCSV = (jobs: any[], filename?: string): void => {
+  const headers = ['Job Title', 'Company', 'Location', 'Status', 'Salary', 'Applied Date', 'Deadline'];
+  const rows = jobs.map(job => [
+    job.jobTitle || '',
+    job.company?.name || '',
+    job.location || '',
+    job.status || '',
+    job.salaryMin && job.salaryMax ? `${job.salaryMin}-${job.salaryMax}` : '',
+    job.appliedDate || '',
+    job.applicationDeadline || '',
+  ]);
+
+  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || `jobs-${Date.now()}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };

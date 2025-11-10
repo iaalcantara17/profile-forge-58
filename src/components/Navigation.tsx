@@ -5,6 +5,7 @@ import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart } from 'lucide-
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 export const Navigation = () => {
   const { user, logout } = useAuth();
@@ -85,6 +86,7 @@ export const Navigation = () => {
                 <User className="inline h-4 w-4 mr-1" />
                 Profile
               </Link>
+              <NotificationCenter />
               <ThemeToggle />
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />

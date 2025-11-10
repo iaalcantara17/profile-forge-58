@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Wand2, Save, Download } from "lucide-react";
 import { toast } from "sonner";
 import { useExport } from "@/hooks/useExport";
+import { GrammarChecker } from "@/components/editor/GrammarChecker";
 
 interface CoverLetterEditorProps {
   initialContent: string;
@@ -168,6 +169,13 @@ export const CoverLetterEditor = ({
             <p className="text-sm text-muted-foreground">
               {TONE_OPTIONS.find(t => t.value === tone)?.description}
             </p>
+          </div>
+
+          <div className="mt-4">
+            <GrammarChecker 
+              content={content} 
+              onApplySuggestion={(corrected) => setContent(corrected)}
+            />
           </div>
         </CardContent>
       </Card>

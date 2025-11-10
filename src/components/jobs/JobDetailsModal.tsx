@@ -26,6 +26,7 @@ import { SkillsGapAnalysis } from "./SkillsGapAnalysis";
 import { SalaryResearch } from "./SalaryResearch";
 import { InterviewInsights } from "./InterviewInsights";
 import { CompanyResearch } from "./CompanyResearch";
+import { InterviewScheduler } from "./InterviewScheduler";
 import { format } from "date-fns";
 import { Job, JobContact } from "@/types/jobs";
 import { cn } from "@/lib/utils";
