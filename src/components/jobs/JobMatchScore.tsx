@@ -9,8 +9,6 @@ import { toast } from "sonner";
 
 interface JobMatchScoreProps {
   jobId: string;
-  jobTitle: string;
-  companyName: string;
 }
 
 interface MatchData {
@@ -25,7 +23,7 @@ interface MatchData {
   recommendations: string[];
 }
 
-export const JobMatchScore = ({ jobId, jobTitle, companyName }: JobMatchScoreProps) => {
+export const JobMatchScore = ({ jobId }: JobMatchScoreProps) => {
   const [matchData, setMatchData] = useState<MatchData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,15 +69,10 @@ export const JobMatchScore = ({ jobId, jobTitle, companyName }: JobMatchScorePro
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Job Match Analysis
-            </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {jobTitle} at {companyName}
-            </p>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Job Match Analysis
+          </CardTitle>
           <Button
             onClick={calculateMatch}
             disabled={isLoading}

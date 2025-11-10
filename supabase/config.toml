@@ -32,3 +32,9 @@ verify_jwt = true
 
 [functions.ai-skills-gap]
 verify_jwt = true
+
+[functions.ai-salary-research]
+verify_jwt = true
+
+[functions.ai-interview-prep]
+verify_jwt = true
