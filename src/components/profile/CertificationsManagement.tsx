@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, Award, Calendar, Building2, FileText, ExternalLink, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { api } from '@/lib/api';
+import { useProfileData } from './ProfileDataManager';
 
 interface Certification {
   id: string;

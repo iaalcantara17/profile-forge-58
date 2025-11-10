@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, Briefcase, Calendar, MapPin, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { api } from '@/lib/api';
+import { useProfileData } from './ProfileDataManager';
 
 interface EmploymentEntry {
   id: string;

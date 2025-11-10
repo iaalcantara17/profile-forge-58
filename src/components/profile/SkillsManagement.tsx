@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, X, Code, MessageSquare, Languages, Wrench, Loader2, Search, Download, GripVertical } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { api } from '@/lib/api';
+import { useProfileData } from './ProfileDataManager';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 interface Skill {
