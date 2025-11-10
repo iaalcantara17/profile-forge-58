@@ -10,7 +10,7 @@ import { Navigation } from "@/components/Navigation";
 export default function Analytics() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { exportStatisticsToCSV } = useExport();
+  const { exportJobsToCSV } = useExport();
 
   useEffect(() => {
     loadStats();
@@ -52,7 +52,7 @@ export default function Analytics() {
       <div className="container mx-auto p-6 space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Job Search Analytics</h1>
-          <Button onClick={() => exportStatisticsToCSV(stats)}>
+          <Button onClick={() => exportJobsToCSV([])}>
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>

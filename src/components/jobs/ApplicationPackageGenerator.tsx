@@ -47,8 +47,7 @@ export const ApplicationPackageGenerator = ({
       if (includeCoverLetter && job.cover_letter_id) {
         const coverLetter = await api.coverLetters.get(job.cover_letter_id);
         await exportCoverLetterToPDF(
-          coverLetter.content,
-          jobTitle,
+          coverLetter,
           `${companyName}-${jobTitle}-CoverLetter.pdf`.replace(/\s+/g, '-')
         );
       }
