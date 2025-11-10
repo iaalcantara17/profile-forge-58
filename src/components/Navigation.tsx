@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User, Target } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -39,6 +39,15 @@ export const Navigation = () => {
                 }`}
               >
                 Dashboard
+              </Link>
+              <Link
+                to="/jobs"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/jobs') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Target className="inline h-4 w-4 mr-1" />
+                Jobs
               </Link>
               <Link
                 to="/profile"
@@ -98,6 +107,18 @@ export const Navigation = () => {
                   }`}
                 >
                   Dashboard
+                </Link>
+                <Link
+                  to="/jobs"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/jobs')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Target className="inline h-4 w-4 mr-1" />
+                  Jobs
                 </Link>
                 <Link
                   to="/profile"

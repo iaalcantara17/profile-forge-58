@@ -304,6 +304,72 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Jobs management (Sprint 2)
+  async getJobs(filters?: any) {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== undefined && filters[key] !== null) {
+          if (Array.isArray(filters[key])) {
+            filters[key].forEach((val: string) => params.append(key, val));
+          } else {
+            params.append(key, filters[key].toString());
+          }
+        }
+      });
+    }
+    const queryString = params.toString();
+    return this.request<any[]>(`/jobs${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getJob(id: string) {
+    return this.request<any>(`/jobs/${id}`);
+  }
+
+  async createJob(data: any) {
+    return this.request<any>('/jobs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateJob(id: string, data: any) {
+    return this.request<any>(`/jobs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteJob(id: string) {
+    return this.request<void>(`/jobs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getJobStats() {
+    return this.request<any>('/jobs/stats');
+  }
+
+  async importJobFromUrl(url: string) {
+    return this.request<any>('/jobs/import', {
+      method: 'POST',
+      body: JSON.stringify({ url }),
+    });
+  }
+
+  async archiveJob(id: string, reason?: string) {
+    return this.request<any>(`/jobs/${id}/archive`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  }
+
+  async unarchiveJob(id: string) {
+    return this.request<any>(`/jobs/${id}/unarchive`, {
+      method: 'POST',
+    });
+  }
 }
 
 export const api = new ApiClient();
