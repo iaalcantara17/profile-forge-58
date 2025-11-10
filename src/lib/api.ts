@@ -348,7 +348,7 @@ class ApiClient {
   }
 
   async getJobStats() {
-    return this.request<any>('/jobs/stats');
+    return this.request<any>('/jobs/stats/summary');
   }
 
   async importJobFromUrl(url: string) {
@@ -367,6 +367,84 @@ class ApiClient {
 
   async unarchiveJob(id: string) {
     return this.request<any>(`/jobs/${id}/unarchive`, {
+      method: 'POST',
+    });
+  }
+
+  // Resume management (Sprint 2 - AI)
+  async getResumes(filters?: any) {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== undefined) {
+          params.append(key, filters[key].toString());
+        }
+      });
+    }
+    const queryString = params.toString();
+    return this.request<any[]>(`/resumes${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getResume(id: string) {
+    return this.request<any>(`/resumes/${id}`);
+  }
+
+  async createResume(data: any) {
+    return this.request<any>('/resumes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateResume(id: string, data: any) {
+    return this.request<any>(`/resumes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteResume(id: string) {
+    return this.request<void>(`/resumes/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async generateResumeContent(id: string, jobId?: string, sections?: string[]) {
+    return this.request<any>(`/resumes/${id}/generate-content`, {
+      method: 'POST',
+      body: JSON.stringify({ jobId, sections }),
+    });
+  }
+
+  async optimizeResumeSkills(id: string, jobId: string) {
+    return this.request<any>(`/resumes/${id}/optimize-skills`, {
+      method: 'POST',
+      body: JSON.stringify({ jobId }),
+    });
+  }
+
+  async tailorResumeExperience(id: string, jobId: string) {
+    return this.request<any>(`/resumes/${id}/tailor-experience`, {
+      method: 'POST',
+      body: JSON.stringify({ jobId }),
+    });
+  }
+
+  async createResumeVersion(id: string, versionName: string, tailoredForJob?: string, notes?: string) {
+    return this.request<any>(`/resumes/${id}/versions`, {
+      method: 'POST',
+      body: JSON.stringify({ versionName, tailoredForJob, notes }),
+    });
+  }
+
+  async restoreResumeVersion(id: string, versionId: string) {
+    return this.request<any>(`/resumes/${id}/restore/${versionId}`, {
+      method: 'POST',
+    });
+  }
+
+  async setDefaultResume(id: string) {
+    return this.request<any>(`/resumes/${id}/set-default`, {
       method: 'POST',
     });
   }

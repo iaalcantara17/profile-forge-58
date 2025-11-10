@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import resumeRoutes from "./routes/resumeRoutes.js";
 import { MONGO_URI } from "./config.js";
 import passport from "passport";
 
@@ -37,6 +38,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/users", userProfileRoutes);
 // Job management routes (Sprint 2)
 app.use("/api/jobs", jobRoutes);
+// Resume management routes (Sprint 2 - AI)
+app.use("/api/resumes", resumeRoutes);
 
 // Start server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

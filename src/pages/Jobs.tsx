@@ -3,10 +3,12 @@ import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, LayoutGrid, LayoutList, TrendingUp } from 'lucide-react';
+import { Plus, LayoutGrid, TrendingUp } from 'lucide-react';
 import { JobForm } from '@/components/jobs/JobForm';
 import { JobCard } from '@/components/jobs/JobCard';
-import { Job } from '@/types/jobs';
+import { JobDetailsModal } from '@/components/jobs/JobDetailsModal';
+import { JobFilters } from '@/components/jobs/JobFilters';
+import { Job, JobFilters as JobFiltersType } from '@/types/jobs';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,8 +18,14 @@ const Jobs = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'pipeline'>('grid');
+  const [filters, setFilters] = useState<JobFiltersType>({
+    isArchived: false,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
 
   const statuses: Array<{ value: string; label: string; count: number }> = [
     { value: 'all', label: 'All Jobs', count: jobs.length },
@@ -34,7 +42,7 @@ const Jobs = () => {
     
     setIsLoading(true);
     try {
-      const response = await api.getJobs();
+      const response = await api.getJobs(filters);
       if (response.success && response.data) {
         setJobs(response.data);
       }
@@ -47,7 +55,7 @@ const Jobs = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [token]);
+  }, [token, filters]);
 
   const handleAddSuccess = () => {
     setIsAddDialogOpen(false);
@@ -112,7 +120,14 @@ const Jobs = () => {
             </div>
           </div>
 
-          {/* Stats */}
+          {/* Search and Filters */}
+          <JobFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            onClearFilters={() =>
+              setFilters({ isArchived: false, sortBy: 'createdAt', sortOrder: 'desc' })
+            }
+          />
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
             {statuses.map((status) => (
               <button
@@ -151,6 +166,7 @@ const Jobs = () => {
                 <JobCard
                   key={job.job_id || job._id}
                   job={job}
+                  onView={setSelectedJob}
                   onDelete={handleDeleteJob}
                   onArchive={handleArchiveJob}
                 />
@@ -166,7 +182,7 @@ const Jobs = () => {
           <DialogHeader>
             <DialogTitle>Add New Job</DialogTitle>
             <DialogDescription>
-              Enter the details of the job you're interested in or paste a job posting URL to auto-fill
+              Enter the details of the job you&apos;re interested in or paste a job posting URL to auto-fill
             </DialogDescription>
           </DialogHeader>
           <JobForm
@@ -175,6 +191,14 @@ const Jobs = () => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Job Details Modal */}
+      <JobDetailsModal
+        job={selectedJob}
+        isOpen={!!selectedJob}
+        onClose={() => setSelectedJob(null)}
+        onUpdate={fetchJobs}
+      />
     </div>
   );
 };
