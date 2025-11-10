@@ -1,4 +1,4 @@
-import { Job } from '@/types/jobs';
+import { Job, JobStatus } from '@/types/jobs';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,22 +17,22 @@ interface JobCardProps {
   className?: string;
 }
 
-const statusColors: Record<Job['status'], string> = {
-  'interested': 'bg-muted text-muted-foreground',
-  'applied': 'bg-primary/10 text-primary',
-  'phone-screen': 'bg-accent/10 text-accent',
-  'interview': 'bg-warning/10 text-warning',
-  'offer': 'bg-success/10 text-success',
-  'rejected': 'bg-destructive/10 text-destructive',
+const statusColors: Record<JobStatus, string> = {
+  'Interested': 'bg-muted text-muted-foreground',
+  'Applied': 'bg-primary/10 text-primary',
+  'Phone Screen': 'bg-accent/10 text-accent',
+  'Interview': 'bg-warning/10 text-warning',
+  'Offer': 'bg-success/10 text-success',
+  'Rejected': 'bg-destructive/10 text-destructive',
 };
 
-const statusLabels: Record<Job['status'], string> = {
-  'interested': 'Interested',
-  'applied': 'Applied',
-  'phone-screen': 'Phone Screen',
-  'interview': 'Interview',
-  'offer': 'Offer',
-  'rejected': 'Rejected',
+const statusLabels: Record<JobStatus, string> = {
+  'Interested': 'Interested',
+  'Applied': 'Applied',
+  'Phone Screen': 'Phone Screen',
+  'Interview': 'Interview',
+  'Offer': 'Offer',
+  'Rejected': 'Rejected',
 };
 
 export const JobCard = ({
@@ -44,7 +44,7 @@ export const JobCard = ({
   onStatusChange,
   className,
 }: JobCardProps) => {
-  const daysInStage = differenceInDays(new Date(), new Date(job.statusUpdatedAt || job.createdAt));
+  const daysInStage = job.daysInStage || differenceInDays(new Date(), new Date(job.createdAt));
   const daysUntilDeadline = job.applicationDeadline
     ? differenceInDays(new Date(job.applicationDeadline), new Date())
     : null;
@@ -62,8 +62,8 @@ export const JobCard = ({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="font-display font-semibold text-lg truncate">{job.title}</h3>
-            <p className="text-muted-foreground truncate">{job.company}</p>
+            <h3 className="font-display font-semibold text-lg truncate">{job.jobTitle || job.title}</h3>
+            <p className="text-muted-foreground truncate">{typeof job.company === 'string' ? job.company : job.company.name}</p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -131,14 +131,14 @@ export const JobCard = ({
             </div>
           )}
 
-          {job.jobPostingUrl && (
+          {job.jobUrl && (
             <Button
               variant="link"
               size="sm"
               className="h-auto p-0 text-primary"
               onClick={(e) => {
                 e.stopPropagation();
-                window.open(job.jobPostingUrl, '_blank');
+                window.open(job.jobUrl, '_blank');
               }}
             >
               <ExternalLink className="h-3 w-3 mr-1" />

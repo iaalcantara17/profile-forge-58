@@ -21,12 +21,12 @@ const Jobs = () => {
 
   const statuses: Array<{ value: string; label: string; count: number }> = [
     { value: 'all', label: 'All Jobs', count: jobs.length },
-    { value: 'interested', label: 'Interested', count: jobs.filter(j => j.status === 'interested').length },
-    { value: 'applied', label: 'Applied', count: jobs.filter(j => j.status === 'applied').length },
-    { value: 'phone-screen', label: 'Phone Screen', count: jobs.filter(j => j.status === 'phone-screen').length },
-    { value: 'interview', label: 'Interview', count: jobs.filter(j => j.status === 'interview').length },
-    { value: 'offer', label: 'Offer', count: jobs.filter(j => j.status === 'offer').length },
-    { value: 'rejected', label: 'Rejected', count: jobs.filter(j => j.status === 'rejected').length },
+    { value: 'Interested', label: 'Interested', count: jobs.filter(j => j.status === 'Interested').length },
+    { value: 'Applied', label: 'Applied', count: jobs.filter(j => j.status === 'Applied').length },
+    { value: 'Phone Screen', label: 'Phone Screen', count: jobs.filter(j => j.status === 'Phone Screen').length },
+    { value: 'Interview', label: 'Interview', count: jobs.filter(j => j.status === 'Interview').length },
+    { value: 'Offer', label: 'Offer', count: jobs.filter(j => j.status === 'Offer').length },
+    { value: 'Rejected', label: 'Rejected', count: jobs.filter(j => j.status === 'Rejected').length },
   ];
 
   const fetchJobs = async () => {
@@ -58,7 +58,7 @@ const Jobs = () => {
     if (!confirm('Are you sure you want to delete this job?')) return;
 
     try {
-      const response = await api.deleteJob(job._id);
+      const response = await api.deleteJob(job.job_id || job._id!);
       if (response.success) {
         toast.success('Job deleted successfully');
         fetchJobs();
@@ -70,7 +70,7 @@ const Jobs = () => {
 
   const handleArchiveJob = async (job: Job) => {
     try {
-      const response = await api.archiveJob(job._id);
+      const response = await api.archiveJob(job.job_id || job._id!);
       if (response.success) {
         toast.success('Job archived successfully');
         fetchJobs();
@@ -81,8 +81,8 @@ const Jobs = () => {
   };
 
   const filteredJobs = selectedStatus === 'all'
-    ? jobs.filter(j => !j.archived)
-    : jobs.filter(j => j.status === selectedStatus && !j.archived);
+    ? jobs.filter(j => !j.isArchived)
+    : jobs.filter(j => j.status === selectedStatus && !j.isArchived);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -149,7 +149,7 @@ const Jobs = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredJobs.map((job) => (
                 <JobCard
-                  key={job._id}
+                  key={job.job_id || job._id}
                   job={job}
                   onDelete={handleDeleteJob}
                   onArchive={handleArchiveJob}

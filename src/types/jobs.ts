@@ -1,106 +1,138 @@
-export interface Job {
-  _id: string;
-  userId: string;
-  title: string;
-  company: string;
-  location: string;
-  salaryMin?: number;
-  salaryMax?: number;
-  jobPostingUrl?: string;
-  applicationDeadline?: string;
-  description: string;
-  industry?: string;
-  jobType?: 'full-time' | 'part-time' | 'contract' | 'internship' | 'remote';
-  status: 'interested' | 'applied' | 'phone-screen' | 'interview' | 'offer' | 'rejected';
-  notes?: string;
-  contacts?: JobContact[];
-  applicationHistory?: ApplicationHistoryEntry[];
-  importMetadata?: {
-    sourceUrl: string;
-    importedAt: string;
-    importMethod: 'manual' | 'url-scrape';
-  };
-  applicationMaterials?: {
-    resumeId?: string;
-    coverLetterId?: string;
-    portfolioUrl?: string;
-  };
-  companyInfo?: CompanyInfo;
-  archived?: boolean;
-  archivedAt?: string;
-  archivedReason?: string;
-  createdAt: string;
-  updatedAt: string;
-  statusUpdatedAt: string;
-}
+export type JobStatus = 
+  | "Interested" 
+  | "Applied" 
+  | "Phone Screen" 
+  | "Interview" 
+  | "Offer" 
+  | "Rejected";
 
-export interface JobContact {
-  name: string;
-  role: string;
-  email?: string;
-  phone?: string;
-  linkedIn?: string;
-  notes?: string;
-}
+export type JobType = 
+  | "Full-time" 
+  | "Part-time" 
+  | "Contract" 
+  | "Internship" 
+  | "Freelance";
 
-export interface ApplicationHistoryEntry {
-  date: string;
-  action: string;
-  notes?: string;
-  status?: string;
-}
+export type DeadlineUrgency = "overdue" | "urgent" | "soon" | "normal" | null;
 
 export interface CompanyInfo {
   name: string;
   size?: string;
   industry?: string;
+  location?: string;
   website?: string;
   description?: string;
-  mission?: string;
-  logo?: string;
-  rating?: number;
-  location?: string;
+  logoUrl?: string;
+  glassdoorRating?: number;
 }
 
-export interface JobFilters {
-  search?: string;
-  status?: string[];
-  industry?: string[];
-  jobType?: string[];
+export interface JobContact {
+  name?: string;
+  role?: string;
+  email?: string;
+  phone?: string;
+  notes?: string;
+}
+
+export interface StatusHistoryEntry {
+  status: JobStatus;
+  changedAt: string;
+  notes?: string;
+}
+
+export interface ApplicationMaterials {
+  resumeId?: string;
+  resumeName?: string;
+  coverLetterId?: string;
+  coverLetterName?: string;
+  appliedDate?: string;
+}
+
+export interface Job {
+  job_id: string;
+  user_id: string;
+  jobTitle: string;
+  company: CompanyInfo;
+  location?: string;
+  jobType?: JobType;
   salaryMin?: number;
   salaryMax?: number;
-  deadlineBefore?: string;
-  deadlineAfter?: string;
-  archived?: boolean;
+  salaryCurrency?: string;
+  jobDescription?: string;
+  jobUrl?: string;
+  status: JobStatus;
+  statusHistory?: StatusHistoryEntry[];
+  applicationDeadline?: string;
+  appliedDate?: string;
+  applicationMaterials?: ApplicationMaterials;
+  notes?: string;
+  interviewNotes?: string;
+  salaryNegotiationNotes?: string;
+  contacts?: JobContact[];
+  isArchived: boolean;
+  archiveReason?: string;
+  archivedAt?: string;
+  importedFrom?: string;
+  createdAt: string;
+  updatedAt: string;
+  daysInStage?: number;
+  deadlineUrgency?: DeadlineUrgency;
+  
+  // Legacy fields for compatibility (will be removed)
+  _id?: string;
+  userId?: string;
+  title?: string;
 }
 
 export interface JobStats {
   total: number;
-  byStatus: Record<string, number>;
-  responseRate: number;
-  averageResponseTime: number;
-  deadlinesUpcoming: number;
-  deadlinesOverdue: number;
+  byStatus: {
+    interested: number;
+    applied: number;
+    phoneScreen: number;
+    interview: number;
+    offer: number;
+    rejected: number;
+  };
+  upcomingDeadlines: Array<{
+    jobId: string;
+    jobTitle: string;
+    company: string;
+    deadline: string;
+    daysUntil: number;
+  }>;
+  recentActivity: Array<{
+    jobId: string;
+    jobTitle: string;
+    company: string;
+    status: JobStatus;
+    updatedAt: string;
+  }>;
+}
+
+export interface JobFilters {
+  status?: JobStatus;
+  isArchived?: boolean;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface CreateJobData {
-  title: string;
-  company: string;
-  location: string;
+  jobTitle: string;
+  company: CompanyInfo;
+  location?: string;
+  jobType?: JobType;
   salaryMin?: number;
   salaryMax?: number;
-  jobPostingUrl?: string;
+  jobUrl?: string;
+  jobDescription?: string;
   applicationDeadline?: string;
-  description: string;
-  industry?: string;
-  jobType?: 'full-time' | 'part-time' | 'contract' | 'internship' | 'remote';
-  status?: 'interested' | 'applied' | 'phone-screen' | 'interview' | 'offer' | 'rejected';
+  status?: JobStatus;
   notes?: string;
 }
 
 export interface UpdateJobData extends Partial<CreateJobData> {
   contacts?: JobContact[];
-  applicationHistory?: ApplicationHistoryEntry[];
-  archived?: boolean;
-  archivedReason?: string;
+  statusNotes?: string;
 }
