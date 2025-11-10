@@ -15,7 +15,7 @@ export const useExport = () => {
 
   const exportResumeToText = async (resumeData: any, filename?: string) => {
     try {
-      await exportService.exportResumeToText(resumeData, filename);
+      exportService.downloadResumeAsText(resumeData, filename);
       toast({ title: "Resume exported to text" });
     } catch (error) {
       toast({ title: "Export failed", variant: "destructive" });
@@ -33,7 +33,7 @@ export const useExport = () => {
 
   const exportCoverLetterToText = async (content: string, filename?: string) => {
     try {
-      await exportService.exportCoverLetterToText(content, filename);
+      exportService.downloadCoverLetterAsText({ content }, filename);
       toast({ title: "Cover letter exported to text" });
     } catch (error) {
       toast({ title: "Export failed", variant: "destructive" });

@@ -25,7 +25,9 @@ export const useAutoArchive = (config: AutoArchiveConfig) => {
 
           // Auto-archive rejected jobs after specified days
           if (config.daysAfterRejection && job.status === 'Rejected') {
-            const statusDate = job.status_history?.find((h: any) => h.status === 'Rejected')?.changedAt;
+            const statusHistory = Array.isArray(job.status_history) ? job.status_history as any[] : [];
+            const rejectionEntry = statusHistory.find((h: any) => h.status === 'Rejected');
+            const statusDate = rejectionEntry?.changedAt as string;
             if (statusDate) {
               const daysSince = Math.floor((now.getTime() - new Date(statusDate).getTime()) / (1000 * 60 * 60 * 24));
               if (daysSince >= config.daysAfterRejection) {
@@ -37,7 +39,9 @@ export const useAutoArchive = (config: AutoArchiveConfig) => {
 
           // Auto-archive accepted offers after specified days
           if (config.daysAfterOffer && job.status === 'Offer' && !shouldArchive) {
-            const statusDate = job.status_history?.find((h: any) => h.status === 'Offer')?.changedAt;
+            const statusHistory = Array.isArray(job.status_history) ? job.status_history as any[] : [];
+            const offerEntry = statusHistory.find((h: any) => h.status === 'Offer');
+            const statusDate = offerEntry?.changedAt as string;
             if (statusDate) {
               const daysSince = Math.floor((now.getTime() - new Date(statusDate).getTime()) / (1000 * 60 * 60 * 24));
               if (daysSince >= config.daysAfterOffer) {
