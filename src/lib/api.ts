@@ -1,5 +1,347 @@
-// API client for backend communication
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.jibbit.app/api';
+import { supabase } from '@/integrations/supabase/client';
+
+// Supabase-based API client
+export const api = {
+  // Jobs management
+  jobs: {
+    getAll: async (filters?: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let query = supabase
+        .from('jobs')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (filters?.status) {
+        query = query.eq('status', filters.status);
+      }
+
+      if (filters?.isArchived !== undefined) {
+        query = query.eq('is_archived', filters.isArchived);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+
+    get: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    create: async (jobData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .insert({ ...jobData, user_id: user.id })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    update: async (id: string, jobData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('jobs')
+        .update(jobData)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    delete: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+    },
+
+    archive: async (id: string, reason?: string) => {
+      return api.jobs.update(id, { is_archived: true, archive_reason: reason });
+    },
+
+    unarchive: async (id: string) => {
+      return api.jobs.update(id, { is_archived: false, archive_reason: null });
+    },
+
+    updateStatus: async (id: string, status: string) => {
+      const job = await api.jobs.get(id);
+      const statusHistory = job.status_history || [];
+      
+      statusHistory.push({
+        status,
+        timestamp: new Date().toISOString(),
+        previousStatus: job.status,
+      });
+
+      return api.jobs.update(id, {
+        status,
+        status_updated_at: new Date().toISOString(),
+        status_history: statusHistory,
+      });
+    },
+  },
+
+  // Resume management
+  resumes: {
+    getAll: async (isArchived?: boolean) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let query = supabase
+        .from('resumes')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (isArchived !== undefined) {
+        query = query.eq('is_archived', isArchived);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+
+    get: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('resumes')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    create: async (resumeData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('resumes')
+        .insert({ ...resumeData, user_id: user.id })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    update: async (id: string, resumeData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('resumes')
+        .update(resumeData)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    delete: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('resumes')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+    },
+
+    generateContent: async (resumeId: string, jobId: string, sections: string[]) => {
+      const { data, error } = await supabase.functions.invoke('ai-resume-generate', {
+        body: { resumeId, jobId, sections }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+
+    optimizeSkills: async (jobId: string) => {
+      const { data, error } = await supabase.functions.invoke('ai-optimize-skills', {
+        body: { jobId }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+
+    tailorExperience: async (jobId: string) => {
+      const { data, error } = await supabase.functions.invoke('ai-tailor-experience', {
+        body: { jobId }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+  },
+
+  // Cover letter management
+  coverLetters: {
+    getAll: async (isArchived?: boolean) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let query = supabase
+        .from('cover_letters')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (isArchived !== undefined) {
+        query = query.eq('is_archived', isArchived);
+      }
+
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+
+    get: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('cover_letters')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    create: async (coverLetterData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('cover_letters')
+        .insert({ ...coverLetterData, user_id: user.id })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    update: async (id: string, coverLetterData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('cover_letters')
+        .update(coverLetterData)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    delete: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('cover_letters')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+    },
+
+    generate: async (jobId: string, tone?: string, template?: string) => {
+      const { data, error } = await supabase.functions.invoke('ai-cover-letter-generate', {
+        body: { jobId, tone, template }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+  },
+
+  // Profile management
+  profile: {
+    get: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    update: async (profileData: any) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  },
+};
 
 export interface ApiResponse<T = any> {
   success: boolean;
