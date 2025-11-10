@@ -26,3 +26,9 @@ verify_jwt = true
 
 [functions.ai-job-import]
 verify_jwt = true
+
+[functions.ai-job-match-score]
+verify_jwt = true
+
+[functions.ai-skills-gap]
+verify_jwt = true
