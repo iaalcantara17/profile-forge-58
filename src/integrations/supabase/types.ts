@@ -14,6 +14,137 @@ export type Database = {
   }
   public: {
     Tables: {
+      application_events: {
+        Row: {
+          event_date: string | null
+          event_type: string
+          id: string
+          job_id: string
+          metadata: Json | null
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          event_date?: string | null
+          event_type: string
+          id?: string
+          job_id: string
+          metadata?: Json | null
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          event_date?: string | null
+          event_type?: string
+          id?: string
+          job_id?: string
+          metadata?: Json | null
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_events_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_integrations: {
+        Row: {
+          access_token: string | null
+          calendar_id: string | null
+          created_at: string | null
+          id: string
+          last_sync: string | null
+          provider: string
+          refresh_token: string | null
+          sync_enabled: boolean | null
+          token_expiry: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          calendar_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_sync?: string | null
+          provider: string
+          refresh_token?: string | null
+          sync_enabled?: boolean | null
+          token_expiry?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          calendar_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_sync?: string | null
+          provider?: string
+          refresh_token?: string | null
+          sync_enabled?: boolean | null
+          token_expiry?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      company_research: {
+        Row: {
+          ai_summary: string | null
+          company_name: string
+          competitors: Json | null
+          created_at: string | null
+          culture: string | null
+          description: string | null
+          glassdoor_rating: number | null
+          id: string
+          industry: string | null
+          key_people: Json | null
+          recent_news: Json | null
+          size: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          company_name: string
+          competitors?: Json | null
+          created_at?: string | null
+          culture?: string | null
+          description?: string | null
+          glassdoor_rating?: number | null
+          id?: string
+          industry?: string | null
+          key_people?: Json | null
+          recent_news?: Json | null
+          size?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_summary?: string | null
+          company_name?: string
+          competitors?: Json | null
+          created_at?: string | null
+          culture?: string | null
+          description?: string | null
+          glassdoor_rating?: number | null
+          id?: string
+          industry?: string | null
+          key_people?: Json | null
+          recent_news?: Json | null
+          size?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       cover_letters: {
         Row: {
           ai_generated: Json | null
@@ -75,6 +206,121 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "cover_letters_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviews: {
+        Row: {
+          calendar_event_id: string | null
+          common_questions: Json | null
+          company_research: Json | null
+          created_at: string | null
+          id: string
+          interview_date: string | null
+          interview_type: string | null
+          interviewer_name: string | null
+          interviewer_role: string | null
+          job_id: string
+          location: string | null
+          notes: string | null
+          preparation_status: string | null
+          reminder_sent: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          calendar_event_id?: string | null
+          common_questions?: Json | null
+          company_research?: Json | null
+          created_at?: string | null
+          id?: string
+          interview_date?: string | null
+          interview_type?: string | null
+          interviewer_name?: string | null
+          interviewer_role?: string | null
+          job_id: string
+          location?: string | null
+          notes?: string | null
+          preparation_status?: string | null
+          reminder_sent?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          calendar_event_id?: string | null
+          common_questions?: Json | null
+          company_research?: Json | null
+          created_at?: string | null
+          id?: string
+          interview_date?: string | null
+          interview_type?: string | null
+          interviewer_name?: string | null
+          interviewer_role?: string | null
+          job_id?: string
+          location?: string | null
+          notes?: string | null
+          preparation_status?: string | null
+          reminder_sent?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_match_scores: {
+        Row: {
+          created_at: string | null
+          education_score: number | null
+          experience_score: number | null
+          gaps: Json | null
+          id: string
+          job_id: string
+          overall_score: number
+          recommendations: string | null
+          skills_score: number | null
+          strengths: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          education_score?: number | null
+          experience_score?: number | null
+          gaps?: Json | null
+          id?: string
+          job_id: string
+          overall_score: number
+          recommendations?: string | null
+          skills_score?: number | null
+          strengths?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          education_score?: number | null
+          experience_score?: number | null
+          gaps?: Json | null
+          id?: string
+          job_id?: string
+          overall_score?: number
+          recommendations?: string | null
+          skills_score?: number | null
+          strengths?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_match_scores_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
@@ -168,6 +414,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          related_interview_id: string | null
+          related_job_id: string | null
+          sent_via_email: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_interview_id?: string | null
+          related_job_id?: string | null
+          sent_via_email?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_interview_id?: string | null
+          related_job_id?: string | null
+          sent_via_email?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_related_interview_id_fkey"
+            columns: ["related_interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_job_id_fkey"
+            columns: ["related_job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
