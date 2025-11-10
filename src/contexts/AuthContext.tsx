@@ -9,10 +9,12 @@ interface AuthContextType {
   profile: any;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithToken: (token: string) => Promise<{ success: boolean; error?: string }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   updatePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  deleteAccount: (password: string, isOAuthUser?: boolean) => Promise<{ success: boolean; error?: string }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -94,6 +96,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithToken = async (token: string) => {
+    try {
+      // For OAuth, we need to set the session with the token
+      localStorage.setItem('auth_token', token);
+      
+      const { data, error } = await supabase.auth.getUser();
+      
+      if (error || !data.user) {
+        return { success: false, error: 'Invalid or expired token' };
+      }
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: 'An unexpected error occurred'
+      };
+    }
+  };
+
+  const deleteAccount = async (password: string, isOAuthUser: boolean = false) => {
+    try {
+      if (!user) {
+        return { success: false, error: 'No user logged in' };
+      }
+
+      // For Supabase, we need to delete the user
+      const { error } = await supabase.auth.admin.deleteUser(user.id);
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      await logout();
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: 'Failed to delete account'
+      };
+    }
+  };
+
   const register = async (name: string, email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -169,7 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, isLoading, login, register, logout, resetPassword, updatePassword, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, isLoading, login, loginWithToken, register, logout, resetPassword, updatePassword, deleteAccount, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

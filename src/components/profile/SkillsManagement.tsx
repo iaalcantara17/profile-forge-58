@@ -6,9 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, X, Code, MessageSquare, Languages, Wrench, Loader2, Search, Download, GripVertical } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 import { useProfileData } from './ProfileDataManager';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 interface Skill {
   id: string;
@@ -32,7 +30,8 @@ const proficiencyColors = {
 };
 
 export const SkillsManagement = () => {
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, profile } = useAuth();
+  const { updateProfileField } = useProfileData();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -53,10 +52,8 @@ export const SkillsManagement = () => {
 
   const fetchSkills = async () => {
     setIsLoading(true);
-    const response = await api.getSkills();
-    if (response.success && response.data) {
-      setSkills(response.data);
-    }
+    const skills = (profile?.skills || []) as Skill[];
+    setSkills(skills);
     setIsLoading(false);
   };
 
@@ -89,38 +86,24 @@ export const SkillsManagement = () => {
 
     try {
       if (editingId) {
-        const response = await api.updateSkill(editingId, formData);
-        if (response.success) {
-          await fetchSkills();
-          await refreshProfile();
-          toast({
-            title: 'Skill updated',
-            description: 'Your skill has been updated successfully',
-          });
-          setEditingId(null);
-        } else {
-          toast({
-            title: 'Update failed',
-            description: response.error?.message || 'Failed to update skill',
-            variant: 'destructive',
-          });
-        }
+        const updatedSkills = skills.map(s => s.id === editingId ? { ...formData, id: editingId } : s);
+        await updateProfileField('skills', updatedSkills);
+        await fetchSkills();
+        await refreshProfile();
+        toast({
+          title: 'Skill updated',
+          description: 'Your skill has been updated successfully',
+        });
+        setEditingId(null);
       } else {
-        const response = await api.addSkill(formData);
-        if (response.success) {
-          await fetchSkills();
-          await refreshProfile();
-          toast({
-            title: 'Skill added',
-            description: 'New skill has been added to your profile',
-          });
-        } else {
-          toast({
-            title: 'Add failed',
-            description: response.error?.message || 'Failed to add skill',
-            variant: 'destructive',
-          });
-        }
+        const newSkill = { ...formData, id: crypto.randomUUID() };
+        await updateProfileField('skills', [...skills, newSkill]);
+        await fetchSkills();
+        await refreshProfile();
+        toast({
+          title: 'Skill added',
+          description: 'New skill has been added to your profile',
+        });
       }
 
       resetForm();
@@ -146,36 +129,25 @@ export const SkillsManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const response = await api.deleteSkill(id);
-    if (response.success) {
-      await fetchSkills();
-      await refreshProfile();
-      toast({
-        title: 'Skill removed',
-        description: 'The skill has been removed from your profile',
-      });
-    } else {
-      toast({
-        title: 'Delete failed',
-        description: response.error?.message || 'Failed to delete skill',
-        variant: 'destructive',
-      });
-    }
+    const updatedSkills = skills.filter(s => s.id !== id);
+    await updateProfileField('skills', updatedSkills);
+    await fetchSkills();
+    await refreshProfile();
+    toast({
+      title: 'Skill removed',
+      description: 'The skill has been removed from your profile',
+    });
   };
 
   const handleMoveToCategory = async (skillId: string, newCategory: Skill['category']) => {
-    const skill = skills.find(s => s.id === skillId);
-    if (!skill) return;
-
-    const response = await api.updateSkill(skillId, { ...skill, category: newCategory });
-    if (response.success) {
-      await fetchSkills();
-      await refreshProfile();
-      toast({
-        title: 'Skill moved',
-        description: `Skill moved to ${newCategory}`,
-      });
-    }
+    const updatedSkills = skills.map(s => s.id === skillId ? { ...s, category: newCategory } : s);
+    await updateProfileField('skills', updatedSkills);
+    await fetchSkills();
+    await refreshProfile();
+    toast({
+      title: 'Skill moved',
+      description: `Skill moved to ${newCategory}`,
+    });
   };
 
   const handleDragEnd = async (result: DropResult) => {

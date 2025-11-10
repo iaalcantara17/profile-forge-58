@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Jobs = () => {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -38,14 +38,12 @@ const Jobs = () => {
   ];
 
   const fetchJobs = async () => {
-    if (!token) return;
+    if (!user) return;
     
     setIsLoading(true);
     try {
-      const response = await api.getJobs(filters);
-      if (response.success && response.data) {
-        setJobs(response.data);
-      }
+      const jobsData = await api.jobs.getAll(filters);
+      setJobs(jobsData as any);
     } catch (error) {
       toast.error('Failed to load jobs');
     } finally {
@@ -55,7 +53,7 @@ const Jobs = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [token, filters]);
+  }, [user, filters]);
 
   const handleAddSuccess = () => {
     setIsAddDialogOpen(false);
@@ -66,11 +64,9 @@ const Jobs = () => {
     if (!confirm('Are you sure you want to delete this job?')) return;
 
     try {
-      const response = await api.deleteJob(job.job_id || job._id!);
-      if (response.success) {
-        toast.success('Job deleted successfully');
-        fetchJobs();
-      }
+      await api.jobs.delete(job.job_id || job.id!);
+      toast.success('Job deleted successfully');
+      fetchJobs();
     } catch (error) {
       toast.error('Failed to delete job');
     }
@@ -78,11 +74,9 @@ const Jobs = () => {
 
   const handleArchiveJob = async (job: Job) => {
     try {
-      const response = await api.archiveJob(job.job_id || job._id!);
-      if (response.success) {
-        toast.success('Job archived successfully');
-        fetchJobs();
-      }
+      await api.jobs.archive(job.job_id || job.id!);
+      toast.success('Job archived successfully');
+      fetchJobs();
     } catch (error) {
       toast.error('Failed to archive job');
     }
