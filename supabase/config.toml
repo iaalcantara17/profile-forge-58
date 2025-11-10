@@ -1,5 +1,14 @@
 project_id = "fzckeizrrolxgakekzhe"
 
+[functions.send-notification-email]
+verify_jwt = true
+
+[functions.check-grammar]
+verify_jwt = true
+
+[functions.calendar-sync]
+verify_jwt = true
+
 [functions.ai-resume-generate]
 verify_jwt = true
 

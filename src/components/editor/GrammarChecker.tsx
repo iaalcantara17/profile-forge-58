@@ -33,8 +33,8 @@ export const GrammarChecker = ({ content, onApplySuggestion }: GrammarCheckerPro
     setChecked(false);
     
     try {
-      const { data, error } = await supabase.functions.invoke('ai-grammar-check', {
-        body: { content },
+      const { data, error } = await supabase.functions.invoke('check-grammar', {
+        body: { text: content },
       });
 
       if (error) throw error;
