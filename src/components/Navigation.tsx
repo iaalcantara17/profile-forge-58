@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, LogOut, User, Target, FileText, Mail } from 'lucide-react';
+import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -66,6 +66,15 @@ export const Navigation = () => {
               >
                 <Mail className="inline h-4 w-4 mr-1" />
                 Cover Letters
+              </Link>
+              <Link
+                to="/analytics"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/analytics') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <BarChart className="inline h-4 w-4 mr-1" />
+                Analytics
               </Link>
               <Link
                 to="/profile"
@@ -161,6 +170,18 @@ export const Navigation = () => {
                 >
                   <Mail className="inline h-4 w-4 mr-1" />
                   Cover Letters
+                </Link>
+                <Link
+                  to="/analytics"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/analytics')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <BarChart className="inline h-4 w-4 mr-1" />
+                  Analytics
                 </Link>
                 <Link
                   to="/profile"

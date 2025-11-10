@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Jobs from "./pages/Jobs";
 import Resumes from "./pages/Resumes";
 import CoverLetters from "./pages/CoverLetters";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <CoverLetters />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics" 
+                element={
+                  <ProtectedRoute>
+                    <Analytics />
                   </ProtectedRoute>
                 } 
               />
