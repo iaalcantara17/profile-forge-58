@@ -50,6 +50,58 @@ export const exportService = {
     pdf.save(filename);
   },
 
+  // Export resume as plain text
+  exportResumeAsText(resumeData: any): string {
+    let text = '';
+    
+    // Header
+    if (resumeData.personal_info?.name) {
+      text += `${resumeData.personal_info.name.toUpperCase()}\n`;
+      text += '='.repeat(resumeData.personal_info.name.length) + '\n\n';
+    }
+    
+    if (resumeData.personal_info?.email) text += `Email: ${resumeData.personal_info.email}\n`;
+    if (resumeData.personal_info?.phone) text += `Phone: ${resumeData.personal_info.phone}\n`;
+    if (resumeData.personal_info?.location) text += `Location: ${resumeData.personal_info.location}\n`;
+    text += '\n';
+    
+    // Sections
+    resumeData.sections?.forEach((section: any) => {
+      if (!section.isVisible) return;
+      
+      text += `${section.title.toUpperCase()}\n`;
+      text += '-'.repeat(section.title.length) + '\n';
+      text += `${section.content}\n\n`;
+    });
+    
+    return text;
+  },
+
+  // Export cover letter as plain text
+  exportCoverLetterAsText(coverLetter: any): string {
+    let text = '';
+    
+    // Header
+    const date = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    text += `${date}\n\n`;
+    
+    if (coverLetter.title) {
+      text += `${coverLetter.title.toUpperCase()}\n`;
+      text += '='.repeat(coverLetter.title.length) + '\n\n';
+    }
+    
+    text += coverLetter.content || '';
+    text += '\n\n';
+    
+    if (coverLetter.user_info?.name) text += `Sincerely,\n${coverLetter.user_info.name}\n`;
+    
+    return text;
+  },
+
   // Export cover letter as PDF
   async exportCoverLetterToPDF(content: string, metadata: any, filename: string = 'cover-letter.pdf'): Promise<void> {
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -84,6 +136,19 @@ export const exportService = {
     pdf.save(filename);
   },
 
+  // Download text file
+  downloadTextFile(content: string, filename: string): void {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  },
+
   // Export as plain text
   exportAsText(content: string, filename: string): void {
     const blob = new Blob([content], { type: 'text/plain' });
@@ -97,37 +162,16 @@ export const exportService = {
     URL.revokeObjectURL(url);
   },
 
-  // Export resume as text
-  exportResumeToText(resumeData: any, filename: string = 'resume.txt'): void {
-    const text = this.generateResumeText(resumeData);
+  // Export resume to text file
+  downloadResumeAsText(resumeData: any, filename: string = 'resume.txt'): void {
+    const text = this.exportResumeAsText(resumeData);
     this.exportAsText(text, filename);
   },
 
-  // Export cover letter as text
-  exportCoverLetterToText(content: string, filename: string = 'cover-letter.txt'): void {
-    this.exportAsText(content, filename);
-  },
-
-  // Generate plain text version of resume
-  generateResumeText(resumeData: any): string {
-    let text = '';
-    
-    // Header
-    if (resumeData.personal_info) {
-      text += `${resumeData.personal_info.name || ''}\n`;
-      text += `${resumeData.personal_info.email || ''} | ${resumeData.personal_info.phone || ''}\n`;
-      text += `${resumeData.personal_info.location || ''}\n\n`;
-    }
-
-    // Sections
-    resumeData.sections?.forEach((section: any) => {
-      if (!section.isVisible) return;
-      text += `${section.title.toUpperCase()}\n`;
-      text += `${'-'.repeat(section.title.length)}\n`;
-      text += `${section.content}\n\n`;
-    });
-
-    return text;
+  // Export cover letter to text file  
+  downloadCoverLetterAsText(coverLetter: any, filename: string = 'cover-letter.txt'): void {
+    const text = this.exportCoverLetterAsText(coverLetter);
+    this.exportAsText(text, filename);
   },
 
   // Export statistics to CSV

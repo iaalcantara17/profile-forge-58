@@ -25,6 +25,7 @@ import { JobMatchScore } from "./JobMatchScore";
 import { SkillsGapAnalysis } from "./SkillsGapAnalysis";
 import { SalaryResearch } from "./SalaryResearch";
 import { InterviewInsights } from "./InterviewInsights";
+import { CompanyResearch } from "./CompanyResearch";
 import { format } from "date-fns";
 import { Job, JobContact } from "@/types/jobs";
 import { cn } from "@/lib/utils";
@@ -180,15 +181,16 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
 
           {/* Tabbed Content */}
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-9 overflow-x-auto">
+            <TabsList className="grid w-full grid-cols-10 overflow-x-auto">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="notes">Notes</TabsTrigger>
               <TabsTrigger value="contacts">Contacts</TabsTrigger>
               <TabsTrigger value="interview">Interview</TabsTrigger>
-              <TabsTrigger value="match">Match Score</TabsTrigger>
-              <TabsTrigger value="skills">Skills Gap</TabsTrigger>
+              <TabsTrigger value="match">Match</TabsTrigger>
+              <TabsTrigger value="skills">Skills</TabsTrigger>
               <TabsTrigger value="salary">Salary</TabsTrigger>
               <TabsTrigger value="prep">Prep</TabsTrigger>
+              <TabsTrigger value="research">Research</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
 
@@ -358,6 +360,10 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
 
             <TabsContent value="prep">
               <InterviewInsights jobId={job.id} />
+            </TabsContent>
+
+            <TabsContent value="research">
+              <CompanyResearch jobId={job.id} />
             </TabsContent>
 
             <TabsContent value="history" className="space-y-3">
