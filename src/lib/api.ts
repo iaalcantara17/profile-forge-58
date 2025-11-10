@@ -334,6 +334,18 @@ export const api = {
     },
   },
 
+  // Job import from URL
+  jobImport: {
+    fromUrl: async (url: string) => {
+      const { data, error } = await supabase.functions.invoke('ai-job-import', {
+        body: { url }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+  },
+
   // Profile management
   profile: {
     get: async () => {

@@ -52,8 +52,38 @@ export const JobForm = ({ initialData, onSuccess, onCancel }: JobFormProps) => {
   const deadline = watch('applicationDeadline');
 
   const handleImportFromUrl = async () => {
-    toast.error('Job import feature coming soon. Please enter details manually for now.');
-    setImportUrl('');
+    if (!importUrl) {
+      toast.error('Please enter a job posting URL');
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const result = await api.jobImport.fromUrl(importUrl);
+      
+      if (result.success && result.data) {
+        // Auto-populate form fields
+        setValue('title', result.data.job_title || '');
+        setValue('company', result.data.company_name || '');
+        setValue('location', result.data.location || '');
+        setValue('description', result.data.job_description || '');
+        setValue('industry', result.data.industry || '');
+        setValue('jobType', result.data.job_type?.toLowerCase() as any || undefined);
+        setValue('salaryMin', result.data.salary_min || undefined);
+        setValue('salaryMax', result.data.salary_max || undefined);
+        setValue('jobPostingUrl', importUrl);
+        
+        toast.success('Job details imported successfully!');
+        setImportUrl('');
+      } else {
+        toast.warning('Partial import - please review and fill in missing details');
+      }
+    } catch (error) {
+      toast.error('Failed to import job details. Please enter manually.');
+      console.error('Import error:', error);
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   const onSubmit = async (data: JobFormData) => {
