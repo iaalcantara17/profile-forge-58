@@ -7,15 +7,12 @@ const corsHeaders = {
 
 interface GrammarCheckRequest {
   text: string;
-  language?: string;
 }
 
 interface GrammarIssue {
   message: string;
   suggestion: string;
   severity: 'error' | 'warning' | 'info';
-  offset: number;
-  length: number;
 }
 
 serve(async (req) => {
@@ -24,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text, language = 'en-US' }: GrammarCheckRequest = await req.json();
+    const { text }: GrammarCheckRequest = await req.json();
 
     if (!text || text.trim().length === 0) {
       return new Response(
@@ -36,65 +33,86 @@ serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get('LANGUAGETOOL_API_KEY');
-    const apiUrl = apiKey 
-      ? 'https://api.languagetoolplus.com/v2/check'
-      : 'https://api.languagetool.org/v2/check';
-
-    const params = new URLSearchParams({
-      text,
-      language,
-      enabledOnly: 'false',
-    });
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
-    };
-
-    if (apiKey) {
-      headers['Authorization'] = `Bearer ${apiKey}`;
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const response = await fetch(apiUrl, {
+    // Use Lovable AI for grammar checking
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
-      headers,
-      body: params,
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a professional grammar and style checker. Analyze the text and return a JSON object with:
+- issues: array of {message, suggestion, severity} where severity is "error", "warning", or "info"
+- correctedText: the fully corrected version of the text
+
+Focus on:
+- Grammar errors (subject-verb agreement, tenses, etc.)
+- Spelling mistakes
+- Punctuation issues
+- Style improvements (clarity, conciseness)
+- Professional tone
+
+Return ONLY valid JSON, no additional text.`
+          },
+          {
+            role: 'user',
+            content: `Check this text:\n\n${text}`
+          }
+        ],
+      }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('LanguageTool API error:', response.status, errorText);
-      throw new Error(`LanguageTool API error: ${response.status}`);
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'AI credits exhausted. Please add more credits.' }),
+          {
+            status: 402,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      throw new Error(`AI API error: ${response.status}`);
     }
 
     const data = await response.json();
+    const content = data.choices[0].message.content;
     
-    const issues: GrammarIssue[] = data.matches.map((match: any) => ({
-      message: match.message,
-      suggestion: match.replacements?.[0]?.value || '',
-      severity: match.rule.issueType === 'misspelling' ? 'error' : 
-                match.rule.issueType === 'grammar' ? 'warning' : 'info',
-      offset: match.offset,
-      length: match.length,
-    }));
-
-    // Apply corrections automatically
-    let correctedText = text;
-    const sortedIssues = [...data.matches].sort((a: any, b: any) => b.offset - a.offset);
-    
-    for (const match of sortedIssues) {
-      if (match.replacements?.[0]?.value) {
-        const before = correctedText.substring(0, match.offset);
-        const after = correctedText.substring(match.offset + match.length);
-        correctedText = before + match.replacements[0].value + after;
-      }
+    // Parse AI response
+    let result;
+    try {
+      result = JSON.parse(content);
+    } catch (e) {
+      // If AI doesn't return valid JSON, create a basic response
+      console.error('AI returned invalid JSON:', content);
+      result = {
+        issues: [],
+        correctedText: text,
+      };
     }
 
     return new Response(
       JSON.stringify({
-        issues,
-        correctedText: issues.length > 0 ? correctedText : text,
+        issues: result.issues || [],
+        correctedText: result.correctedText || text,
         originalText: text,
       }),
       {

@@ -18,6 +18,8 @@ import Jobs from "./pages/Jobs";
 import Resumes from "./pages/Resumes";
 import CoverLetters from "./pages/CoverLetters";
 import Analytics from "./pages/Analytics";
+import CalendarConnect from "./pages/CalendarConnect";
+import CalendarCallback from "./pages/CalendarCallback";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -81,6 +83,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Analytics />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/calendar-connect" 
+                element={
+                  <ProtectedRoute>
+                    <CalendarConnect />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/calendar/callback" 
+                element={
+                  <ProtectedRoute>
+                    <CalendarCallback />
                   </ProtectedRoute>
                 } 
               />
