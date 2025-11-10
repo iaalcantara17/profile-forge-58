@@ -15,6 +15,8 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Jobs from "./pages/Jobs";
+import Resumes from "./pages/Resumes";
+import CoverLetters from "./pages/CoverLetters";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +56,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Jobs />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/resumes" 
+                element={
+                  <ProtectedRoute>
+                    <Resumes />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/cover-letters" 
+                element={
+                  <ProtectedRoute>
+                    <CoverLetters />
                   </ProtectedRoute>
                 } 
               />

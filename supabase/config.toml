@@ -1,1 +1,13 @@
 project_id = "fzckeizrrolxgakekzhe"
+
+[functions.ai-resume-generate]
+verify_jwt = true
+
+[functions.ai-optimize-skills]
+verify_jwt = true
+
+[functions.ai-tailor-experience]
+verify_jwt = true
+
+[functions.ai-cover-letter-generate]
+verify_jwt = true
