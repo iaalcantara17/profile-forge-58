@@ -11,11 +11,13 @@ serve(async (req) => {
   }
 
   try {
-    // Get user_id from request body
-    const { user_id } = await req.json();
-    
-    if (!user_id) {
-      throw new Error('User ID is required');
+    // Try to read user_id from request body, but allow empty body for config probe
+    let user_id: string | null = null;
+    try {
+      const body = await req.json();
+      user_id = body?.user_id ?? null;
+    } catch {
+      // No JSON body provided - treat as config probe
     }
 
     const clientId = Deno.env.get('GOOGLE_CLIENT_ID');
@@ -26,6 +28,14 @@ serve(async (req) => {
       // Return 200 with configured=false so the UI can disable the button gracefully
       return new Response(
         JSON.stringify({ configured: false, reason: 'OAuth credentials not configured' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // If no user_id, this is a configuration probe - return configured=true
+    if (!user_id) {
+      return new Response(
+        JSON.stringify({ configured: true }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
