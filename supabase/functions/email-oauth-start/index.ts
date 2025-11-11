@@ -11,6 +11,13 @@ serve(async (req) => {
   }
 
   try {
+    // Get user_id from request body
+    const { user_id } = await req.json();
+    
+    if (!user_id) {
+      throw new Error('User ID is required');
+    }
+
     const clientId = Deno.env.get('GOOGLE_CLIENT_ID');
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
     const redirectUri = `${supabaseUrl}/functions/v1/email-oauth-callback`;
@@ -34,6 +41,7 @@ serve(async (req) => {
       scope: scopes.join(' '),
       access_type: 'offline',
       prompt: 'consent',
+      state: user_id, // Pass user_id through state parameter
     });
 
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;

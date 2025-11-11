@@ -12,8 +12,15 @@ serve(async (req) => {
   }
 
   try {
-    // Get code and user_id from request
-    const { code, user_id } = await req.json();
+    // Parse query parameters from URL
+    const url = new URL(req.url);
+    const code = url.searchParams.get('code');
+    const user_id = url.searchParams.get('state'); // user_id is passed via state
+    const error = url.searchParams.get('error');
+
+    if (error) {
+      throw new Error(`OAuth error: ${error}`);
+    }
 
     if (!code || !user_id) {
       throw new Error('Missing required parameters');
@@ -73,13 +80,13 @@ serve(async (req) => {
       throw new Error('Failed to store integration');
     }
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    // Redirect back to the app with success
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || ''}/email/callback?success=true`,
+      },
+    });
   } catch (error) {
     console.error('Email OAuth callback error:', error);
     return new Response(
