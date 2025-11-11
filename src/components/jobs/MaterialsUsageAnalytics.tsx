@@ -13,33 +13,8 @@ export const MaterialsUsageAnalytics = () => {
 
   const loadAnalytics = async () => {
     try {
-      const { data: { user } } = await api.auth.getUser();
-      if (!user) return;
-
-      const usageData = await api.materialsUsage.getMonthlyStats(user.id, 6);
-
-      // Aggregate by month
-      const monthCounts = new Map<string, number>();
-      usageData.forEach(item => {
-        const date = new Date(item.used_at);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        monthCounts.set(monthKey, (monthCounts.get(monthKey) || 0) + 1);
-      });
-
-      // Generate last 6 months
-      const chartData: { month: string; count: number }[] = [];
-      const now = new Date();
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        const monthLabel = d.toLocaleString('default', { month: 'short' });
-        chartData.push({
-          month: monthLabel,
-          count: monthCounts.get(monthKey) || 0,
-        });
-      }
-
-      setData(chartData);
+      const data = await api.materialsUsage.usageByMonth({ months: 6 });
+      setData(data);
     } catch (error) {
       console.error('Failed to load materials analytics:', error);
     } finally {

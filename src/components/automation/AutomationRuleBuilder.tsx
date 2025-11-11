@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Trigger, Action } from "@/types/automation";
 
 interface AutomationRule {
   id: string;
@@ -46,7 +47,18 @@ export const AutomationRuleBuilder = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRules((data || []) as AutomationRule[]);
+      
+      // Parse Json to typed structures
+      const parsed: AutomationRule[] = (data || []).map(row => ({
+        id: row.id,
+        user_id: row.user_id,
+        name: row.name,
+        is_enabled: row.is_enabled,
+        trigger: row.trigger as unknown as Trigger,
+        action: row.action as unknown as Action,
+      }));
+      
+      setRules(parsed);
     } catch (error) {
       console.error('Failed to load rules:', error);
     }
@@ -80,8 +92,12 @@ export const AutomationRuleBuilder = () => {
         const { error } = await supabase
           .from('automation_rules')
           .insert({
-            ...editingRule,
+            name: editingRule.name,
+            is_enabled: editingRule.is_enabled,
+            trigger: editingRule.trigger as unknown as any,
+            action: editingRule.action as unknown as any,
             user_id: user.id,
+            rule_type: editingRule.trigger.type,
           });
 
         if (error) throw error;

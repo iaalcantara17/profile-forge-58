@@ -56,12 +56,11 @@ export const ApplicationMaterialsSection = ({
       if (selectedResume || selectedCoverLetter) {
         const { data: { user } } = await api.auth.getUser();
         if (user) {
-          await api.materialsUsage.create({
-            job_id: jobId,
-            resume_id: selectedResumeId || null,
-            cover_letter_id: selectedCoverLetterId || null,
-            resume_version_name: selectedResume?.title || null,
-            cover_letter_version_name: selectedCoverLetter?.title || null,
+          await api.materialsUsage.add({
+            jobId,
+            resumeId: selectedResumeId || null,
+            coverLetterId: selectedCoverLetterId || null,
+            notes: null,
           });
         }
       }
