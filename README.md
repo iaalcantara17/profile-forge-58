@@ -54,6 +54,8 @@ npm run test -- --coverage  # Run with coverage report
 
 ## Security Model
 
+**⚠️ IMPORTANT: If you cloned this repo before [DATE], rotate all secrets immediately. A `.env` file was briefly committed and has been removed.**
+
 **Row-Level Security (RLS)**:
 - All user data tables enforce `auth.uid() = user_id` policies
 - No anonymous table reads on private data (profiles, jobs, resumes, email_tracking, etc.)
@@ -87,6 +89,18 @@ supabase/
   functions/       # Edge functions
   migrations/      # Database migrations
 ```
+
+## Edge Function Failure Modes
+
+- **Rate Limits**: 429 errors are normalized and surfaced to client; backoff logic recommended
+- **Token Expiry**: OAuth tokens refresh automatically on 401; edge functions retry once
+- **Network Failures**: All edge functions return `{ error: { code, message } }` on failure
+
+## Cache & Rate-Limit Strategy
+
+- **Company Research**: Cached in DB for 30 days; re-fetched on demand
+- **Email Polling**: 14-day lookback window; dedupe by `provider_msg_id`
+- **Calendar Sync**: Token refresh on 401; normalized error responses for 404/500
 
 ## License
 
