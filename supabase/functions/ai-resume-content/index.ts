@@ -27,7 +27,7 @@ serve(async (req) => {
       });
     }
 
-    const { jobId, sections = ['summary'] } = await req.json();
+    const { jobId, sections = ['summary'], returnFormat = 'variations' } = await req.json();
 
     // Get user profile
     const { data: profile } = await supabaseClient
@@ -144,6 +144,23 @@ serve(async (req) => {
     const result = toolCall?.function?.arguments 
       ? JSON.parse(toolCall.function.arguments)
       : { variations: [] };
+
+    // If multiple sections requested, return structured format for ResumeBuilder
+    if (sections.length > 1 && returnFormat === 'structured') {
+      const structured: any = {};
+      sections.forEach((section: string) => {
+        if (section === 'summary') {
+          structured.summary = result.variations.map((v: any) => v.content);
+        } else if (section === 'experience') {
+          structured.experience = result.variations.map((v: any) => v.content);
+        } else if (section === 'skills') {
+          structured.skills = result.variations.map((v: any) => v.content);
+        }
+      });
+      return new Response(JSON.stringify(structured), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
