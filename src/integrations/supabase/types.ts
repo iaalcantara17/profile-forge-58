@@ -594,6 +594,7 @@ export type Database = {
           created_at: string | null
           education: Json | null
           email: string | null
+          email_reminders: boolean | null
           employment_history: Json | null
           experience_level: string | null
           github_url: string | null
@@ -606,6 +607,7 @@ export type Database = {
           portfolio_url: string | null
           professional_headline: string | null
           projects: Json | null
+          reminder_days: number[] | null
           skills: Json | null
           updated_at: string | null
           user_id: string
@@ -617,6 +619,7 @@ export type Database = {
           created_at?: string | null
           education?: Json | null
           email?: string | null
+          email_reminders?: boolean | null
           employment_history?: Json | null
           experience_level?: string | null
           github_url?: string | null
@@ -629,6 +632,7 @@ export type Database = {
           portfolio_url?: string | null
           professional_headline?: string | null
           projects?: Json | null
+          reminder_days?: number[] | null
           skills?: Json | null
           updated_at?: string | null
           user_id: string
@@ -640,6 +644,7 @@ export type Database = {
           created_at?: string | null
           education?: Json | null
           email?: string | null
+          email_reminders?: boolean | null
           employment_history?: Json | null
           experience_level?: string | null
           github_url?: string | null
@@ -652,6 +657,7 @@ export type Database = {
           portfolio_url?: string | null
           professional_headline?: string | null
           projects?: Json | null
+          reminder_days?: number[] | null
           skills?: Json | null
           updated_at?: string | null
           user_id?: string
