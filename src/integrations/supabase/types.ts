@@ -820,6 +820,47 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_experience_variants: {
+        Row: {
+          accepted: boolean
+          content_markdown: string
+          created_at: string
+          id: string
+          job_id: string | null
+          relevance_score: number
+          resume_experience_id: string
+          user_id: string
+        }
+        Insert: {
+          accepted?: boolean
+          content_markdown: string
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          relevance_score: number
+          resume_experience_id: string
+          user_id: string
+        }
+        Update: {
+          accepted?: boolean
+          content_markdown?: string
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          relevance_score?: number
+          resume_experience_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_experience_variants_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_shares: {
         Row: {
           access_level: string
@@ -852,6 +893,36 @@ export type Database = {
           share_token?: string
           shared_with_email?: string
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      resume_templates: {
+        Row: {
+          content_markdown: string
+          created_at: string
+          id: string
+          is_default: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_markdown: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_markdown?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
