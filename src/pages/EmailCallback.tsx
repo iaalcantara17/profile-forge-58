@@ -25,9 +25,15 @@ export default function EmailCallback() {
           throw new Error('No authorization code received');
         }
 
+        // Get current user ID
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          throw new Error('User not authenticated');
+        }
+
         // Exchange code for tokens via backend
         const { data, error: callbackError } = await supabase.functions.invoke('email-oauth-callback', {
-          body: { code }
+          body: { code, user_id: user.id }
         });
 
         if (callbackError) throw callbackError;

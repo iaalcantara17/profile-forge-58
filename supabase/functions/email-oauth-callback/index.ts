@@ -12,26 +12,18 @@ serve(async (req) => {
   }
 
   try {
+    // Get code and user_id from request
+    const { code, user_id } = await req.json();
+
+    if (!code || !user_id) {
+      throw new Error('Missing required parameters');
+    }
+
+    // Create admin client to store integration
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      throw new Error('Not authenticated');
-    }
-
-    const { code } = await req.json();
-
-    if (!code) {
-      throw new Error('Missing authorization code');
-    }
 
     const clientId = Deno.env.get('GOOGLE_CLIENT_ID');
     const clientSecret = Deno.env.get('GOOGLE_CLIENT_SECRET');
@@ -67,7 +59,7 @@ serve(async (req) => {
     const { error: dbError } = await supabaseClient
       .from('email_integrations')
       .upsert({
-        user_id: user.id,
+        user_id: user_id,
         provider: 'google',
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
