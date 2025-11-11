@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Jobs from "./pages/Jobs";
 import Resumes from "./pages/Resumes";
 import CoverLetters from "./pages/CoverLetters";
+import CoverLetterPerformance from "./pages/CoverLetterPerformance";
 import Analytics from "./pages/Analytics";
 import CalendarConnect from "./pages/CalendarConnect";
 import CalendarCallback from "./pages/CalendarCallback";
@@ -79,7 +80,15 @@ const App = () => (
                 } 
               />
               <Route 
-                path="/analytics" 
+                path="/cover-letters/performance" 
+                element={
+                  <ProtectedRoute>
+                    <CoverLetterPerformance />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics"
                 element={
                   <ProtectedRoute>
                     <Analytics />
