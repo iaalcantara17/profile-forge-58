@@ -40,9 +40,8 @@ export default function EmailIntegration() {
         return;
       }
 
-      // Call the email OAuth start function with user_id
       const { data, error } = await supabase.functions.invoke('email-oauth-start', {
-        body: { user_id: user.id }
+        body: { user_id: user.id, email: user.email }
       });
 
       if (error) {

@@ -10,20 +10,43 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
-
+  
   try {
     // Parse query parameters from URL
     const url = new URL(req.url);
     const code = url.searchParams.get('code');
-    const user_id = url.searchParams.get('state'); // user_id is passed via state
-    const error = url.searchParams.get('error');
+    const stateParam = url.searchParams.get('state');
+    const errorParam = url.searchParams.get('error');
 
-    if (error) {
-      throw new Error(`OAuth error: ${error}`);
+    // Decode state which may contain JSON with user_id and app_origin
+    let user_id: string | null = null;
+    let app_origin: string | null = null;
+    if (stateParam) {
+      try {
+        const decoded = JSON.parse(atob(stateParam));
+        user_id = decoded?.user_id ?? null;
+        app_origin = decoded?.app_origin ?? null;
+      } catch {
+        // Backward compatibility: state was just user_id
+        user_id = stateParam;
+      }
+    }
+
+    const defaultRedirectBase = (Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com')) || '';
+    const redirectBase = app_origin || defaultRedirectBase;
+
+    if (errorParam) {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: `${redirectBase}/email/callback?error=${encodeURIComponent(errorParam)}` },
+      });
     }
 
     if (!code || !user_id) {
-      throw new Error('Missing required parameters');
+      return new Response(null, {
+        status: 302,
+        headers: { Location: `${redirectBase}/email/callback?error=${encodeURIComponent('Missing required parameters')}` },
+      });
     }
 
     // Create admin client to store integration
@@ -84,22 +107,42 @@ serve(async (req) => {
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || ''}/email/callback?success=true`,
+        'Location': `${redirectBase}/email/callback?success=true`,
       },
     });
   } catch (error) {
     console.error('Email OAuth callback error:', error);
-    return new Response(
-      JSON.stringify({
-        error: {
-          code: 'OAUTH_CALLBACK_FAILED',
-          message: error instanceof Error ? error.message : 'OAuth callback failed',
-        },
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    // Attempt a friendly redirect if possible
+    try {
+      const url = new URL(req.url);
+      const stateParam = url.searchParams.get('state');
+      let app_origin: string | null = null;
+      if (stateParam) {
+        try {
+          const decoded = JSON.parse(atob(stateParam));
+          app_origin = decoded?.app_origin ?? null;
+        } catch {}
       }
-    );
+      const defaultRedirectBase = (Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com')) || '';
+      const redirectBase = app_origin || defaultRedirectBase;
+      const message = error instanceof Error ? error.message : 'OAuth callback failed';
+      return new Response(null, {
+        status: 302,
+        headers: { Location: `${redirectBase}/email/callback?error=${encodeURIComponent(message)}` },
+      });
+    } catch {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'OAUTH_CALLBACK_FAILED',
+            message: error instanceof Error ? error.message : 'OAuth callback failed',
+          },
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
   }
 });
