@@ -1,7 +1,14 @@
 import { supabase } from '@/integrations/supabase/client';
+import { savedSearchesApi } from './api/savedSearches';
+import { materialsUsageApi } from './api/materialsUsage';
 
 // Supabase-based API client
 export const api = {
+  auth: {
+    getUser: async () => {
+      return await supabase.auth.getUser();
+    },
+  },
   // Jobs management
   jobs: {
     getAll: async (filters?: any) => {

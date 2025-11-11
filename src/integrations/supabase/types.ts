@@ -52,31 +52,129 @@ export type Database = {
           },
         ]
       }
+      application_status_history: {
+        Row: {
+          changed_at: string
+          from_status: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          to_status: string
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          from_status?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          to_status: string
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          from_status?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          to_status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_status_history_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_rule_runs: {
+        Row: {
+          dedupe_key: string | null
+          id: string
+          job_id: string | null
+          message: string | null
+          outcome: string
+          rule_id: string
+          run_at: string
+          user_id: string
+        }
+        Insert: {
+          dedupe_key?: string | null
+          id?: string
+          job_id?: string | null
+          message?: string | null
+          outcome: string
+          rule_id: string
+          run_at?: string
+          user_id: string
+        }
+        Update: {
+          dedupe_key?: string | null
+          id?: string
+          job_id?: string | null
+          message?: string | null
+          outcome?: string
+          rule_id?: string
+          run_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_rule_runs_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "automation_rule_runs_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "automation_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automation_rules: {
         Row: {
+          action: Json
           config: Json | null
           created_at: string | null
           enabled: boolean | null
           id: string
+          is_enabled: boolean
+          name: string
           rule_type: string
+          trigger: Json
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          action?: Json
           config?: Json | null
           created_at?: string | null
           enabled?: boolean | null
           id?: string
+          is_enabled?: boolean
+          name?: string
           rule_type: string
+          trigger?: Json
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          action?: Json
           config?: Json | null
           created_at?: string | null
           enabled?: boolean | null
           id?: string
+          is_enabled?: boolean
+          name?: string
           rule_type?: string
+          trigger?: Json
           updated_at?: string | null
           user_id?: string
         }
@@ -531,6 +629,64 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      materials_usage: {
+        Row: {
+          cover_letter_id: string | null
+          cover_letter_version_name: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          resume_id: string | null
+          resume_version_name: string | null
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_letter_id?: string | null
+          cover_letter_version_name?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          resume_id?: string | null
+          resume_version_name?: string | null
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_letter_id?: string | null
+          cover_letter_version_name?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          resume_id?: string | null
+          resume_version_name?: string | null
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_usage_cover_letter_id_fkey"
+            columns: ["cover_letter_id"]
+            isOneToOne: false
+            referencedRelation: "cover_letters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "materials_usage_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "materials_usage_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {

@@ -15,9 +15,17 @@ import {
 } from "@/lib/analyticsService";
 
 export default function Analytics() {
-  const [stats, setStats] = useState<any>(null);
   const [jobs, setJobs] = useState<any[]>([]);
+  const [statusHistory, setStatusHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [kpis, setKpis] = useState({
+    totalJobs: 0,
+    applicationsSent: 0,
+    responseRate: 0,
+    avgTimePerStage: {} as Record<string, number>,
+    deadlineAdherence: 0,
+    timeToOffer: 0,
+  });
   const { exportJobsToCSV } = useExport();
 
   useEffect(() => {
