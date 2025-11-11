@@ -20,7 +20,7 @@ import {
 import { Filter, X, Search, Save } from "lucide-react";
 import { JobStatus, JobType, JobFilters as JobFiltersType } from "@/types/jobs";
 import { SavedSearchesDialog } from "./SavedSearchesDialog";
-import { JOB_STATUS, STATUS_LABELS, JobStatus as JobStatusType } from '@/lib/constants/jobStatus';
+import { JOB_STATUS, STATUS_LABELS, getStatusLabel } from '@/lib/constants/jobStatus';
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -28,9 +28,7 @@ interface JobFiltersProps {
   onClearFilters: () => void;
 }
 
-import { JOB_STATUS, STATUS_LABELS, JobStatus as JobStatusType } from '@/lib/constants/jobStatus';
-
-const JOB_STATUSES: JobStatusType[] = [
+const JOB_STATUSES: JobStatus[] = [
   JOB_STATUS.INTERESTED,
   JOB_STATUS.APPLIED,
   JOB_STATUS.PHONE_SCREEN,
@@ -119,9 +117,9 @@ export const JobFilters = ({ filters, onFiltersChange, onClearFilters }: JobFilt
             <div className="space-y-2">
               <Label>Status</Label>
               <Select
-                value={filters.status ? mapDBStatusToUI(filters.status) : "all"}
+                value={filters.status || "all"}
                 onValueChange={(value) =>
-                  handleFilterChange("status", value === "all" ? undefined : mapUIStatusToDB(value as JobStatus))
+                  handleFilterChange("status", value === "all" ? undefined : value)
                 }
               >
                 <SelectTrigger>
@@ -131,7 +129,7 @@ export const JobFilters = ({ filters, onFiltersChange, onClearFilters }: JobFilt
                   <SelectItem value="all">All Statuses</SelectItem>
                   {JOB_STATUSES.map((status) => (
                     <SelectItem key={status} value={status}>
-                      {status}
+                      {getStatusLabel(status)}
                     </SelectItem>
                   ))}
                 </SelectContent>
