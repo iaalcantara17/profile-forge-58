@@ -102,7 +102,18 @@ export const JobForm = ({ initialData, onSuccess, onCancel }: JobFormProps) => {
         notes: data.notes,
       };
 
-      await api.jobs.create(jobData);
+      const createdJob = await api.jobs.create(jobData);
+      
+      // Automatically trigger company research for new jobs
+      if (!initialData && data.company) {
+        try {
+          await api.company.research(createdJob.id, data.company);
+        } catch (researchError) {
+          console.error('Error triggering company research:', researchError);
+          // Don't fail job creation if research fails
+        }
+      }
+
       toast.success('Job added successfully');
       onSuccess?.();
     } catch (error) {
