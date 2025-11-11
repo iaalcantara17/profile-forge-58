@@ -19,8 +19,12 @@ import Resumes from "./pages/Resumes";
 import CoverLetters from "./pages/CoverLetters";
 import CoverLetterPerformance from "./pages/CoverLetterPerformance";
 import Analytics from "./pages/Analytics";
+import Automation from "./pages/Automation";
 import CalendarConnect from "./pages/CalendarConnect";
 import CalendarCallback from "./pages/CalendarCallback";
+import IntegrationsSettings from "./pages/IntegrationsSettings";
+import EmailMonitor from "./pages/EmailMonitor";
+import PublicReviewerView from "./pages/PublicReviewerView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -96,6 +100,30 @@ const App = () => (
                 } 
               />
               <Route 
+                path="/automation"
+                element={
+                  <ProtectedRoute>
+                    <Automation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/settings/integrations"
+                element={
+                  <ProtectedRoute>
+                    <IntegrationsSettings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/email"
+                element={
+                  <ProtectedRoute>
+                    <EmailMonitor />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
                 path="/calendar-connect" 
                 element={
                   <ProtectedRoute>
@@ -111,6 +139,8 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
+              {/* Public reviewer page - no auth required */}
+              <Route path="/r/:token" element={<PublicReviewerView />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
