@@ -175,6 +175,51 @@ export type Database = {
         }
         Relationships: []
       }
+      cover_letter_analytics: {
+        Row: {
+          cover_letter_id: string
+          created_at: string | null
+          id: string
+          job_id: string | null
+          opened: boolean | null
+          outcome: string | null
+          responded: boolean | null
+          response_time_hours: number | null
+          sent_at: string | null
+          updated_at: string | null
+          user_id: string
+          variant_name: string | null
+        }
+        Insert: {
+          cover_letter_id: string
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          opened?: boolean | null
+          outcome?: string | null
+          responded?: boolean | null
+          response_time_hours?: number | null
+          sent_at?: string | null
+          updated_at?: string | null
+          user_id: string
+          variant_name?: string | null
+        }
+        Update: {
+          cover_letter_id?: string
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          opened?: boolean | null
+          outcome?: string | null
+          responded?: boolean | null
+          response_time_hours?: number | null
+          sent_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+          variant_name?: string | null
+        }
+        Relationships: []
+      }
       cover_letters: {
         Row: {
           ai_generated: Json | null
@@ -242,6 +287,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      email_tracking: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          detected_status: string | null
+          email_body: string | null
+          email_subject: string | null
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          processed_at: string | null
+          sender_email: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          detected_status?: string | null
+          email_body?: string | null
+          email_subject?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          processed_at?: string | null
+          sender_email?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          detected_status?: string | null
+          email_body?: string | null
+          email_subject?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          processed_at?: string | null
+          sender_email?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       interviews: {
         Row: {
@@ -557,6 +644,42 @@ export type Database = {
           professional_headline?: string | null
           projects?: Json | null
           skills?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      resume_shares: {
+        Row: {
+          access_level: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          resume_id: string
+          share_token: string
+          shared_with_email: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          resume_id: string
+          share_token: string
+          shared_with_email: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_level?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          resume_id?: string
+          share_token?: string
+          shared_with_email?: string
           updated_at?: string | null
           user_id?: string
         }

@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import { Download, TrendingUp, Clock, Target, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
+import { Download, TrendingUp, Target, CheckCircle, Calendar as CalendarIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { useExport } from "@/hooks/useExport";
 import { Navigation } from "@/components/Navigation";
+import { exportAnalyticsToCSV } from "@/lib/csvExportService";
 import {
   calculateAverageTimeInStage,
   calculateDeadlineAdherence,
@@ -64,7 +65,21 @@ export default function Analytics() {
   const monthlyData = getMonthlyApplications(jobs, 6);
 
   const handleExportCSV = () => {
-    exportJobsToCSV(jobs, `job-analytics-${new Date().toISOString().split('T')[0]}.csv`);
+    const analyticsData = {
+      totalApplications: stats?.total || 0,
+      interviewRate: responseRate,
+      offerRate: ((stats?.byStatus?.offer || 0) / (stats?.total || 1) * 100).toFixed(1),
+      rejectionRate: ((stats?.byStatus?.rejected || 0) / (stats?.total || 1) * 100).toFixed(1),
+      activeApplications: stats?.byStatus?.applied || 0,
+      avgTimeToInterview: null,
+      avgTimeToOffer: timeToOffer,
+      deadlineAdherence,
+    };
+    exportAnalyticsToCSV(analyticsData);
+  };
+
+  const handleExportJobs = () => {
+    exportJobsToCSV(jobs, `jobs-${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   return (
@@ -73,10 +88,16 @@ export default function Analytics() {
       <div className="container mx-auto p-6 space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Job Search Analytics</h1>
-          <Button onClick={handleExportCSV}>
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleExportCSV} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export Analytics
+            </Button>
+            <Button onClick={handleExportJobs}>
+              <Download className="h-4 w-4 mr-2" />
+              Export Jobs
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
