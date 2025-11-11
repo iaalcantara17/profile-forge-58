@@ -78,7 +78,7 @@ Format: Provide concise, factual, actionable information that helps a job applic
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           { 
             role: 'system', 
