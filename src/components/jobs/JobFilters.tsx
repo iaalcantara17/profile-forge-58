@@ -20,7 +20,7 @@ import {
 import { Filter, X, Search, Save } from "lucide-react";
 import { JobStatus, JobType, JobFilters as JobFiltersType } from "@/types/jobs";
 import { SavedSearchesDialog } from "./SavedSearchesDialog";
-import { mapUIStatusToDB, mapDBStatusToUI } from "@/lib/jobStatusMapping";
+import { JOB_STATUS, STATUS_LABELS, JobStatus as JobStatusType } from '@/lib/constants/jobStatus';
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -28,13 +28,15 @@ interface JobFiltersProps {
   onClearFilters: () => void;
 }
 
-const JOB_STATUSES: JobStatus[] = [
-  "Interested",
-  "Applied",
-  "Phone Screen",
-  "Interview",
-  "Offer",
-  "Rejected",
+import { JOB_STATUS, STATUS_LABELS, JobStatus as JobStatusType } from '@/lib/constants/jobStatus';
+
+const JOB_STATUSES: JobStatusType[] = [
+  JOB_STATUS.INTERESTED,
+  JOB_STATUS.APPLIED,
+  JOB_STATUS.PHONE_SCREEN,
+  JOB_STATUS.INTERVIEW,
+  JOB_STATUS.OFFER,
+  JOB_STATUS.REJECTED,
 ];
 
 const JOB_TYPES: JobType[] = [
