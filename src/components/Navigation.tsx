@@ -78,6 +78,15 @@ export const Navigation = () => {
                 Analytics
               </Link>
               <Link
+                to="/interview-analytics"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/interview-analytics') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Calendar className="inline h-4 w-4 mr-1" />
+                Interview Analytics
+              </Link>
+              <Link
                 to="/automation"
                 className={`text-sm font-medium transition-colors hover:text-primary ${
                   isActive('/automation') ? 'text-primary' : 'text-muted-foreground'
@@ -247,6 +256,18 @@ export const Navigation = () => {
                 >
                   <BarChart className="inline h-4 w-4 mr-1" />
                   Analytics
+                </Link>
+                <Link
+                  to="/interview-analytics"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/interview-analytics')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Calendar className="inline h-4 w-4 mr-1" />
+                  Interview Analytics
                 </Link>
                 <Link
                   to="/automation"

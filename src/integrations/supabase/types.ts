@@ -561,6 +561,56 @@ export type Database = {
           },
         ]
       }
+      interview_success_predictions: {
+        Row: {
+          actual_outcome: string | null
+          confidence_band: string
+          created_at: string
+          id: string
+          interview_id: string
+          outcome_recorded_at: string | null
+          predicted_score: number
+          prediction_accuracy: number | null
+          score_factors: Json
+          top_actions: Json
+          user_id: string
+        }
+        Insert: {
+          actual_outcome?: string | null
+          confidence_band: string
+          created_at?: string
+          id?: string
+          interview_id: string
+          outcome_recorded_at?: string | null
+          predicted_score: number
+          prediction_accuracy?: number | null
+          score_factors?: Json
+          top_actions?: Json
+          user_id: string
+        }
+        Update: {
+          actual_outcome?: string | null
+          confidence_band?: string
+          created_at?: string
+          id?: string
+          interview_id?: string
+          outcome_recorded_at?: string | null
+          predicted_score?: number
+          prediction_accuracy?: number | null
+          score_factors?: Json
+          top_actions?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_success_predictions_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interviews: {
         Row: {
           calendar_event_id: string | null

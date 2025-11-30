@@ -38,6 +38,7 @@ import MockInterviewSession from "./pages/MockInterviewSession";
 import MockInterviewSummary from "./pages/MockInterviewSummary";
 import TechnicalPrep from "./pages/TechnicalPrep";
 import TechnicalChallengeDetail from "./pages/TechnicalChallengeDetail";
+import InterviewAnalytics from "./pages/InterviewAnalytics";
 
 const queryClient = new QueryClient();
  
@@ -104,10 +105,18 @@ const App = () => (
                 } 
               />
               <Route 
-                path="/analytics"
+                path="/analytics" 
                 element={
                   <ProtectedRoute>
                     <Analytics />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/interview-analytics" 
+                element={
+                  <ProtectedRoute>
+                    <InterviewAnalytics />
                   </ProtectedRoute>
                 } 
               />

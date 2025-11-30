@@ -17,6 +17,7 @@ import { InterviewChecklistCard } from '@/components/interviews/InterviewCheckli
 import { PostInterviewFollowup } from '@/components/interviews/PostInterviewFollowup';
 import { CompanyResearchReport } from '@/components/interviews/CompanyResearchReport';
 import { InterviewFollowupTemplates } from '@/components/interviews/InterviewFollowupTemplates';
+import { InterviewSuccessScore } from '@/components/interviews/InterviewSuccessScore';
 
 const InterviewDetail = () => {
   const { interviewId } = useParams<{ interviewId: string }>();
@@ -318,6 +319,14 @@ const InterviewDetail = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Success Probability Score */}
+            {interview.scheduled_start && new Date(interview.scheduled_start) > new Date() && (
+              <InterviewSuccessScore 
+                interviewId={interview.id}
+                interviewDate={interview.scheduled_start}
+              />
+            )}
           </div>
 
           <Separator />
