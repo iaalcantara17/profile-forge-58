@@ -34,13 +34,15 @@ interface QuestionDetailDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUpdate?: () => void;
+  onStartPractice?: (questionId: string) => void;
 }
 
 export const QuestionDetailDrawer = ({ 
   question, 
   open, 
   onOpenChange,
-  onUpdate 
+  onUpdate,
+  onStartPractice
 }: QuestionDetailDrawerProps) => {
   const { user } = useAuth();
   const [isPracticing, setIsPracticing] = useState(false);
@@ -116,9 +118,14 @@ export const QuestionDetailDrawer = ({
         if (insertError) throw insertError;
       }
 
-      toast.success('Practice session started! Good luck!');
+      toast.success('Starting practice session!');
       onUpdate?.();
       onOpenChange(false);
+      
+      // Navigate to practice page if handler provided
+      if (onStartPractice) {
+        onStartPractice(question.id);
+      }
     } catch (error) {
       console.error('Error starting practice:', error);
       toast.error('Failed to start practice session');

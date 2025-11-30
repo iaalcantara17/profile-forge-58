@@ -33,6 +33,7 @@ import Network from "./pages/Network";
 import Collaboration from "./pages/Collaboration";
 import InterviewDetail from "./pages/InterviewDetail";
 import QuestionBank from "./pages/QuestionBank";
+import QuestionPractice from "./pages/QuestionPractice";
 
 const queryClient = new QueryClient();
  
@@ -171,6 +172,14 @@ const App = () => (
                 } 
               />
               <Route 
+                path="/question-practice/:questionId"
+                element={
+                  <ProtectedRoute>
+                    <QuestionPractice />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
                 path="/network"
                 element={
                   <ProtectedRoute>

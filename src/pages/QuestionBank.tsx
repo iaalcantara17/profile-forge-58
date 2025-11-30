@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ interface QuestionBankItem {
 
 const QuestionBank = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState<QuestionBankItem[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<QuestionBankItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,6 +137,10 @@ const QuestionBank = () => {
   const openQuestionDetail = (question: QuestionBankItem) => {
     setSelectedQuestion(question);
     setDrawerOpen(true);
+  };
+
+  const startPractice = (questionId: string) => {
+    navigate(`/question-practice/${questionId}`);
   };
 
   const getCategoryIcon = (category: string) => {
@@ -366,6 +372,7 @@ const QuestionBank = () => {
           open={drawerOpen}
           onOpenChange={setDrawerOpen}
           onUpdate={loadQuestions}
+          onStartPractice={startPractice}
         />
       )}
     </div>
