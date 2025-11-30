@@ -222,6 +222,60 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_outreaches: {
+        Row: {
+          campaign_id: string
+          contact_id: string
+          created_at: string
+          id: string
+          outcome_notes: string | null
+          response_date: string | null
+          response_received: boolean | null
+          sent_at: string | null
+          user_id: string
+          variant: string | null
+        }
+        Insert: {
+          campaign_id: string
+          contact_id: string
+          created_at?: string
+          id?: string
+          outcome_notes?: string | null
+          response_date?: string | null
+          response_received?: boolean | null
+          sent_at?: string | null
+          user_id: string
+          variant?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          contact_id?: string
+          created_at?: string
+          id?: string
+          outcome_notes?: string | null
+          response_date?: string | null
+          response_received?: boolean | null
+          sent_at?: string | null
+          user_id?: string
+          variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_outreaches_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "networking_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_outreaches_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_research: {
         Row: {
           ai_summary: string | null
@@ -738,6 +792,56 @@ export type Database = {
             columns: ["referral_request_id"]
             isOneToOne: false
             referencedRelation: "referral_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      informational_interviews: {
+        Row: {
+          contact_id: string
+          created_at: string
+          follow_up_tasks: Json | null
+          id: string
+          outcome_notes: string | null
+          outreach_sent_at: string | null
+          prep_checklist: Json | null
+          scheduled_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          follow_up_tasks?: Json | null
+          id?: string
+          outcome_notes?: string | null
+          outreach_sent_at?: string | null
+          prep_checklist?: Json | null
+          scheduled_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          follow_up_tasks?: Json | null
+          id?: string
+          outcome_notes?: string | null
+          outreach_sent_at?: string | null
+          prep_checklist?: Json | null
+          scheduled_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "informational_interviews_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
             referencedColumns: ["id"]
           },
         ]
@@ -1310,6 +1414,45 @@ export type Database = {
           },
         ]
       }
+      networking_campaigns: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          goal: string | null
+          id: string
+          name: string
+          start_date: string | null
+          target_companies: string[] | null
+          target_roles: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          target_companies?: string[] | null
+          target_roles?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          target_companies?: string[] | null
+          target_roles?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       networking_events: {
         Row: {
           attended: boolean
@@ -1464,6 +1607,53 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_references: {
+        Row: {
+          can_speak_to: string[] | null
+          contact_id: string
+          contact_preference: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          relationship_description: string | null
+          times_used: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_speak_to?: string[] | null
+          contact_id: string
+          contact_preference?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          relationship_description?: string | null
+          times_used?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_speak_to?: string[] | null
+          contact_id?: string
+          contact_preference?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          relationship_description?: string | null
+          times_used?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_references_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
             referencedColumns: ["id"]
           },
         ]
@@ -1719,6 +1909,54 @@ export type Database = {
             columns: ["question_id"]
             isOneToOne: false
             referencedRelation: "question_bank_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reference_requests: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string | null
+          notes: string | null
+          provided_at: string | null
+          reference_id: string
+          requested_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          provided_at?: string | null
+          reference_id: string
+          requested_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          provided_at?: string | null
+          reference_id?: string
+          requested_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_requests_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reference_requests_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "professional_references"
             referencedColumns: ["id"]
           },
         ]
