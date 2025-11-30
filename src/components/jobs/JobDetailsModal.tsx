@@ -33,6 +33,7 @@ import { CompanyInfoSection } from "./CompanyInfoSection";
 import { CompanyNewsSection } from "./CompanyNewsSection";
 import { InterviewScheduler, InterviewData } from "./InterviewScheduler";
 import { ApplicationMaterialsDialog } from "./ApplicationMaterialsDialog";
+import { ReferralRequestsSection } from "./ReferralRequestsSection";
 import { format } from "date-fns";
 import { Job, JobContact } from "@/types/jobs";
 import { cn } from "@/lib/utils";
@@ -306,6 +307,7 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
               <TabsTrigger value="salary">Salary</TabsTrigger>
               <TabsTrigger value="prep">Prep</TabsTrigger>
               <TabsTrigger value="research">Research</TabsTrigger>
+              <TabsTrigger value="referrals">Referrals</TabsTrigger>
               <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
 
@@ -607,6 +609,10 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
                   )}
                 </>
               )}
+            </TabsContent>
+
+            <TabsContent value="referrals" className="space-y-4">
+              <ReferralRequestsSection job={displayJob} />
             </TabsContent>
 
             <TabsContent value="history" className="space-y-3">
