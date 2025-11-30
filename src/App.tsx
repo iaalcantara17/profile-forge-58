@@ -31,6 +31,7 @@ import AuthCallback from "./pages/AuthCallback";
 import InterviewPrep from "./pages/InterviewPrep";
 import Network from "./pages/Network";
 import Collaboration from "./pages/Collaboration";
+import InterviewDetail from "./pages/InterviewDetail";
  
 const queryClient = new QueryClient();
  
@@ -149,6 +150,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <InterviewPrep />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/interview/:interviewId"
+                element={
+                  <ProtectedRoute>
+                    <InterviewDetail />
                   </ProtectedRoute>
                 } 
               />
