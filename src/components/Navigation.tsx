@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2, Brain } from 'lucide-react';
+import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2, Brain, Code2 } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -112,6 +112,15 @@ export const Navigation = () => {
               >
                 <Brain className="inline h-4 w-4 mr-1" />
                 Question Bank
+              </Link>
+              <Link
+                to="/technical-prep"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/technical-prep') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Code2 className="inline h-4 w-4 mr-1" />
+                Technical Prep
               </Link>
               <Link
                 to="/network"
@@ -286,6 +295,18 @@ export const Navigation = () => {
                 >
                   <Brain className="inline h-4 w-4 mr-1" />
                   Question Bank
+                </Link>
+                <Link
+                  to="/technical-prep"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/technical-prep')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Code2 className="inline h-4 w-4 mr-1" />
+                  Technical Prep
                 </Link>
                 <Link
                   to="/network"
