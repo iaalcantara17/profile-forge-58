@@ -16,6 +16,7 @@ import { InterviewWithDetails, InterviewOutcome, InterviewFollowup, getOutcomeBa
 import { InterviewChecklistCard } from '@/components/interviews/InterviewChecklistCard';
 import { PostInterviewFollowup } from '@/components/interviews/PostInterviewFollowup';
 import { CompanyResearchReport } from '@/components/interviews/CompanyResearchReport';
+import { InterviewFollowupTemplates } from '@/components/interviews/InterviewFollowupTemplates';
 
 const InterviewDetail = () => {
   const { interviewId } = useParams<{ interviewId: string }>();
@@ -326,7 +327,7 @@ const InterviewDetail = () => {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="checklist">Preparation</TabsTrigger>
               <TabsTrigger value="research">Company Research</TabsTrigger>
-              <TabsTrigger value="followup">Follow-up</TabsTrigger>
+              <TabsTrigger value="followup">Follow-ups</TabsTrigger>
             </TabsList>
 
             <TabsContent value="checklist" className="mt-6">
@@ -347,18 +348,10 @@ const InterviewDetail = () => {
             </TabsContent>
 
             <TabsContent value="followup" className="mt-6">
-              {interview.status === 'completed' ? (
-                <PostInterviewFollowup 
-                  interview={interview} 
-                  onUpdate={loadInterview}
-                />
-              ) : (
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    <p>Follow-up tasks will appear once the interview is marked as completed.</p>
-                  </CardContent>
-                </Card>
-              )}
+              <InterviewFollowupTemplates 
+                interview={interview as any}
+                onFollowupUpdate={loadInterview}
+              />
             </TabsContent>
           </Tabs>
         </div>
