@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox } from 'lucide-react';
+import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2 } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -94,6 +94,33 @@ export const Navigation = () => {
               >
                 <Inbox className="inline h-4 w-4 mr-1" />
                 Email
+              </Link>
+              <Link
+                to="/interview-prep"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/interview-prep') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Calendar className="inline h-4 w-4 mr-1" />
+                Interview Prep
+              </Link>
+              <Link
+                to="/network"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/network') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Users className="inline h-4 w-4 mr-1" />
+                Network
+              </Link>
+              <Link
+                to="/collaboration"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/collaboration') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Users2 className="inline h-4 w-4 mr-1" />
+                Collaboration
               </Link>
               <Link
                 to="/profile"
@@ -226,6 +253,42 @@ export const Navigation = () => {
                 >
                   <Inbox className="inline h-4 w-4 mr-1" />
                   Email
+                </Link>
+                <Link
+                  to="/interview-prep"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/interview-prep')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Calendar className="inline h-4 w-4 mr-1" />
+                  Interview Prep
+                </Link>
+                <Link
+                  to="/network"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/network')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Users className="inline h-4 w-4 mr-1" />
+                  Network
+                </Link>
+                <Link
+                  to="/collaboration"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/collaboration')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Users2 className="inline h-4 w-4 mr-1" />
+                  Collaboration
                 </Link>
                 <Link
                   to="/profile"
