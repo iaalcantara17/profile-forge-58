@@ -1042,6 +1042,65 @@ export type Database = {
           },
         ]
       }
+      offers: {
+        Row: {
+          base_salary: number | null
+          bonus: number | null
+          confidence_checklist: Json | null
+          created_at: string
+          equity: string | null
+          id: string
+          job_id: string
+          level: string | null
+          location: string | null
+          market_data: Json | null
+          notes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_salary?: number | null
+          bonus?: number | null
+          confidence_checklist?: Json | null
+          created_at?: string
+          equity?: string | null
+          id?: string
+          job_id: string
+          level?: string | null
+          location?: string | null
+          market_data?: Json | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_salary?: number | null
+          bonus?: number | null
+          confidence_checklist?: Json | null
+          created_at?: string
+          equity?: string | null
+          id?: string
+          job_id?: string
+          level?: string | null
+          location?: string | null
+          market_data?: Json | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
