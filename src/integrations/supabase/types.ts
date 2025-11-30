@@ -1553,6 +1553,107 @@ export type Database = {
         }
         Relationships: []
       }
+      technical_challenges: {
+        Row: {
+          best_practices: string | null
+          category: string
+          created_at: string
+          difficulty: string
+          hints: Json | null
+          id: string
+          problem_statement: string
+          solution_framework: string | null
+          tech_stack: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          best_practices?: string | null
+          category: string
+          created_at?: string
+          difficulty: string
+          hints?: Json | null
+          id?: string
+          problem_statement: string
+          solution_framework?: string | null
+          tech_stack?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          best_practices?: string | null
+          category?: string
+          created_at?: string
+          difficulty?: string
+          hints?: Json | null
+          id?: string
+          problem_statement?: string
+          solution_framework?: string | null
+          tech_stack?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      technical_practice_attempts: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          id: string
+          language: string
+          notes: string | null
+          rubric_checklist: Json
+          solution_code: string | null
+          started_at: string
+          status: string
+          submitted_at: string | null
+          time_taken: number | null
+          timer_duration: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          id?: string
+          language?: string
+          notes?: string | null
+          rubric_checklist?: Json
+          solution_code?: string | null
+          started_at?: string
+          status?: string
+          submitted_at?: string | null
+          time_taken?: number | null
+          timer_duration?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          id?: string
+          language?: string
+          notes?: string | null
+          rubric_checklist?: Json
+          solution_code?: string | null
+          started_at?: string
+          status?: string
+          submitted_at?: string | null
+          time_taken?: number | null
+          timer_duration?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_practice_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "technical_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

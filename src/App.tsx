@@ -36,6 +36,8 @@ import QuestionBank from "./pages/QuestionBank";
 import QuestionPractice from "./pages/QuestionPractice";
 import MockInterviewSession from "./pages/MockInterviewSession";
 import MockInterviewSummary from "./pages/MockInterviewSummary";
+import TechnicalPrep from "./pages/TechnicalPrep";
+import TechnicalChallengeDetail from "./pages/TechnicalChallengeDetail";
 
 const queryClient = new QueryClient();
  
@@ -194,6 +196,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <MockInterviewSummary />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/technical-prep"
+                element={
+                  <ProtectedRoute>
+                    <TechnicalPrep />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/technical-prep/:challengeId"
+                element={
+                  <ProtectedRoute>
+                    <TechnicalChallengeDetail />
                   </ProtectedRoute>
                 } 
               />
