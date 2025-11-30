@@ -28,6 +28,9 @@ import EmailCallback from "./pages/EmailCallback";
 import PublicReviewerView from "./pages/PublicReviewerView";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
+import InterviewPrep from "./pages/InterviewPrep";
+import Network from "./pages/Network";
+import Collaboration from "./pages/Collaboration";
  
 const queryClient = new QueryClient();
  
@@ -142,7 +145,31 @@ const App = () => (
                 } 
               />
               <Route 
-                path="/calendar-connect" 
+                path="/interview-prep"
+                element={
+                  <ProtectedRoute>
+                    <InterviewPrep />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/network"
+                element={
+                  <ProtectedRoute>
+                    <Network />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/collaboration"
+                element={
+                  <ProtectedRoute>
+                    <Collaboration />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/calendar-connect"
                 element={
                   <ProtectedRoute>
                     <CalendarConnect />
