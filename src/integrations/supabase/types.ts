@@ -842,6 +842,152 @@ export type Database = {
           },
         ]
       }
+      mock_interview_responses: {
+        Row: {
+          answered_at: string | null
+          created_at: string
+          followup_rationale: string | null
+          id: string
+          is_followup: boolean
+          question_id: string
+          question_order: number
+          response_text: string | null
+          session_id: string
+          started_at: string
+          time_taken: number | null
+        }
+        Insert: {
+          answered_at?: string | null
+          created_at?: string
+          followup_rationale?: string | null
+          id?: string
+          is_followup?: boolean
+          question_id: string
+          question_order: number
+          response_text?: string | null
+          session_id: string
+          started_at?: string
+          time_taken?: number | null
+        }
+        Update: {
+          answered_at?: string | null
+          created_at?: string
+          followup_rationale?: string | null
+          id?: string
+          is_followup?: boolean
+          question_id?: string
+          question_order?: number
+          response_text?: string | null
+          session_id?: string
+          started_at?: string
+          time_taken?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mock_interview_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "question_bank_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mock_interview_responses_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mock_interview_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mock_interview_sessions: {
+        Row: {
+          company_name: string | null
+          completed_at: string | null
+          created_at: string
+          format: string
+          id: string
+          job_id: string | null
+          question_count: number
+          started_at: string
+          status: string
+          target_role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          format: string
+          id?: string
+          job_id?: string | null
+          question_count: number
+          started_at?: string
+          status?: string
+          target_role: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          format?: string
+          id?: string
+          job_id?: string | null
+          question_count?: number
+          started_at?: string
+          status?: string
+          target_role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mock_interview_summaries: {
+        Row: {
+          ai_summary: string | null
+          avg_response_length: number | null
+          completion_rate: number
+          created_at: string
+          id: string
+          session_id: string
+          strongest_category: string | null
+          top_improvements: Json
+          weakest_category: string | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          avg_response_length?: number | null
+          completion_rate: number
+          created_at?: string
+          id?: string
+          session_id: string
+          strongest_category?: string | null
+          top_improvements?: Json
+          weakest_category?: string | null
+        }
+        Update: {
+          ai_summary?: string | null
+          avg_response_length?: number | null
+          completion_rate?: number
+          created_at?: string
+          id?: string
+          session_id?: string
+          strongest_category?: string | null
+          top_improvements?: Json
+          weakest_category?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mock_interview_summaries_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "mock_interview_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string | null

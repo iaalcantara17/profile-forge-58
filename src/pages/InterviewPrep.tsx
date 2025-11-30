@@ -1,10 +1,11 @@
 import { Navigation } from '@/components/Navigation';
-import { Calendar, Eye, Video, Building, Phone, Clock } from 'lucide-react';
+import { Calendar, Eye, Video, Building, Phone, Clock, Play } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { getUserInterviewsWithJobs } from '@/lib/api/interviews';
 import { Interview } from '@/types/interviews';
 import { InterviewReminders } from '@/components/interviews/InterviewReminders';
+import { MockInterviewSetup } from '@/components/interviews/MockInterviewSetup';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ const InterviewPrep = () => {
   const { user } = useAuth();
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [loading, setLoading] = useState(true);
+  const [setupOpen, setSetupOpen] = useState(false);
 
   useEffect(() => {
     const loadInterviews = async () => {
@@ -73,6 +75,22 @@ const InterviewPrep = () => {
 
           {/* Reminder Banners */}
           {!loading && <InterviewReminders interviews={interviews} />}
+
+          {/* Mock Interview */}
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle>Practice with Mock Interviews</CardTitle>
+              <CardDescription>
+                Simulate real interview scenarios and get AI-powered feedback on your responses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => setSetupOpen(true)} size="lg" className="w-full sm:w-auto">
+                <Play className="mr-2 h-5 w-5" />
+                Start Mock Interview
+              </Button>
+            </CardContent>
+          </Card>
 
           {/* Upcoming Interviews */}
           <Card>
@@ -188,6 +206,7 @@ const InterviewPrep = () => {
           )}
         </div>
       </div>
+      <MockInterviewSetup open={setupOpen} onOpenChange={setSetupOpen} />
     </div>
   );
 };

@@ -34,6 +34,8 @@ import Collaboration from "./pages/Collaboration";
 import InterviewDetail from "./pages/InterviewDetail";
 import QuestionBank from "./pages/QuestionBank";
 import QuestionPractice from "./pages/QuestionPractice";
+import MockInterviewSession from "./pages/MockInterviewSession";
+import MockInterviewSummary from "./pages/MockInterviewSummary";
 
 const queryClient = new QueryClient();
  
@@ -176,6 +178,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <QuestionPractice />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mock-interview/:sessionId"
+                element={
+                  <ProtectedRoute>
+                    <MockInterviewSession />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mock-interview/:sessionId/summary"
+                element={
+                  <ProtectedRoute>
+                    <MockInterviewSummary />
                   </ProtectedRoute>
                 } 
               />
