@@ -642,6 +642,103 @@ export type Database = {
         }
         Relationships: []
       }
+      event_connections: {
+        Row: {
+          contact_id: string
+          created_at: string
+          event_id: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          event_id: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_connections_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_connections_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "networking_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_outcomes: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string
+          id: string
+          job_id: string | null
+          outcome_type: string
+          referral_request_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id: string
+          id?: string
+          job_id?: string | null
+          outcome_type: string
+          referral_request_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          id?: string
+          job_id?: string | null
+          outcome_type?: string
+          referral_request_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_outcomes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "networking_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_outcomes_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_outcomes_referral_request_id_fkey"
+            columns: ["referral_request_id"]
+            isOneToOne: false
+            referencedRelation: "referral_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_checklists: {
         Row: {
           category: string | null
@@ -1209,6 +1306,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      networking_events: {
+        Row: {
+          attended: boolean
+          created_at: string
+          event_date: string
+          event_type: string
+          goals: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          prep_checklist: Json | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attended?: boolean
+          created_at?: string
+          event_date: string
+          event_type?: string
+          goals?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          prep_checklist?: Json | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attended?: boolean
+          created_at?: string
+          event_date?: string
+          event_type?: string
+          goals?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          prep_checklist?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {

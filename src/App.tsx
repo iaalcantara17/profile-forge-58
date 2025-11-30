@@ -41,6 +41,8 @@ import TechnicalChallengeDetail from "./pages/TechnicalChallengeDetail";
 import InterviewAnalytics from "./pages/InterviewAnalytics";
 import Contacts from "./pages/Contacts";
 import ContactDetail from "./pages/ContactDetail";
+import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 
 const queryClient = new QueryClient();
  
@@ -247,6 +249,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <ContactDetail />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/events"
+                element={
+                  <ProtectedRoute>
+                    <Events />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/events/:id"
+                element={
+                  <ProtectedRoute>
+                    <EventDetail />
                   </ProtectedRoute>
                 } 
               />
