@@ -470,6 +470,97 @@ export type Database = {
         }
         Relationships: []
       }
+      interview_checklists: {
+        Row: {
+          category: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          interview_id: string
+          is_required: boolean
+          label: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          interview_id: string
+          is_required?: boolean
+          label: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          interview_id?: string
+          is_required?: boolean
+          label?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_checklists_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_followups: {
+        Row: {
+          created_at: string
+          id: string
+          interview_id: string
+          sent_at: string | null
+          status: string
+          template_body: string | null
+          template_subject: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interview_id: string
+          sent_at?: string | null
+          status?: string
+          template_body?: string | null
+          template_subject?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interview_id?: string
+          sent_at?: string | null
+          status?: string
+          template_body?: string | null
+          template_subject?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_followups_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interviews: {
         Row: {
           calendar_event_id: string | null
@@ -481,16 +572,20 @@ export type Database = {
           interview_date: string | null
           interview_type: string | null
           interviewer_name: string | null
+          interviewer_names: string[] | null
           interviewer_role: string | null
           job_id: string
           location: string | null
           notes: string | null
+          outcome: string | null
           preparation_status: string | null
           reminder_sent: boolean | null
+          scheduled_end: string | null
           scheduled_start: string | null
           status: string | null
           updated_at: string | null
           user_id: string
+          video_link: string | null
         }
         Insert: {
           calendar_event_id?: string | null
@@ -502,16 +597,20 @@ export type Database = {
           interview_date?: string | null
           interview_type?: string | null
           interviewer_name?: string | null
+          interviewer_names?: string[] | null
           interviewer_role?: string | null
           job_id: string
           location?: string | null
           notes?: string | null
+          outcome?: string | null
           preparation_status?: string | null
           reminder_sent?: boolean | null
+          scheduled_end?: string | null
           scheduled_start?: string | null
           status?: string | null
           updated_at?: string | null
           user_id: string
+          video_link?: string | null
         }
         Update: {
           calendar_event_id?: string | null
@@ -523,16 +622,20 @@ export type Database = {
           interview_date?: string | null
           interview_type?: string | null
           interviewer_name?: string | null
+          interviewer_names?: string[] | null
           interviewer_role?: string | null
           job_id?: string
           location?: string | null
           notes?: string | null
+          outcome?: string | null
           preparation_status?: string | null
           reminder_sent?: boolean | null
+          scheduled_end?: string | null
           scheduled_start?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string
+          video_link?: string | null
         }
         Relationships: [
           {
