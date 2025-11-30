@@ -8,6 +8,7 @@ import { useExport } from "@/hooks/useExport";
 import { Navigation } from "@/components/Navigation";
 import { exportAnalyticsToCSV } from "@/lib/csvExportService";
 import { supabase } from "@/integrations/supabase/client";
+import { ReferralAnalytics } from "@/components/jobs/ReferralAnalytics";
 import {
   calculateAverageTimeInStage,
   calculateDeadlineAdherence,
@@ -318,6 +319,8 @@ export default function Analytics() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        <ReferralAnalytics />
       </div>
     </div>
   );

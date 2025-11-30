@@ -1578,6 +1578,63 @@ export type Database = {
           },
         ]
       }
+      referral_requests: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          job_id: string
+          last_action_at: string
+          message_sent: string | null
+          next_followup_at: string | null
+          notes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          job_id: string
+          last_action_at?: string
+          message_sent?: string | null
+          next_followup_at?: string | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          job_id?: string
+          last_action_at?: string
+          message_sent?: string | null
+          next_followup_at?: string | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_requests_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_requests_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_comments: {
         Row: {
           author_name: string
