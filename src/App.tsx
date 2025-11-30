@@ -32,7 +32,8 @@ import InterviewPrep from "./pages/InterviewPrep";
 import Network from "./pages/Network";
 import Collaboration from "./pages/Collaboration";
 import InterviewDetail from "./pages/InterviewDetail";
- 
+import QuestionBank from "./pages/QuestionBank";
+
 const queryClient = new QueryClient();
  
 const App = () => (
@@ -158,6 +159,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <InterviewDetail />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/question-bank"
+                element={
+                  <ProtectedRoute>
+                    <QuestionBank />
                   </ProtectedRoute>
                 } 
               />
