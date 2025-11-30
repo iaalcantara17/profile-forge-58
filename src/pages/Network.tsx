@@ -55,6 +55,19 @@ const Network = () => {
                 </Button>
               </div>
             </div>
+
+            <div className="mt-6 pt-6 border-t">
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold">Network Power Features</h2>
+                <p className="text-sm text-muted-foreground">
+                  Informational interviews, relationship maintenance, campaigns & references
+                </p>
+                <Button onClick={() => navigate('/network-power')} className="w-full" variant="default">
+                  Unlock Advanced Features
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            </div>
             <div className="grid gap-4 md:grid-cols-3 text-center mt-6">
               <div className="rounded-lg border bg-muted/50 p-4">
                 <p className="text-sm font-medium text-muted-foreground mb-1">Track</p>

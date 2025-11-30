@@ -44,6 +44,8 @@ import ContactDetail from "./pages/ContactDetail";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import LinkedInOptimization from "./pages/LinkedInOptimization";
+import NetworkingCampaigns from "./pages/NetworkingCampaigns";
+import NetworkPowerFeatures from "./pages/NetworkPowerFeatures";
 
 const queryClient = new QueryClient();
  
@@ -274,6 +276,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <LinkedInOptimization />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/networking-campaigns"
+                element={
+                  <ProtectedRoute>
+                    <NetworkingCampaigns />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/network-power"
+                element={
+                  <ProtectedRoute>
+                    <NetworkPowerFeatures />
                   </ProtectedRoute>
                 } 
               />
