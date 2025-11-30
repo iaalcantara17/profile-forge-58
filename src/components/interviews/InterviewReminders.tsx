@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, AlertCircle, Video, Building, Phone } from 'lucide-react';
+import { Calendar, Clock, AlertCircle, Video, Building, Phone, Eye } from 'lucide-react';
 import { format, differenceInHours, differenceInMinutes } from 'date-fns';
 import { Interview } from '@/types/interviews';
 import { Link } from 'react-router-dom';
@@ -122,6 +122,12 @@ export const InterviewReminders = ({ interviews }: InterviewRemindersProps) => {
                 Join Video Call
               </Button>
             )}
+            <Link to={`/interview/${interview.id}`}>
+              <Button size="sm" variant="outline" className="mt-2">
+                <Eye className="h-3 w-3 mr-1" />
+                View Prep Checklist
+              </Button>
+            </Link>
             {interview.notes && (
               <p className="text-sm text-muted-foreground mt-2">{interview.notes}</p>
             )}
