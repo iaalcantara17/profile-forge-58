@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Calendar, Clock, MapPin, Video, Phone, Building, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -14,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { InterviewWithDetails, InterviewOutcome, InterviewFollowup, getOutcomeBadgeVariant, getStatusBadgeVariant } from '@/types/interviews';
 import { InterviewChecklistCard } from '@/components/interviews/InterviewChecklistCard';
 import { PostInterviewFollowup } from '@/components/interviews/PostInterviewFollowup';
+import { CompanyResearchReport } from '@/components/interviews/CompanyResearchReport';
 
 const InterviewDetail = () => {
   const { interviewId } = useParams<{ interviewId: string }>();
@@ -319,19 +321,46 @@ const InterviewDetail = () => {
 
           <Separator />
 
-          {/* Checklist Card */}
-          <InterviewChecklistCard 
-            interview={interview} 
-            onUpdate={loadInterview}
-          />
+          {/* Tabs for different sections */}
+          <Tabs defaultValue="checklist" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="checklist">Preparation</TabsTrigger>
+              <TabsTrigger value="research">Company Research</TabsTrigger>
+              <TabsTrigger value="followup">Follow-up</TabsTrigger>
+            </TabsList>
 
-          {/* Post-Interview Follow-up Section */}
-          {interview.status === 'completed' && (
-            <PostInterviewFollowup 
-              interview={interview} 
-              onUpdate={loadInterview}
-            />
-          )}
+            <TabsContent value="checklist" className="mt-6">
+              <InterviewChecklistCard 
+                interview={interview} 
+                onUpdate={loadInterview}
+              />
+            </TabsContent>
+
+            <TabsContent value="research" className="mt-6">
+              <CompanyResearchReport
+                interviewId={interview.id}
+                companyName={companyName}
+                jobTitle={jobTitle}
+                currentResearch={interview.company_research}
+                onUpdate={loadInterview}
+              />
+            </TabsContent>
+
+            <TabsContent value="followup" className="mt-6">
+              {interview.status === 'completed' ? (
+                <PostInterviewFollowup 
+                  interview={interview} 
+                  onUpdate={loadInterview}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="py-8 text-center text-muted-foreground">
+                    <p>Follow-up tasks will appear once the interview is marked as completed.</p>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
