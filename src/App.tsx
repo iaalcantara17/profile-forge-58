@@ -43,6 +43,7 @@ import Contacts from "./pages/Contacts";
 import ContactDetail from "./pages/ContactDetail";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
+import LinkedInOptimization from "./pages/LinkedInOptimization";
 
 const queryClient = new QueryClient();
  
@@ -265,6 +266,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <EventDetail />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/linkedin-optimization"
+                element={
+                  <ProtectedRoute>
+                    <LinkedInOptimization />
                   </ProtectedRoute>
                 } 
               />
