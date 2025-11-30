@@ -39,6 +39,8 @@ import MockInterviewSummary from "./pages/MockInterviewSummary";
 import TechnicalPrep from "./pages/TechnicalPrep";
 import TechnicalChallengeDetail from "./pages/TechnicalChallengeDetail";
 import InterviewAnalytics from "./pages/InterviewAnalytics";
+import Contacts from "./pages/Contacts";
+import ContactDetail from "./pages/ContactDetail";
 
 const queryClient = new QueryClient();
  
@@ -229,6 +231,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Network />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/contacts"
+                element={
+                  <ProtectedRoute>
+                    <Contacts />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/contacts/:id"
+                element={
+                  <ProtectedRoute>
+                    <ContactDetail />
                   </ProtectedRoute>
                 } 
               />

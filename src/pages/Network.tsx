@@ -1,7 +1,11 @@
 import { Navigation } from '@/components/Navigation';
-import { Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Network = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
@@ -16,11 +20,33 @@ const Network = () => {
           <p className="text-lg text-muted-foreground">
             Manage your professional contacts, track referrals, and leverage your network to unlock new opportunities.
           </p>
-          <div className="mt-8 rounded-lg border border-border bg-muted/50 p-8 text-center">
-            <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              This feature is under development and will be available in Sprint 3.
-            </p>
+          <div className="mt-8 rounded-lg border border-border bg-card p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold mb-2">Professional Contacts</h2>
+                <p className="text-muted-foreground">
+                  Build and maintain relationships with your professional network
+                </p>
+              </div>
+              <Button onClick={() => navigate('/contacts')}>
+                Go to Contacts
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3 text-center">
+              <div className="rounded-lg border bg-muted/50 p-4">
+                <p className="text-sm font-medium text-muted-foreground mb-1">Track</p>
+                <p className="text-xs text-muted-foreground">Contact details, roles, companies</p>
+              </div>
+              <div className="rounded-lg border bg-muted/50 p-4">
+                <p className="text-sm font-medium text-muted-foreground mb-1">Engage</p>
+                <p className="text-xs text-muted-foreground">Log interactions, set reminders</p>
+              </div>
+              <div className="rounded-lg border bg-muted/50 p-4">
+                <p className="text-sm font-medium text-muted-foreground mb-1">Connect</p>
+                <p className="text-xs text-muted-foreground">Link to job applications</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
