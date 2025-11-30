@@ -1051,6 +1051,106 @@ export type Database = {
           },
         ]
       }
+      question_practice_feedback: {
+        Row: {
+          alternative_approaches: string[] | null
+          clarity_score: number | null
+          created_at: string
+          general_feedback: string | null
+          id: string
+          impact_score: number | null
+          overall_score: number | null
+          relevance_score: number | null
+          response_id: string
+          speaking_time_estimate: number | null
+          specificity_score: number | null
+          star_adherence: Json | null
+          weak_language: Json | null
+        }
+        Insert: {
+          alternative_approaches?: string[] | null
+          clarity_score?: number | null
+          created_at?: string
+          general_feedback?: string | null
+          id?: string
+          impact_score?: number | null
+          overall_score?: number | null
+          relevance_score?: number | null
+          response_id: string
+          speaking_time_estimate?: number | null
+          specificity_score?: number | null
+          star_adherence?: Json | null
+          weak_language?: Json | null
+        }
+        Update: {
+          alternative_approaches?: string[] | null
+          clarity_score?: number | null
+          created_at?: string
+          general_feedback?: string | null
+          id?: string
+          impact_score?: number | null
+          overall_score?: number | null
+          relevance_score?: number | null
+          response_id?: string
+          speaking_time_estimate?: number | null
+          specificity_score?: number | null
+          star_adherence?: Json | null
+          weak_language?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_practice_feedback_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "question_practice_responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_practice_responses: {
+        Row: {
+          created_at: string
+          id: string
+          question_id: string
+          response_text: string
+          status: string
+          time_taken: number | null
+          timer_duration: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          question_id: string
+          response_text: string
+          status?: string
+          time_taken?: number | null
+          timer_duration?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          question_id?: string
+          response_text?: string
+          status?: string
+          time_taken?: number | null
+          timer_duration?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_practice_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "question_bank_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_comments: {
         Row: {
           author_name: string
