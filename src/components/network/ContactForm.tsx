@@ -28,6 +28,7 @@ export const ContactForm = ({ contact, onSuccess, onCancel }: ContactFormProps) 
     notes: '',
     interests: '',
     relationship_strength: 3,
+    linkedin_url: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,6 +45,7 @@ export const ContactForm = ({ contact, onSuccess, onCancel }: ContactFormProps) 
         notes: contact.notes || '',
         interests: contact.interests || '',
         relationship_strength: contact.relationship_strength || 3,
+        linkedin_url: contact.linkedin_url || '',
       });
     }
   }, [contact]);
@@ -72,6 +74,7 @@ export const ContactForm = ({ contact, onSuccess, onCancel }: ContactFormProps) 
         notes: formData.notes || null,
         interests: formData.interests || null,
         relationship_strength: formData.relationship_strength,
+        linkedin_url: formData.linkedin_url || null,
         user_id: user.id,
       };
 
@@ -143,24 +146,35 @@ export const ContactForm = ({ contact, onSuccess, onCancel }: ContactFormProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="relationship_type">Relationship Type</Label>
-            <Select
-              value={formData.relationship_type}
-              onValueChange={(value) => setFormData({ ...formData, relationship_type: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="professional">Professional</SelectItem>
-                <SelectItem value="personal">Personal</SelectItem>
-                <SelectItem value="mentor">Mentor</SelectItem>
-                <SelectItem value="mentee">Mentee</SelectItem>
-                <SelectItem value="colleague">Colleague</SelectItem>
-                <SelectItem value="recruiter">Recruiter</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="linkedin_url">LinkedIn Profile</Label>
+            <Input
+              id="linkedin_url"
+              type="url"
+              placeholder="https://linkedin.com/in/username"
+              value={formData.linkedin_url}
+              onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+            />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="relationship_type">Relationship Type</Label>
+          <Select
+            value={formData.relationship_type}
+            onValueChange={(value) => setFormData({ ...formData, relationship_type: value })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="professional">Professional</SelectItem>
+              <SelectItem value="personal">Personal</SelectItem>
+              <SelectItem value="mentor">Mentor</SelectItem>
+              <SelectItem value="mentee">Mentee</SelectItem>
+              <SelectItem value="colleague">Colleague</SelectItem>
+              <SelectItem value="recruiter">Recruiter</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">

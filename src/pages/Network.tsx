@@ -21,28 +21,36 @@ const Network = () => {
             Manage your professional contacts, track referrals, and leverage your network to unlock new opportunities.
           </p>
           <div className="mt-8 rounded-lg border border-border bg-card p-8">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-semibold mb-2">Professional Contacts</h2>
-                  <p className="text-muted-foreground">
-                    Build and maintain relationships with your professional network
-                  </p>
-                </div>
-                <Button onClick={() => navigate('/contacts')}>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold">Professional Contacts</h2>
+                <p className="text-sm text-muted-foreground">
+                  Build and maintain relationships with your professional network
+                </p>
+                <Button onClick={() => navigate('/contacts')} className="w-full">
                   Go to Contacts
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-semibold mb-2">Networking Events</h2>
-                  <p className="text-muted-foreground">
-                    Track events and measure your networking ROI
-                  </p>
-                </div>
-                <Button onClick={() => navigate('/events')}>
+              
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold">Networking Events</h2>
+                <p className="text-sm text-muted-foreground">
+                  Track events and measure your networking ROI
+                </p>
+                <Button onClick={() => navigate('/events')} className="w-full">
                   Go to Events
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold">LinkedIn Tools</h2>
+                <p className="text-sm text-muted-foreground">
+                  Templates and optimization checklist
+                </p>
+                <Button onClick={() => navigate('/linkedin-optimization')} className="w-full">
+                  View Resources
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>

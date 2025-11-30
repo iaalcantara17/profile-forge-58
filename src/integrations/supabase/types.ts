@@ -399,6 +399,7 @@ export type Database = {
           id: string
           interests: string | null
           last_contacted_at: string | null
+          linkedin_url: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -416,6 +417,7 @@ export type Database = {
           id?: string
           interests?: string | null
           last_contacted_at?: string | null
+          linkedin_url?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -433,6 +435,7 @@ export type Database = {
           id?: string
           interests?: string | null
           last_contacted_at?: string | null
+          linkedin_url?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
