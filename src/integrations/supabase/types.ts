@@ -974,6 +974,83 @@ export type Database = {
         }
         Relationships: []
       }
+      question_bank_items: {
+        Row: {
+          category: string
+          created_at: string
+          difficulty: string
+          id: string
+          industry: string | null
+          linked_skills: string[] | null
+          question_text: string
+          role_title: string
+          source: string | null
+          star_framework_hint: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          difficulty: string
+          id?: string
+          industry?: string | null
+          linked_skills?: string[] | null
+          question_text: string
+          role_title: string
+          source?: string | null
+          star_framework_hint?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          industry?: string | null
+          linked_skills?: string[] | null
+          question_text?: string
+          role_title?: string
+          source?: string | null
+          star_framework_hint?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      question_practice: {
+        Row: {
+          created_at: string
+          id: string
+          last_practiced_at: string
+          question_id: string
+          response_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_practiced_at?: string
+          question_id: string
+          response_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_practiced_at?: string
+          question_id?: string
+          response_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_practice_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "question_bank_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resume_comments: {
         Row: {
           author_name: string

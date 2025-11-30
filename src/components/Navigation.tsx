@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2 } from 'lucide-react';
+import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2, Brain } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -103,6 +103,15 @@ export const Navigation = () => {
               >
                 <Calendar className="inline h-4 w-4 mr-1" />
                 Interview Prep
+              </Link>
+              <Link
+                to="/question-bank"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/question-bank') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Brain className="inline h-4 w-4 mr-1" />
+                Question Bank
               </Link>
               <Link
                 to="/network"
@@ -265,6 +274,18 @@ export const Navigation = () => {
                 >
                   <Calendar className="inline h-4 w-4 mr-1" />
                   Interview Prep
+                </Link>
+                <Link
+                  to="/question-bank"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/question-bank')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Brain className="inline h-4 w-4 mr-1" />
+                  Question Bank
                 </Link>
                 <Link
                   to="/network"
