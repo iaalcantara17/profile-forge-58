@@ -57,6 +57,8 @@ import NetworkPowerFeatures from "./pages/NetworkPowerFeatures";
 import MarketIntelligence from "./pages/MarketIntelligence";
 import Benchmarking from "./pages/Benchmarking";
 import SuccessPatterns from "./pages/SuccessPatterns";
+import Teams from "./pages/Teams";
+import AcceptInvitation from "./pages/AcceptInvitation";
 
 const queryClient = new QueryClient();
  
@@ -391,6 +393,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <SuccessPatterns />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teams"
+                element={
+                  <ProtectedRoute>
+                    <Teams />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/accept-invitation/:token"
+                element={
+                  <ProtectedRoute>
+                    <AcceptInvitation />
                   </ProtectedRoute>
                 } 
               />
