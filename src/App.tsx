@@ -54,6 +54,9 @@ import TimeInvestment from "./pages/TimeInvestment";
 import CustomReports from "./pages/CustomReports";
 import Forecasting from "./pages/Forecasting";
 import NetworkPowerFeatures from "./pages/NetworkPowerFeatures";
+import MarketIntelligence from "./pages/MarketIntelligence";
+import Benchmarking from "./pages/Benchmarking";
+import SuccessPatterns from "./pages/SuccessPatterns";
 
 const queryClient = new QueryClient();
  
@@ -364,6 +367,30 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Forecasting />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/market-intelligence"
+                element={
+                  <ProtectedRoute>
+                    <MarketIntelligence />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/benchmarking"
+                element={
+                  <ProtectedRoute>
+                    <Benchmarking />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/success-patterns"
+                element={
+                  <ProtectedRoute>
+                    <SuccessPatterns />
                   </ProtectedRoute>
                 } 
               />
