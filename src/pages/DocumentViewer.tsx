@@ -11,6 +11,7 @@ import { DocumentShareDialog } from '@/components/documents/DocumentShareDialog'
 import { VersionHistory } from '@/components/documents/VersionHistory';
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import DOMPurify from 'dompurify';
 
 const DocumentViewer = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -167,7 +168,13 @@ const DocumentViewer = () => {
                           <div
                             className="whitespace-pre-wrap"
                             dangerouslySetInnerHTML={{
-                              __html: ('content' in document ? document.content : null) || 'No content',
+                              __html: DOMPurify.sanitize(
+                                ('content' in document ? document.content : null) || 'No content',
+                                {
+                                  ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'a'],
+                                  ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+                                }
+                              ),
                             }}
                           />
                         </div>
