@@ -66,6 +66,7 @@ import MenteeDetail from "./pages/MenteeDetail";
 import WeeklyProgress from "./pages/WeeklyProgress";
 import SharedProgress from "./pages/SharedProgress";
 import FamilyDashboard from "./pages/FamilyDashboard";
+import DemoSprint3 from "./pages/DemoSprint3";
 
 const queryClient = new QueryClient();
  
@@ -488,6 +489,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <FamilyDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/demo/sprint3"
+                element={
+                  <ProtectedRoute>
+                    <DemoSprint3 />
                   </ProtectedRoute>
                 } 
               />
