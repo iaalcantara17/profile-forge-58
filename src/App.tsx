@@ -49,6 +49,10 @@ import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import LinkedInOptimization from "./pages/LinkedInOptimization";
 import NetworkingCampaigns from "./pages/NetworkingCampaigns";
+import Goals from "./pages/Goals";
+import TimeInvestment from "./pages/TimeInvestment";
+import CustomReports from "./pages/CustomReports";
+import Forecasting from "./pages/Forecasting";
 import NetworkPowerFeatures from "./pages/NetworkPowerFeatures";
 
 const queryClient = new QueryClient();
@@ -328,6 +332,38 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <NetworkPowerFeatures />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/goals"
+                element={
+                  <ProtectedRoute>
+                    <Goals />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/time-investment"
+                element={
+                  <ProtectedRoute>
+                    <TimeInvestment />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/custom-reports"
+                element={
+                  <ProtectedRoute>
+                    <CustomReports />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
+                path="/forecasting"
+                element={
+                  <ProtectedRoute>
+                    <Forecasting />
                   </ProtectedRoute>
                 } 
               />

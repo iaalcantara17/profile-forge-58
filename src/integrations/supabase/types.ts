@@ -615,6 +615,42 @@ export type Database = {
           },
         ]
       }
+      custom_report_templates: {
+        Row: {
+          chart_type: string | null
+          created_at: string
+          description: string | null
+          filters: Json | null
+          id: string
+          metrics: Json
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chart_type?: string | null
+          created_at?: string
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          metrics: Json
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chart_type?: string | null
+          created_at?: string
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          metrics?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_integrations: {
         Row: {
           access_token: string
@@ -795,6 +831,111 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      forecasts: {
+        Row: {
+          accuracy_score: number | null
+          actual_value: number | null
+          based_on_data: Json
+          confidence_level: string
+          created_at: string
+          forecast_date: string
+          forecast_type: string
+          id: string
+          prediction_value: number
+          target_date: string
+          user_id: string
+        }
+        Insert: {
+          accuracy_score?: number | null
+          actual_value?: number | null
+          based_on_data: Json
+          confidence_level: string
+          created_at?: string
+          forecast_date?: string
+          forecast_type: string
+          id?: string
+          prediction_value: number
+          target_date: string
+          user_id: string
+        }
+        Update: {
+          accuracy_score?: number | null
+          actual_value?: number | null
+          based_on_data?: Json
+          confidence_level?: string
+          created_at?: string
+          forecast_date?: string
+          forecast_type?: string
+          id?: string
+          prediction_value?: number
+          target_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      goals: {
+        Row: {
+          achievable: string | null
+          category: string
+          created_at: string
+          current_value: number | null
+          description: string | null
+          id: string
+          is_shared: boolean | null
+          measurable: string | null
+          milestones: Json | null
+          relevant: string | null
+          specific: string | null
+          status: string
+          target_date: string | null
+          target_value: number | null
+          time_bound: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievable?: string | null
+          category: string
+          created_at?: string
+          current_value?: number | null
+          description?: string | null
+          id?: string
+          is_shared?: boolean | null
+          measurable?: string | null
+          milestones?: Json | null
+          relevant?: string | null
+          specific?: string | null
+          status?: string
+          target_date?: string | null
+          target_value?: number | null
+          time_bound?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievable?: string | null
+          category?: string
+          created_at?: string
+          current_value?: number | null
+          description?: string | null
+          id?: string
+          is_shared?: boolean | null
+          measurable?: string | null
+          milestones?: Json | null
+          relevant?: string | null
+          specific?: string | null
+          status?: string
+          target_date?: string | null
+          target_value?: number | null
+          time_bound?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       informational_interviews: {
         Row: {
@@ -2374,6 +2515,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      time_tracking: {
+        Row: {
+          activity_type: string
+          created_at: string
+          duration_minutes: number | null
+          ended_at: string | null
+          id: string
+          job_id: string | null
+          notes: string | null
+          related_entity_id: string | null
+          related_entity_type: string | null
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          duration_minutes?: number | null
+          ended_at?: string | null
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          started_at: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          duration_minutes?: number | null
+          ended_at?: string | null
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
