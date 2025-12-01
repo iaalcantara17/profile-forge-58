@@ -157,5 +157,58 @@ export async function seedSprint3Data(userId: string): Promise<Sprint3SeedResult
   }, { onConflict: 'user_id' });
   result.advisorProfiles = 1;
 
+  // Seed family supporters + messages (UC-113)
+  const { data: supporters } = await supabase.from('family_supporters').upsert([
+    {
+      user_id: userId,
+      supporter_name: 'Sarah (Spouse)',
+      supporter_email: 'sarah.demo@example.com',
+      relationship: 'spouse',
+      access_level: 'full',
+      invite_token: 'demo-token-spouse-' + Date.now(),
+      can_send_messages: true,
+      accepted_at: new Date().toISOString(),
+    },
+    {
+      user_id: userId,
+      supporter_name: 'Mom',
+      supporter_email: 'mom.demo@example.com',
+      relationship: 'parent',
+      access_level: 'view_only',
+      invite_token: 'demo-token-parent-' + Date.now(),
+      can_send_messages: true,
+      accepted_at: new Date().toISOString(),
+    },
+  ], { onConflict: 'user_id,supporter_email', ignoreDuplicates: false }).select();
+
+  if (supporters && supporters.length > 0) {
+    // Seed supporter messages
+    await supabase.from('supporter_messages').upsert([
+      {
+        supporter_id: supporters[0].id,
+        user_id: userId,
+        message_text: 'So proud of you! Keep up the great work on your job search! 💪',
+        sent_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        supporter_id: supporters[1].id,
+        user_id: userId,
+        message_text: 'Thinking of you today. You got this! ❤️',
+        sent_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ], { onConflict: 'supporter_id,sent_at', ignoreDuplicates: false });
+
+    // Seed user updates for supporters to view
+    await supabase.from('user_updates').upsert([
+      {
+        user_id: userId,
+        update_type: 'milestone',
+        update_text: 'Completed 5 interviews! Hit a major milestone in my job search journey',
+        visibility: 'supporters',
+        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ], { onConflict: 'user_id,update_text', ignoreDuplicates: false });
+  }
+
   return result;
 }

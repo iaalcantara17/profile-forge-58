@@ -168,9 +168,9 @@ export const Navigation = () => {
                 Community
               </Link>
               <Link
-                to="/advisor-marketplace"
+                to="/advisors"
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive('/advisor-marketplace') ? 'text-primary' : 'text-muted-foreground'
+                  isActive('/advisors') ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
                 <UserCircle className="inline h-4 w-4 mr-1" />
@@ -414,10 +414,10 @@ export const Navigation = () => {
                   Community
                 </Link>
                 <Link
-                  to="/advisor-marketplace"
+                  to="/advisors"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive('/advisor-marketplace')
+                    isActive('/advisors')
                       ? 'bg-primary text-primary-foreground'
                       : 'text-foreground hover:bg-muted'
                   }`}
