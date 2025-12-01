@@ -2041,6 +2041,80 @@ export type Database = {
         }
         Relationships: []
       }
+      progress_share_access_log: {
+        Row: {
+          accessed_at: string
+          id: string
+          ip_address: string | null
+          share_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          accessed_at?: string
+          id?: string
+          ip_address?: string | null
+          share_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          accessed_at?: string
+          id?: string
+          ip_address?: string | null
+          share_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "progress_share_access_log_share_id_fkey"
+            columns: ["share_id"]
+            isOneToOne: false
+            referencedRelation: "progress_shares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      progress_shares: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          last_accessed_at: string | null
+          notes: string | null
+          scope: string
+          share_token: string
+          shared_with_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          notes?: string | null
+          scope: string
+          share_token: string
+          shared_with_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_accessed_at?: string | null
+          notes?: string | null
+          scope?: string
+          share_token?: string
+          shared_with_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       question_bank_items: {
         Row: {
           category: string

@@ -1,5 +1,5 @@
 import { Navigation } from '@/components/Navigation';
-import { Users2, Users, FileText } from 'lucide-react';
+import { Users2, Users, FileText, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -43,6 +43,19 @@ const Collaboration = () => {
               </p>
               <Button asChild>
                 <Link to="/documents">Go to Documents</Link>
+              </Button>
+            </div>
+
+            <div className="rounded-lg border border-border bg-card p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <Heart className="h-8 w-8 text-primary" />
+                <h2 className="text-2xl font-semibold">Progress Sharing</h2>
+              </div>
+              <p className="text-muted-foreground">
+                Share your job search progress with accountability partners and family members with privacy controls.
+              </p>
+              <Button asChild>
+                <Link to="/family-dashboard">Go to Progress</Link>
               </Button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2, Brain, Code2 } from 'lucide-react';
+import { Menu, X, LogOut, User, Target, FileText, Mail, BarChart, Settings, Inbox, Calendar, Users, Users2, Brain, Code2, Heart } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -148,6 +148,15 @@ export const Navigation = () => {
               >
                 <Users2 className="inline h-4 w-4 mr-1" />
                 Collaboration
+              </Link>
+              <Link
+                to="/family-dashboard"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive('/family-dashboard') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Heart className="inline h-4 w-4 mr-1" />
+                Progress
               </Link>
               <Link
                 to="/profile"
@@ -352,6 +361,18 @@ export const Navigation = () => {
                 >
                   <Users2 className="inline h-4 w-4 mr-1" />
                   Collaboration
+                </Link>
+                <Link
+                  to="/family-dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/family-dashboard')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Heart className="inline h-4 w-4 mr-1" />
+                  Progress
                 </Link>
                 <Link
                   to="/profile"

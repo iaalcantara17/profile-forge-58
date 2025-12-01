@@ -64,6 +64,8 @@ import DocumentViewer from "./pages/DocumentViewer";
 import MentorDashboard from "./pages/MentorDashboard";
 import MenteeDetail from "./pages/MenteeDetail";
 import WeeklyProgress from "./pages/WeeklyProgress";
+import SharedProgress from "./pages/SharedProgress";
+import FamilyDashboard from "./pages/FamilyDashboard";
 
 const queryClient = new QueryClient();
  
@@ -481,8 +483,17 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
-              {/* Public reviewer page - no auth required */}
+              <Route 
+                path="/family-dashboard"
+                element={
+                  <ProtectedRoute>
+                    <FamilyDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* Public routes - no auth required */}
               <Route path="/r/:token" element={<PublicReviewerView />} />
+              <Route path="/progress/:token" element={<SharedProgress />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
