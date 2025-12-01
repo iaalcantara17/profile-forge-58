@@ -189,7 +189,7 @@ export default function Analytics() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto p-6 space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
           <div className="flex gap-2">
             <Button onClick={handleExportCSV} variant="outline">
@@ -252,6 +252,60 @@ export default function Analytics() {
                 <div className="text-left">
                   <div className="font-semibold">Salary Progression</div>
                   <div className="text-xs text-muted-foreground">Offers, negotiation outcomes</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Advanced Tools</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/goals"}
+              >
+                <Target className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">SMART Goals</div>
+                  <div className="text-xs text-muted-foreground">Track milestones & progress</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/time-investment"}
+              >
+                <Target className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Time Investment</div>
+                  <div className="text-xs text-muted-foreground">Track time vs outcomes</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/custom-reports"}
+              >
+                <Target className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Custom Reports</div>
+                  <div className="text-xs text-muted-foreground">Build & save report templates</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/forecasting"}
+              >
+                <TrendingUp className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Forecasting</div>
+                  <div className="text-xs text-muted-foreground">Predict outcomes, track accuracy</div>
                 </div>
               </Button>
             </div>
