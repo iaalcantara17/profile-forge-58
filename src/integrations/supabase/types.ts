@@ -651,6 +651,78 @@ export type Database = {
         }
         Relationships: []
       }
+      document_comments: {
+        Row: {
+          comment_text: string
+          created_at: string
+          document_id: string
+          document_type: string
+          id: string
+          quoted_text: string | null
+          resolved: boolean
+          selection_end: number | null
+          selection_start: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment_text: string
+          created_at?: string
+          document_id: string
+          document_type: string
+          id?: string
+          quoted_text?: string | null
+          resolved?: boolean
+          selection_end?: number | null
+          selection_start?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment_text?: string
+          created_at?: string
+          document_id?: string
+          document_type?: string
+          id?: string
+          quoted_text?: string | null
+          resolved?: boolean
+          selection_end?: number | null
+          selection_start?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      document_shares_internal: {
+        Row: {
+          created_at: string
+          document_id: string
+          document_type: string
+          id: string
+          owner_id: string
+          permission: string
+          shared_with_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          document_type: string
+          id?: string
+          owner_id: string
+          permission: string
+          shared_with_user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          document_type?: string
+          id?: string
+          owner_id?: string
+          permission?: string
+          shared_with_user_id?: string
+        }
+        Relationships: []
+      }
       email_integrations: {
         Row: {
           access_token: string
@@ -2796,6 +2868,10 @@ export type Database = {
     Functions: {
       can_view_candidate_data: {
         Args: { _candidate_id: string; _viewer_id: string }
+        Returns: boolean
+      }
+      has_document_access: {
+        Args: { _document_id: string; _document_type: string; _user_id: string }
         Returns: boolean
       }
       is_team_admin: {

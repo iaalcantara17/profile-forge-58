@@ -59,6 +59,8 @@ import Benchmarking from "./pages/Benchmarking";
 import SuccessPatterns from "./pages/SuccessPatterns";
 import Teams from "./pages/Teams";
 import AcceptInvitation from "./pages/AcceptInvitation";
+import Documents from "./pages/Documents";
+import DocumentViewer from "./pages/DocumentViewer";
 import MentorDashboard from "./pages/MentorDashboard";
 import MenteeDetail from "./pages/MenteeDetail";
 import WeeklyProgress from "./pages/WeeklyProgress";
@@ -412,6 +414,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <AcceptInvitation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/documents"
+                element={
+                  <ProtectedRoute>
+                    <Documents />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/documents/:type/:id"
+                element={
+                  <ProtectedRoute>
+                    <DocumentViewer />
                   </ProtectedRoute>
                 } 
               />

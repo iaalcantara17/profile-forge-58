@@ -1,5 +1,5 @@
 import { Navigation } from '@/components/Navigation';
-import { Users2, Users } from 'lucide-react';
+import { Users2, Users, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -33,12 +33,17 @@ const Collaboration = () => {
               </Button>
             </div>
 
-            <div className="rounded-lg border border-border bg-muted/50 p-6 space-y-4">
-              <h2 className="text-2xl font-semibold">Resume Sharing</h2>
+            <div className="rounded-lg border border-border bg-card p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <FileText className="h-8 w-8 text-primary" />
+                <h2 className="text-2xl font-semibold">Document Review</h2>
+              </div>
               <p className="text-muted-foreground">
-                Share resumes and cover letters with mentors, career coaches, or peers for real-time feedback and collaborative editing.
+                Share resumes and cover letters with team members for collaborative review and feedback.
               </p>
-              <p className="text-sm font-medium text-muted-foreground">Coming in Sprint 3</p>
+              <Button asChild>
+                <Link to="/documents">Go to Documents</Link>
+              </Button>
             </div>
           </div>
         </div>
