@@ -7,9 +7,11 @@ import { toast } from 'sonner';
 import { EventCard } from '@/components/network/EventCard';
 import { EventForm } from '@/components/network/EventForm';
 import { EventROI } from '@/components/network/EventROI';
+import { EventDiscoveryDialog } from '@/components/network/EventDiscoveryDialog';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 
 const Events = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const Events = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -96,10 +99,16 @@ const Events = () => {
                 <p className="text-muted-foreground">Track events and measure your networking ROI</p>
               </div>
             </div>
-            <Button onClick={handleAddEvent}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Event
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsDiscoveryOpen(true)}>
+                <Search className="h-4 w-4 mr-2" />
+                Discover Events
+              </Button>
+              <Button onClick={handleAddEvent}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Event
+              </Button>
+            </div>
           </div>
 
           <EventROI events={events} />
@@ -181,6 +190,12 @@ const Events = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <EventDiscoveryDialog
+        open={isDiscoveryOpen}
+        onOpenChange={setIsDiscoveryOpen}
+        onEventSaved={fetchEvents}
+      />
     </div>
   );
 };
