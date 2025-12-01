@@ -81,6 +81,30 @@ const DemoSprint3 = () => {
     toast.success(`Verification complete: ${passCount}/${DEMO_ACTIONS.length} actions ready`);
   };
 
+  const handleSeedAndVerify = async () => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
+
+    // First seed
+    setIsSeeding(true);
+    try {
+      const result = await seedDemoData(user.id);
+      setSeedResult(result);
+      toast.success('Demo data seeded successfully!');
+    } catch (error) {
+      console.error('Seed error:', error);
+      toast.error('Failed to seed demo data. Check console for details.');
+      setIsSeeding(false);
+      return;
+    }
+    setIsSeeding(false);
+
+    // Then verify all
+    await handleVerifyAll();
+  };
+
   const groupedActions = DEMO_ACTIONS.reduce((acc, action) => {
     if (!acc[action.act]) acc[action.act] = [];
     acc[action.act].push(action);
@@ -112,14 +136,18 @@ const DemoSprint3 = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-3">
-                <Button onClick={handleSeedData} disabled={isSeeding || !user}>
+              <div className="flex flex-wrap gap-3">
+                <Button onClick={handleSeedData} disabled={isSeeding || isVerifying || !user}>
                   {isSeeding ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Database className="h-4 w-4 mr-2" />}
-                  Load Sprint 3 Demo Data
+                  Load Demo Data
                 </Button>
-                <Button onClick={handleVerifyAll} disabled={isVerifying || !user} variant="secondary">
+                <Button onClick={handleVerifyAll} disabled={isVerifying || isSeeding || !user} variant="secondary">
                   {isVerifying ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
-                  Run All Checks
+                  Verify All
+                </Button>
+                <Button onClick={handleSeedAndVerify} disabled={isSeeding || isVerifying || !user} variant="default" className="bg-primary">
+                  {isSeeding || isVerifying ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
+                  Seed + Verify
                 </Button>
               </div>
 
@@ -235,18 +263,37 @@ const DemoSprint3 = () => {
             ))}
           </Tabs>
 
-          {/* Manual Steps Warning */}
+          {/* Integration Status & Fallbacks */}
           <Card className="border-amber-500 bg-amber-50 dark:bg-amber-950">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-amber-900 dark:text-amber-100">
                 <AlertCircle className="h-5 w-5" />
-                Manual Steps Required
+                Integration Status & Manual Steps
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-amber-900 dark:text-amber-100 space-y-2">
-              <p><strong>Team Collaboration:</strong> To fully demo team features, you must manually invite a second team member via email (Act 4). The invite system requires a valid email address.</p>
-              <p><strong>Calendar Integration:</strong> Google Calendar OAuth is configured. ICS export fallback is available on interview detail pages.</p>
-              <p><strong>LinkedIn OAuth:</strong> Not configured. Manual LinkedIn URL field is available in Profile settings.</p>
+            <CardContent className="text-sm text-amber-900 dark:text-amber-100 space-y-3">
+              <div>
+                <p className="font-semibold mb-1">✓ Working Integrations:</p>
+                <ul className="list-disc list-inside ml-2 space-y-1">
+                  <li>Google Calendar OAuth (configured for calendar sync)</li>
+                  <li>In-app reminders and notifications</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">⚠ Fallback Implementations:</p>
+                <ul className="list-disc list-inside ml-2 space-y-1">
+                  <li><strong>LinkedIn OAuth:</strong> Not configured. Use manual LinkedIn URL field in Profile settings.</li>
+                  <li><strong>Calendar Export:</strong> ICS export (.ics file download) available for all interviews as backup.</li>
+                  <li><strong>PDF Export:</strong> Not configured. Print-friendly pages available (use browser Print → Save as PDF).</li>
+                  <li><strong>AI Features:</strong> Rules-based coaching and recommendations (no external AI provider configured).</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">👥 Manual Required:</p>
+                <ul className="list-disc list-inside ml-2 space-y-1">
+                  <li><strong>Team Collaboration:</strong> To demo mentor/team features, manually invite a second member via email (Act 4).</li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
         </div>

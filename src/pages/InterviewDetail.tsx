@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Calendar, Clock, MapPin, Video, Phone, Building, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Video, Phone, Building, Loader2, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +18,7 @@ import { PostInterviewFollowup } from '@/components/interviews/PostInterviewFoll
 import { CompanyResearchReport } from '@/components/interviews/CompanyResearchReport';
 import { InterviewFollowupTemplates } from '@/components/interviews/InterviewFollowupTemplates';
 import { InterviewSuccessScore } from '@/components/interviews/InterviewSuccessScore';
+import { downloadICS } from '@/lib/demo/icsExport';
 
 const InterviewDetail = () => {
   const { interviewId } = useParams<{ interviewId: string }>();
@@ -134,6 +135,27 @@ const InterviewDetail = () => {
       default:
         return <Calendar className="h-5 w-5" />;
     }
+  };
+
+  const handleExportToCalendar = () => {
+    if (!interview || !interview.scheduled_start || !interview.scheduled_end) {
+      toast.error('Interview must have start and end times');
+      return;
+    }
+
+    const jobTitle = interview.job?.job_title || 'Interview';
+    const companyName = interview.job?.company_name || '';
+    
+    downloadICS({
+      summary: `${jobTitle} Interview - ${companyName}`,
+      description: `Interview for ${jobTitle} at ${companyName}\nType: ${interview.interview_type || 'Not specified'}\n${interview.video_link ? `Video Link: ${interview.video_link}` : ''}`,
+      location: interview.location || interview.video_link || '',
+      startTime: new Date(interview.scheduled_start),
+      endTime: new Date(interview.scheduled_end),
+      uid: `interview-${interview.id}@jobtracker.demo`,
+    }, `interview-${companyName.replace(/\s+/g, '-')}.ics`);
+
+    toast.success('Calendar event file downloaded');
   };
 
   if (loading) {
@@ -319,6 +341,22 @@ const InterviewDetail = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Calendar Export */}
+            {interview.scheduled_start && interview.scheduled_end && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Add to Calendar</CardTitle>
+                  <CardDescription>Download .ics file to import into your calendar app</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button onClick={handleExportToCalendar} variant="outline">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Calendar Event (.ics)
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Success Probability Score */}
             {interview.scheduled_start && new Date(interview.scheduled_start) > new Date() && (
