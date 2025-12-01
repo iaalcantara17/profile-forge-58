@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Download, TrendingUp, Target, CheckCircle, Users, Award } from "lucide-react";
@@ -306,6 +306,50 @@ export default function Analytics() {
                 <div className="text-left">
                   <div className="font-semibold">Forecasting</div>
                   <div className="text-xs text-muted-foreground">Predict outcomes, track accuracy</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Advanced Insights</CardTitle>
+            <CardDescription>Pattern detection and market intelligence</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/market-intelligence"}
+              >
+                <TrendingUp className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Market Intelligence</div>
+                  <div className="text-xs text-muted-foreground">Curate & analyze trends</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/benchmarking"}
+              >
+                <Target className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Personal Benchmarking</div>
+                  <div className="text-xs text-muted-foreground">Set & track targets</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/success-patterns"}
+              >
+                <TrendingUp className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Success Patterns</div>
+                  <div className="text-xs text-muted-foreground">Learn from your history</div>
                 </div>
               </Button>
             </div>

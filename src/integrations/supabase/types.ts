@@ -1351,6 +1351,48 @@ export type Database = {
         }
         Relationships: []
       }
+      market_notes: {
+        Row: {
+          created_at: string
+          id: string
+          industry: string | null
+          location: string | null
+          skills: string[] | null
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          industry?: string | null
+          location?: string | null
+          skills?: string[] | null
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          industry?: string | null
+          location?: string | null
+          skills?: string[] | null
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       materials_usage: {
         Row: {
           cover_letter_id: string | null
@@ -2554,6 +2596,36 @@ export type Database = {
           related_entity_id?: string | null
           related_entity_type?: string | null
           started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_benchmarks: {
+        Row: {
+          created_at: string
+          id: string
+          metric_type: string
+          period: string
+          target_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_type: string
+          period: string
+          target_value: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_type?: string
+          period?: string
+          target_value?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
