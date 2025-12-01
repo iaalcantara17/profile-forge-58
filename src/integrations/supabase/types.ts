@@ -1451,6 +1451,56 @@ export type Database = {
           },
         ]
       }
+      mentor_feedback: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          feedback_text: string
+          id: string
+          implemented: boolean
+          implemented_at: string | null
+          mentor_id: string
+          team_id: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          feedback_text: string
+          id?: string
+          implemented?: boolean
+          implemented_at?: string | null
+          mentor_id: string
+          team_id: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          feedback_text?: string
+          id?: string
+          implemented?: boolean
+          implemented_at?: string | null
+          mentor_id?: string
+          team_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_feedback_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mock_interview_responses: {
         Row: {
           answered_at: string | null
@@ -2744,6 +2794,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_candidate_data: {
+        Args: { _candidate_id: string; _viewer_id: string }
+        Returns: boolean
+      }
       is_team_admin: {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean

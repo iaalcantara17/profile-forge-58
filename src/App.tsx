@@ -59,6 +59,9 @@ import Benchmarking from "./pages/Benchmarking";
 import SuccessPatterns from "./pages/SuccessPatterns";
 import Teams from "./pages/Teams";
 import AcceptInvitation from "./pages/AcceptInvitation";
+import MentorDashboard from "./pages/MentorDashboard";
+import MenteeDetail from "./pages/MenteeDetail";
+import WeeklyProgress from "./pages/WeeklyProgress";
 
 const queryClient = new QueryClient();
  
@@ -409,6 +412,30 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <AcceptInvitation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mentor/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <MentorDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mentor/mentee/:menteeId"
+                element={
+                  <ProtectedRoute>
+                    <MenteeDetail />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/weekly-progress"
+                element={
+                  <ProtectedRoute>
+                    <WeeklyProgress />
                   </ProtectedRoute>
                 } 
               />
