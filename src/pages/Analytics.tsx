@@ -203,6 +203,61 @@ export default function Analytics() {
           </div>
         </div>
 
+        {/* Quick Links to Specialized Analytics */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Specialized Analytics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/analytics/application-success"}
+              >
+                <Target className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Application Success</div>
+                  <div className="text-xs text-muted-foreground">By industry, role, customization</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/analytics/interview-performance"}
+              >
+                <Users className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Interview Performance</div>
+                  <div className="text-xs text-muted-foreground">Trends, formats, practice impact</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/analytics/network-roi"}
+              >
+                <Users className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Network ROI</div>
+                  <div className="text-xs text-muted-foreground">Referrals, outcomes, relationships</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto flex-col items-start p-4"
+                onClick={() => window.location.href = "/analytics/salary-progression"}
+              >
+                <Award className="h-6 w-6 mb-2" />
+                <div className="text-left">
+                  <div className="font-semibold">Salary Progression</div>
+                  <div className="text-xs text-muted-foreground">Offers, negotiation outcomes</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <AnalyticsFilters
           startDate={startDate}
           endDate={endDate}

@@ -18,6 +18,10 @@ import Resumes from "./pages/Resumes";
 import CoverLetters from "./pages/CoverLetters";
 import CoverLetterPerformance from "./pages/CoverLetterPerformance";
 import Analytics from "./pages/Analytics";
+import ApplicationSuccessAnalytics from "./pages/ApplicationSuccessAnalytics";
+import InterviewPerformanceAnalytics from "./pages/InterviewPerformanceAnalytics";
+import NetworkROIAnalytics from "./pages/NetworkROIAnalytics";
+import SalaryProgressionAnalytics from "./pages/SalaryProgressionAnalytics";
 import Automation from "./pages/Automation";
 import CalendarConnect from "./pages/CalendarConnect";
 import CalendarCallback from "./pages/CalendarCallback";
@@ -116,6 +120,38 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Analytics />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics/application-success" 
+                element={
+                  <ProtectedRoute>
+                    <ApplicationSuccessAnalytics />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics/interview-performance" 
+                element={
+                  <ProtectedRoute>
+                    <InterviewPerformanceAnalytics />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics/network-roi" 
+                element={
+                  <ProtectedRoute>
+                    <NetworkROIAnalytics />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analytics/salary-progression" 
+                element={
+                  <ProtectedRoute>
+                    <SalaryProgressionAnalytics />
                   </ProtectedRoute>
                 } 
               />
