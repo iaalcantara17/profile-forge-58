@@ -7,6 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ContactCard } from '@/components/network/ContactCard';
 import { ContactForm } from '@/components/network/ContactForm';
+import { ImportContactsDialog } from '@/components/network/ImportContactsDialog';
+import { ContactDiscoveryDialog } from '@/components/network/ContactDiscoveryDialog';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,6 +37,8 @@ const Contacts = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | undefined>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
 
   useEffect(() => {
     fetchContacts();
@@ -126,10 +130,19 @@ const Contacts = () => {
                 <p className="text-muted-foreground">Manage your professional network</p>
               </div>
             </div>
-            <Button onClick={handleAddContact}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Contact
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsDiscoveryOpen(true)}>
+                <Search className="h-4 w-4 mr-2" />
+                Discover
+              </Button>
+              <Button variant="outline" onClick={() => setIsImportOpen(true)}>
+                Import
+              </Button>
+              <Button onClick={handleAddContact}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Contact
+              </Button>
+            </div>
           </div>
 
           <div className="relative">
@@ -191,6 +204,18 @@ const Contacts = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <ImportContactsDialog
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+        onImportComplete={fetchContacts}
+      />
+
+      <ContactDiscoveryDialog
+        open={isDiscoveryOpen}
+        onOpenChange={setIsDiscoveryOpen}
+        onContactAdded={fetchContacts}
+      />
     </div>
   );
 };
