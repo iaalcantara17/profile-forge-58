@@ -5,6 +5,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { seedSprint3Data, type Sprint3SeedResult } from './seedSprint3Data';
 
 type JobInsert = Database['public']['Tables']['jobs']['Insert'];
 type InterviewInsert = Database['public']['Tables']['interviews']['Insert'];
@@ -27,6 +28,8 @@ export interface SeedResult {
   referralRequests: number;
   professionalReferences: number;
   informationalInterviews: number;
+  // Sprint 3 additions
+  sprint3?: Sprint3SeedResult;
 }
 
 export async function seedDemoData(userId: string): Promise<SeedResult> {
@@ -700,6 +703,14 @@ export async function seedDemoData(userId: string): Promise<SeedResult> {
         notes: 'Researched company and practiced questions',
       },
     ], { onConflict: 'user_id,activity_type,started_at' });
+  }
+
+  // Seed Sprint 3 data (UC-112, UC-114, UC-115)
+  try {
+    const sprint3Result = await seedSprint3Data(userId);
+    result.sprint3 = sprint3Result;
+  } catch (error) {
+    console.error('Sprint 3 seeding error:', error);
   }
 
   return result;
