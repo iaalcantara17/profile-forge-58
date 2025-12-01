@@ -1,5 +1,7 @@
 import { Navigation } from '@/components/Navigation';
-import { Users2 } from 'lucide-react';
+import { Users2, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Collaboration = () => {
   return (
@@ -14,13 +16,30 @@ const Collaboration = () => {
             <h1 className="text-4xl font-display font-bold">Collaboration</h1>
           </div>
           <p className="text-lg text-muted-foreground">
-            Share resumes and cover letters with mentors, career coaches, or peers for real-time feedback and collaborative editing.
+            Collaborate with mentors, coaches, and team members on your job search journey.
           </p>
-          <div className="mt-8 rounded-lg border border-border bg-muted/50 p-8 text-center">
-            <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              This feature is under development and will be available in Sprint 3.
-            </p>
+          
+          <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <div className="rounded-lg border border-border bg-card p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <Users className="h-8 w-8 text-primary" />
+                <h2 className="text-2xl font-semibold">Teams</h2>
+              </div>
+              <p className="text-muted-foreground">
+                Create teams with role-based access for admins, mentors, and candidates. Collaborate securely with proper permissions.
+              </p>
+              <Button asChild>
+                <Link to="/teams">Go to Teams</Link>
+              </Button>
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/50 p-6 space-y-4">
+              <h2 className="text-2xl font-semibold">Resume Sharing</h2>
+              <p className="text-muted-foreground">
+                Share resumes and cover letters with mentors, career coaches, or peers for real-time feedback and collaborative editing.
+              </p>
+              <p className="text-sm font-medium text-muted-foreground">Coming in Sprint 3</p>
+            </div>
           </div>
         </div>
       </div>
