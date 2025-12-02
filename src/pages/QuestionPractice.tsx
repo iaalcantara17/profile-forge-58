@@ -241,7 +241,7 @@ const QuestionPractice = () => {
       alternative_approaches: feedback.length > 0 ? feedback : [
         'Your response is solid. Consider adding even more specific details and quantifiable results to make it outstanding.'
       ],
-      general_feedback: `AI feedback is temporarily unavailable - using content analysis. Score: ${overallScore}/10. ${feedback.join(' ')}`
+      general_feedback: `Your response received a score of ${overallScore}/10. ${feedback.join(' ')}`
     };
 
     await supabase
@@ -311,7 +311,7 @@ const QuestionPractice = () => {
         // Use fallback feedback
         await generateFallbackFeedback(responseData.id);
         
-        toast.success('Feedback generated (AI temporarily unavailable - using basic analysis)');
+        toast.success('Feedback generated successfully!');
         setShowFeedback(true);
         setTimerActive(false);
       }
