@@ -31,10 +31,20 @@ export const SupportGroupsList = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('support_groups')
-        .select('*, support_group_members(count)')
-        .order('created_at', { ascending: false });
+        .select('*')
+        .order('created_at', { ascending: false});
       if (error) throw error;
-      return data;
+      
+      // Get member counts separately
+      const groupsWithCounts = await Promise.all((data || []).map(async (group) => {
+        const { count } = await supabase
+          .from('support_group_members')
+          .select('*', { count: 'exact', head: true })
+          .eq('group_id', group.id);
+        return { ...group, member_count: count || 0 };
+      }));
+      
+      return groupsWithCounts;
     },
   });
 
