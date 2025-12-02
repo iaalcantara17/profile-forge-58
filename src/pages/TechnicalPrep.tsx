@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { Code2, Search, Filter, Clock, CheckCircle2, Loader2, Info } from 'lucide-react';
+import { Code2, Search, Filter, Clock, CheckCircle2, Loader2, Info, Plus } from 'lucide-react';
+import { AddChallengeDialog } from '@/components/interviews/AddChallengeDialog';
 
 interface Challenge {
   id: string;
@@ -29,6 +30,7 @@ export default function TechnicalPrep() {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [userTechStack, setUserTechStack] = useState<string[]>([]);
   const [attemptCounts, setAttemptCounts] = useState<Record<string, number>>({});
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     loadChallenges();
@@ -154,16 +156,22 @@ export default function TechnicalPrep() {
       <div className="flex-1 container py-8 max-w-7xl mx-auto px-4">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-3">
-              <Code2 className="h-6 w-6 text-primary" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-3">
+                <Code2 className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-display font-bold">Technical Prep</h1>
+                <p className="text-muted-foreground mt-1">
+                  Practice coding challenges and track your solutions
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-4xl font-display font-bold">Technical Prep</h1>
-              <p className="text-muted-foreground mt-1">
-                Practice coding challenges and track your solutions
-              </p>
-            </div>
+            <Button onClick={() => setShowAddDialog(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Challenge
+            </Button>
           </div>
 
           {/* Important Notice */}
@@ -310,6 +318,12 @@ export default function TechnicalPrep() {
           )}
         </div>
       </div>
+
+      <AddChallengeDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onSuccess={loadChallenges}
+      />
     </div>
   );
 }
