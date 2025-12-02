@@ -87,6 +87,19 @@ export const SupportGroupsList = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Check if already a member
+      const { data: existing } = await supabase
+        .from('support_group_members')
+        .select('id')
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        toast.info('You are already a member of this group');
+        return;
+      }
+
       const { error } = await supabase.from('support_group_members').insert({
         group_id: groupId,
         user_id: user.id,
