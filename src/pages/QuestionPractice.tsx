@@ -161,31 +161,87 @@ const QuestionPractice = () => {
   };
 
   const generateFallbackFeedback = async (responseId: string) => {
-    // Generate basic rule-based feedback when AI is unavailable
-    const wordCount = responseText.trim().split(/\s+/).length;
-    const hasExamples = responseText.toLowerCase().includes('example') || responseText.toLowerCase().includes('for instance');
-    const hasNumbers = /\d+/.test(responseText);
+    // Generate content-based fallback feedback with variance
+    const text = responseText.trim();
+    const wordCount = text.split(/\s+/).length;
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    // Check for examples
+    const exampleIndicators = ['example', 'for instance', 'such as', 'specifically', 'in particular'];
+    const exampleCount = exampleIndicators.filter(ind => text.toLowerCase().includes(ind)).length;
+    
+    // Check for metrics/numbers
+    const numberMatches = text.match(/\d+/g);
+    const numberCount = numberMatches ? numberMatches.length : 0;
+    
+    // Check for weak language
+    const weakPhrases = ['maybe', 'i think', 'sort of', 'kind of', 'basically', 'just', 'really', 'very'];
+    const weakLanguageCount = weakPhrases.filter(phrase => text.toLowerCase().includes(phrase)).length;
+    
+    // STAR structure detection for behavioral questions
+    const starComponents = {
+      situation: text.toLowerCase().includes('when') || text.toLowerCase().includes('situation') || text.toLowerCase().includes('during'),
+      task: text.toLowerCase().includes('task') || text.toLowerCase().includes('responsible') || text.toLowerCase().includes('needed to'),
+      action: text.toLowerCase().includes('action') || text.toLowerCase().includes('did') || text.toLowerCase().includes('implemented') || text.toLowerCase().includes('created'),
+      result: text.toLowerCase().includes('result') || text.toLowerCase().includes('outcome') || text.toLowerCase().includes('achieved') || text.toLowerCase().includes('led to')
+    };
+    const starCount = Object.values(starComponents).filter(Boolean).length;
+    
+    // Calculate varied scores (1-10)
+    // Length score: too short or too long = low, 100-200 words = high
+    const lengthScore = wordCount < 30 ? 3 : wordCount < 60 ? 5 : wordCount < 150 ? 8 : wordCount < 250 ? 7 : 5;
+    
+    // Relevance: based on length and structure
+    const relevanceScore = Math.min(10, Math.max(3, lengthScore + (sentences.length > 3 ? 1 : 0)));
+    
+    // Specificity: examples + numbers
+    const specificityScore = Math.min(10, 3 + (exampleCount * 2) + (numberCount > 0 ? 2 : 0) + (numberCount > 2 ? 1 : 0));
+    
+    // Impact: metrics and results language
+    const impactKeywords = ['improved', 'increased', 'reduced', 'saved', 'generated', 'achieved', 'delivered'];
+    const impactCount = impactKeywords.filter(kw => text.toLowerCase().includes(kw)).length;
+    const impactScore = Math.min(10, 3 + (numberCount > 0 ? 3 : 0) + (impactCount * 2));
+    
+    // Clarity: sentence length, weak language penalty
+    const avgSentenceLength = wordCount / Math.max(sentences.length, 1);
+    const clarityScore = Math.min(10, Math.max(3, 
+      8 - (weakLanguageCount * 1) - (avgSentenceLength > 30 ? 1 : 0) + (avgSentenceLength > 10 && avgSentenceLength < 25 ? 1 : 0)
+    ));
+    
+    // Overall score: weighted average
+    const overallScore = Math.round(
+      (relevanceScore * 0.25 + specificityScore * 0.25 + impactScore * 0.3 + clarityScore * 0.2)
+    );
+    
+    // Generate feedback based on scores
+    const feedback: string[] = [];
+    if (wordCount < 50) feedback.push('Consider expanding your response with more detail and context.');
+    if (exampleCount === 0) feedback.push('Add specific examples to illustrate your points and make your response more concrete.');
+    if (numberCount === 0) feedback.push('Include quantifiable metrics or numbers to demonstrate the impact of your work.');
+    if (weakLanguageCount > 2) feedback.push('Reduce weak language ("maybe", "I think", "sort of") to sound more confident.');
+    if (impactCount === 0) feedback.push('Emphasize the results and impact of your actions using words like "achieved", "improved", or "delivered".');
     
     const fallbackFeedback = {
-      relevance_score: wordCount > 50 ? 7 : 5,
-      specificity_score: hasExamples && hasNumbers ? 7 : 5,
-      impact_score: hasNumbers ? 7 : 5,
-      clarity_score: wordCount > 30 && wordCount < 300 ? 7 : 5,
-      overall_score: 6,
+      relevance_score: relevanceScore,
+      specificity_score: specificityScore,
+      impact_score: impactScore,
+      clarity_score: clarityScore,
+      overall_score: overallScore,
       star_adherence: question?.category === 'behavioral' ? {
-        situation: responseText.toLowerCase().includes('when') || responseText.toLowerCase().includes('situation'),
-        task: responseText.toLowerCase().includes('task') || responseText.toLowerCase().includes('responsible'),
-        action: responseText.toLowerCase().includes('action') || responseText.toLowerCase().includes('did'),
-        result: responseText.toLowerCase().includes('result') || responseText.toLowerCase().includes('outcome'),
-        feedback: 'AI feedback temporarily unavailable. Basic analysis: Try to include all STAR components (Situation, Task, Action, Result) with specific details.'
+        situation: starComponents.situation,
+        task: starComponents.task,
+        action: starComponents.action,
+        result: starComponents.result,
+        feedback: starCount < 3 
+          ? 'Try to include all STAR components (Situation, Task, Action, Result) with specific details.'
+          : 'Good STAR structure! Make sure each component is detailed and quantifiable.'
       } : null,
-      weak_language: [],
+      weak_language: weakPhrases.filter(phrase => text.toLowerCase().includes(phrase)),
       speaking_time_estimate: Math.floor(wordCount / 2.5),
-      alternative_approaches: [
-        'Consider adding more specific metrics or numbers to quantify your impact',
-        'Try to include a concrete example that demonstrates your skills in action'
+      alternative_approaches: feedback.length > 0 ? feedback : [
+        'Your response is solid. Consider adding even more specific details and quantifiable results to make it outstanding.'
       ],
-      general_feedback: 'AI feedback is temporarily unavailable. Your response has been saved. Consider: 1) Adding specific examples, 2) Including quantifiable results, 3) Keeping your answer focused and structured.'
+      general_feedback: `AI feedback is temporarily unavailable - using content analysis. Score: ${overallScore}/10. ${feedback.join(' ')}`
     };
 
     await supabase
