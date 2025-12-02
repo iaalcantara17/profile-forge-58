@@ -160,6 +160,44 @@ const QuestionPractice = () => {
     }
   };
 
+  const generateFallbackFeedback = async (responseId: string) => {
+    // Generate basic rule-based feedback when AI is unavailable
+    const wordCount = responseText.trim().split(/\s+/).length;
+    const hasExamples = responseText.toLowerCase().includes('example') || responseText.toLowerCase().includes('for instance');
+    const hasNumbers = /\d+/.test(responseText);
+    
+    const fallbackFeedback = {
+      relevance_score: wordCount > 50 ? 7 : 5,
+      specificity_score: hasExamples && hasNumbers ? 7 : 5,
+      impact_score: hasNumbers ? 7 : 5,
+      clarity_score: wordCount > 30 && wordCount < 300 ? 7 : 5,
+      overall_score: 6,
+      star_adherence: question?.category === 'behavioral' ? {
+        situation: responseText.toLowerCase().includes('when') || responseText.toLowerCase().includes('situation'),
+        task: responseText.toLowerCase().includes('task') || responseText.toLowerCase().includes('responsible'),
+        action: responseText.toLowerCase().includes('action') || responseText.toLowerCase().includes('did'),
+        result: responseText.toLowerCase().includes('result') || responseText.toLowerCase().includes('outcome'),
+        feedback: 'AI feedback temporarily unavailable. Basic analysis: Try to include all STAR components (Situation, Task, Action, Result) with specific details.'
+      } : null,
+      weak_language: [],
+      speaking_time_estimate: Math.floor(wordCount / 2.5),
+      alternative_approaches: [
+        'Consider adding more specific metrics or numbers to quantify your impact',
+        'Try to include a concrete example that demonstrates your skills in action'
+      ],
+      general_feedback: 'AI feedback is temporarily unavailable. Your response has been saved. Consider: 1) Adding specific examples, 2) Including quantifiable results, 3) Keeping your answer focused and structured.'
+    };
+
+    await supabase
+      .from('question_practice_feedback')
+      .insert({
+        response_id: responseId,
+        ...fallbackFeedback
+      });
+    
+    return true;
+  };
+
   const submitForFeedback = async () => {
     if (!user || !questionId || !responseText.trim()) {
       toast.error('Please write a response before submitting');
@@ -186,31 +224,44 @@ const QuestionPractice = () => {
 
       setCurrentResponseId(responseData.id);
 
-      // Request AI feedback
-      const { data: feedbackData, error: feedbackError } = await supabase.functions.invoke(
-        'ai-question-feedback',
-        { 
-          body: { responseId: responseData.id },
-          headers: {
-            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-          }
+      try {
+        // Request AI feedback
+        const session = await supabase.auth.getSession();
+        if (!session.data.session?.access_token) {
+          throw new Error('Not authenticated');
         }
-      );
 
-      if (feedbackError) throw feedbackError;
+        const { data: feedbackData, error: feedbackError } = await supabase.functions.invoke(
+          'ai-question-feedback',
+          { 
+            body: { responseId: responseData.id },
+            headers: {
+              Authorization: `Bearer ${session.data.session.access_token}`
+            }
+          }
+        );
 
-      toast.success('Feedback generated successfully!');
-      setShowFeedback(true);
-      setTimerActive(false);
+        if (feedbackError) {
+          console.error('AI feedback error:', feedbackError);
+          throw feedbackError;
+        }
+
+        toast.success('Feedback generated successfully!');
+        setShowFeedback(true);
+        setTimerActive(false);
+      } catch (aiError: any) {
+        console.error('AI feedback failed, using fallback:', aiError);
+        
+        // Use fallback feedback
+        await generateFallbackFeedback(responseData.id);
+        
+        toast.success('Feedback generated (AI temporarily unavailable - using basic analysis)');
+        setShowFeedback(true);
+        setTimerActive(false);
+      }
     } catch (error: any) {
       console.error('Error submitting for feedback:', error);
-      if (error.message?.includes('Rate limit') || error.message?.includes('429')) {
-        toast.error('Rate limit exceeded. Please try again later.');
-      } else if (error.message?.includes('credits') || error.message?.includes('402')) {
-        toast.error('AI credits exhausted. Please add credits to continue.');
-      } else {
-        toast.error('Failed to generate feedback. Please try again.');
-      }
+      toast.error('Failed to save your response. Please try again.');
     } finally {
       setSubmitting(false);
     }
