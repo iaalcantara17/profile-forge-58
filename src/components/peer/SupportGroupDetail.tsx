@@ -25,7 +25,7 @@ export const SupportGroupDetail = ({ groupId, onBack }: SupportGroupDetailProps)
   const [newPost, setNewPost] = useState({
     title: '',
     content: '',
-    post_type: 'discussion' as string,
+    post_type: 'insight' as string,
     is_anonymous: false,
   });
 
@@ -308,7 +308,7 @@ export const SupportGroupDetail = ({ groupId, onBack }: SupportGroupDetailProps)
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="discussion">Discussion</SelectItem>
+                        <SelectItem value="insight">Insight</SelectItem>
                         <SelectItem value="question">Question</SelectItem>
                         <SelectItem value="resource">Resource</SelectItem>
                         <SelectItem value="success_story">Success Story</SelectItem>
