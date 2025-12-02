@@ -45,31 +45,61 @@ export const SupportGroupDetail = ({ groupId, onBack }: SupportGroupDetailProps)
     },
   });
 
-  // Fetch members
+  // Fetch members with profile names
   const { data: members, isLoading: membersLoading } = useQuery({
     queryKey: ['support-group-members', groupId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: membersData, error } = await supabase
         .from('support_group_members')
         .select('*')
         .eq('group_id', groupId)
         .order('joined_at', { ascending: false });
       if (error) throw error;
-      return data;
+      
+      // Fetch profiles for members
+      const userIds = membersData?.map(m => m.user_id) || [];
+      if (userIds.length === 0) return [];
+      
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, name')
+        .in('user_id', userIds);
+      
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p.name]) || []);
+      
+      return membersData?.map(member => ({
+        ...member,
+        profile_name: profileMap.get(member.user_id) || null,
+      })) || [];
     },
   });
 
-  // Fetch posts
+  // Fetch posts with author names
   const { data: posts, isLoading: postsLoading } = useQuery({
     queryKey: ['support-group-posts', groupId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: postsData, error } = await supabase
         .from('group_posts')
         .select('*')
         .eq('group_id', groupId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      
+      // Fetch profiles for post authors
+      const userIds = postsData?.map(p => p.user_id) || [];
+      if (userIds.length === 0) return [];
+      
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, name')
+        .in('user_id', userIds);
+      
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p.name]) || []);
+      
+      return postsData?.map(post => ({
+        ...post,
+        author_name: profileMap.get(post.user_id) || null,
+      })) || [];
     },
   });
 
@@ -340,13 +370,13 @@ export const SupportGroupDetail = ({ groupId, onBack }: SupportGroupDetailProps)
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback>
-                        {post.is_anonymous ? '?' : <User className="h-5 w-5" />}
+                        {post.is_anonymous ? '?' : (post.author_name?.[0]?.toUpperCase() || <User className="h-5 w-5" />)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <CardTitle className="text-base">{post.title}</CardTitle>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{post.is_anonymous ? 'Anonymous' : 'Member'}</span>
+                        <span>{post.is_anonymous ? 'Anonymous' : (post.author_name || 'Member')}</span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -390,12 +420,14 @@ export const SupportGroupDetail = ({ groupId, onBack }: SupportGroupDetailProps)
                 <CardContent className="flex items-center gap-4 py-4">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback>
-                      {member.privacy_level === 'anonymous' ? '?' : <User className="h-6 w-6" />}
+                      {member.privacy_level === 'anonymous' ? '?' : (member.profile_name?.[0]?.toUpperCase() || <User className="h-6 w-6" />)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <p className="font-medium">
-                      {member.privacy_level === 'anonymous' ? 'Anonymous Member' : 'Community Member'}
+                      {member.privacy_level === 'anonymous' 
+                        ? 'Anonymous Member' 
+                        : (member.profile_name || 'Community Member')}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
