@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ArrowLeft, 
@@ -190,7 +189,12 @@ const QuestionPractice = () => {
       // Request AI feedback
       const { data: feedbackData, error: feedbackError } = await supabase.functions.invoke(
         'ai-question-feedback',
-        { body: { responseId: responseData.id } }
+        { 
+          body: { responseId: responseData.id },
+          headers: {
+            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          }
+        }
       );
 
       if (feedbackError) throw feedbackError;
@@ -200,12 +204,12 @@ const QuestionPractice = () => {
       setTimerActive(false);
     } catch (error: any) {
       console.error('Error submitting for feedback:', error);
-      if (error.message?.includes('Rate limit')) {
+      if (error.message?.includes('Rate limit') || error.message?.includes('429')) {
         toast.error('Rate limit exceeded. Please try again later.');
-      } else if (error.message?.includes('credits')) {
+      } else if (error.message?.includes('credits') || error.message?.includes('402')) {
         toast.error('AI credits exhausted. Please add credits to continue.');
       } else {
-        toast.error('Failed to generate feedback');
+        toast.error('Failed to generate feedback. Please try again.');
       }
     } finally {
       setSubmitting(false);
@@ -227,8 +231,8 @@ const QuestionPractice = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navigation />
-        <div className="flex-1 container py-8">
-          <div className="max-w-4xl mx-auto text-center">
+        <div className="flex-1 container py-8 max-w-4xl mx-auto px-4">
+          <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Question Not Found</h2>
             <Button onClick={() => navigate('/question-bank')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -244,20 +248,18 @@ const QuestionPractice = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navigation />
-        <div className="flex-1 container py-8">
-          <div className="max-w-5xl mx-auto">
-            <QuestionPracticeFeedback
-              responseId={currentResponseId}
-              question={question}
-              onBack={() => {
-                setShowFeedback(false);
-                setResponseText('');
-                setTimeElapsed(0);
-                setTimerActive(false);
-                setCurrentResponseId(null);
-              }}
-            />
-          </div>
+        <div className="flex-1 container py-8 max-w-5xl mx-auto px-4">
+          <QuestionPracticeFeedback
+            responseId={currentResponseId}
+            question={question}
+            onBack={() => {
+              setShowFeedback(false);
+              setResponseText('');
+              setTimeElapsed(0);
+              setTimerActive(false);
+              setCurrentResponseId(null);
+            }}
+          />
         </div>
       </div>
     );
@@ -267,14 +269,12 @@ const QuestionPractice = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Navigation />
-        <div className="flex-1 container py-8">
-          <div className="max-w-5xl mx-auto">
-            <QuestionPracticeHistory
-              questionId={questionId!}
-              question={question}
-              onBack={() => setShowHistory(false)}
-            />
-          </div>
+        <div className="flex-1 container py-8 max-w-5xl mx-auto px-4">
+          <QuestionPracticeHistory
+            questionId={questionId!}
+            question={question}
+            onBack={() => setShowHistory(false)}
+          />
         </div>
       </div>
     );
@@ -283,10 +283,10 @@ const QuestionPractice = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <div className="flex-1 container py-8">
-        <div className="max-w-5xl mx-auto space-y-6">
+      <div className="flex-1 container py-8 max-w-5xl mx-auto px-4">
+        <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <Button variant="ghost" onClick={() => navigate('/question-bank')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Question Bank
@@ -300,13 +300,13 @@ const QuestionPractice = () => {
           {/* Question Card */}
           <Card>
             <CardHeader>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <CardTitle className="text-xl mb-3">{question.question_text}</CardTitle>
-                  <div className="flex items-center gap-2">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-xl mb-3 break-words">{question.question_text}</CardTitle>
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge>{question.category}</Badge>
                     <Badge variant="outline">{question.difficulty}</Badge>
-                    <Badge variant="secondary">{question.role_title}</Badge>
+                    <Badge variant="secondary" className="break-words">{question.role_title}</Badge>
                   </div>
                 </div>
               </div>
@@ -315,7 +315,7 @@ const QuestionPractice = () => {
               <CardContent>
                 <div className="p-4 bg-muted rounded-lg">
                   <p className="text-sm font-semibold mb-2">STAR Framework Guide:</p>
-                  <p className="text-sm whitespace-pre-line">{question.star_framework_hint}</p>
+                  <p className="text-sm whitespace-pre-line break-words">{question.star_framework_hint}</p>
                 </div>
               </CardContent>
             )}
@@ -330,8 +330,8 @@ const QuestionPractice = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex-1 w-full sm:w-auto min-w-0">
                   <Select 
                     value={timerDuration?.toString() || ''} 
                     onValueChange={(v) => setTimerDuration(v ? parseInt(v) : null)}
@@ -350,20 +350,22 @@ const QuestionPractice = () => {
                 <div className="text-2xl font-mono font-bold min-w-[80px]">
                   {formatTime(timeElapsed)}
                 </div>
-                {!timerActive ? (
-                  <Button onClick={timeElapsed === 0 ? startTimer : toggleTimer} variant="outline">
-                    <Play className="h-4 w-4 mr-2" />
-                    {timeElapsed === 0 ? 'Start' : 'Resume'}
+                <div className="flex gap-2">
+                  {!timerActive ? (
+                    <Button onClick={timeElapsed === 0 ? startTimer : toggleTimer} variant="outline">
+                      <Play className="h-4 w-4 mr-2" />
+                      {timeElapsed === 0 ? 'Start' : 'Resume'}
+                    </Button>
+                  ) : (
+                    <Button onClick={toggleTimer} variant="outline">
+                      <Pause className="h-4 w-4 mr-2" />
+                      Pause
+                    </Button>
+                  )}
+                  <Button onClick={resetTimer} variant="ghost" size="icon">
+                    <RotateCcw className="h-4 w-4" />
                   </Button>
-                ) : (
-                  <Button onClick={toggleTimer} variant="outline">
-                    <Pause className="h-4 w-4 mr-2" />
-                    Pause
-                  </Button>
-                )}
-                <Button onClick={resetTimer} variant="ghost" size="icon">
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -378,9 +380,9 @@ const QuestionPractice = () => {
                 placeholder="Type your response here..."
                 value={responseText}
                 onChange={(e) => setResponseText(e.target.value)}
-                className="min-h-[300px] font-mono text-sm"
+                className="min-h-[300px] font-mono text-sm w-full"
               />
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={saveDraft}
                   disabled={saving || !responseText.trim()}
