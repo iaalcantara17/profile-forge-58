@@ -153,7 +153,12 @@ export default function MockInterviewSession() {
 
     try {
       const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000);
-      const currentQuestion = questions[currentQuestionIndex];
+      const safeIdx = Math.min(currentQuestionIndex, questions.length - 1);
+      const currentQuestion = questions[safeIdx];
+      
+      if (!currentQuestion) {
+        throw new Error('Question not found');
+      }
 
       const newResponse: Response = {
         question_id: currentQuestion.id,
@@ -178,8 +183,9 @@ export default function MockInterviewSession() {
       setCurrentResponse('');
       setQuestionStartTime(Date.now());
 
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      if (nextIndex < questions.length) {
+        setCurrentQuestionIndex(nextIndex);
       } else {
         // Complete the session
         await supabase
@@ -267,8 +273,42 @@ export default function MockInterviewSession() {
     );
   }
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  // Ensure currentQuestionIndex is within bounds
+  const safeIndex = Math.min(currentQuestionIndex, questions.length - 1);
+  const currentQuestion = questions[safeIndex];
+  const progress = questions.length > 0 ? ((safeIndex + 1) / questions.length) * 100 : 0;
+
+  // Additional safety check - if currentQuestion is still undefined, show error
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navigation />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-destructive" />
+                <CardTitle>Interview Error</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Unable to load the current question. The interview data may be corrupted.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={() => navigate('/interview-prep')} className="flex-1">
+                  Back to Interview Prep
+                </Button>
+                <Button variant="outline" onClick={() => window.location.reload()} className="flex-1">
+                  Retry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
@@ -305,13 +345,13 @@ export default function MockInterviewSession() {
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <CardTitle className="text-xl mb-2">{currentQuestion.question_text}</CardTitle>
+                  <CardTitle className="text-xl mb-2">{currentQuestion.question_text || 'Question unavailable'}</CardTitle>
                   <div className="flex gap-2">
                     <Badge variant="outline" className="capitalize">
-                      {currentQuestion.category}
+                      {currentQuestion.category || 'general'}
                     </Badge>
                     <Badge variant="secondary" className="capitalize">
-                      {currentQuestion.difficulty}
+                      {currentQuestion.difficulty || 'medium'}
                     </Badge>
                   </div>
                 </div>
