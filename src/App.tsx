@@ -72,6 +72,13 @@ import InstitutionalAdmin from "./pages/InstitutionalAdmin";
 import AdvisorMarketplace from "./pages/AdvisorMarketplace";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+// Sprint 4 imports
+import ApplicationSuccessOptimization from "./pages/ApplicationSuccessOptimization";
+import ABTestingDashboard from "./pages/ABTestingDashboard";
+import InterviewResponseLibrary from "./pages/InterviewResponseLibrary";
+import OfferComparisonTool from "./pages/OfferComparisonTool";
+import CareerPathSimulation from "./pages/CareerPathSimulation";
+import ApiAdminDashboard from "./pages/ApiAdminDashboard";
 
 const queryClient = new QueryClient();
  
@@ -526,6 +533,55 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <DemoSprint3 />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* Sprint 4 Routes */}
+              <Route 
+                path="/optimization"
+                element={
+                  <ProtectedRoute>
+                    <ApplicationSuccessOptimization />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/ab-testing"
+                element={
+                  <ProtectedRoute>
+                    <ABTestingDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/interview-responses"
+                element={
+                  <ProtectedRoute>
+                    <InterviewResponseLibrary />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/offer-comparison"
+                element={
+                  <ProtectedRoute>
+                    <OfferComparisonTool />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/career-simulation"
+                element={
+                  <ProtectedRoute>
+                    <CareerPathSimulation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/api"
+                element={
+                  <ProtectedRoute>
+                    <ApiAdminDashboard />
                   </ProtectedRoute>
                 } 
               />
