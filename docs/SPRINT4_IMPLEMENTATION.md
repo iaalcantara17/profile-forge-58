@@ -56,55 +56,88 @@
 |------|----------|
 | `src/test/sprint4/sprint4-features.test.ts` | UC-112 to UC-128 unit tests |
 | `src/test/sprint4/integration.test.ts` | API integration tests |
+| `tests/e2e/auth.spec.ts` | E2E authentication tests |
+| `tests/e2e/jobs.spec.ts` | E2E job management tests |
+| `tests/e2e/accessibility.spec.ts` | WCAG 2.1 AA accessibility tests |
 
 ### Config / CI / Infra
 | File | Purpose |
 |------|---------|
 | `.github/workflows/ci.yml` | CI/CD with coverage + deploy |
+| `.github/workflows/e2e.yml` | Playwright E2E testing |
+| `playwright.config.ts` | Playwright configuration |
 | `.env.example` | Environment variables template |
 | `supabase/config.toml` | Edge function configuration |
 
-### Docs / Seeds
+### Testing Scripts
 | File | Purpose |
 |------|---------|
-| `docs/SPRINT4_IMPLEMENTATION.md` | This file |
+| `scripts/load-test.js` | k6 load/performance testing |
+| `scripts/security-scan.sh` | OWASP ZAP security scanning |
 | `scripts/seed-production.ts` | Production seed data |
-| `src/pages/PrivacyPolicy.tsx` | Privacy policy (existing) |
-| `src/pages/TermsOfService.tsx` | Terms of service (existing) |
+
+### Legal / Compliance
+| File | Purpose |
+|------|---------|
+| `src/pages/PrivacyPolicy.tsx` | Privacy policy page |
+| `src/pages/TermsOfService.tsx` | Terms of service page |
+| `src/components/sprint4/CookieConsent.tsx` | GDPR cookie consent |
 
 ---
 
 ## HOW TO RUN EVERYTHING
 
+### Development
 ```bash
-# Development
-npm run dev
+npm run dev                    # Start development server (port 8080)
+```
 
-# Build
-npm run build
+### Building
+```bash
+npm run build                  # Production build
+npm run preview                # Preview production build
+```
 
-# Type check
-npm run typecheck
+### Type Checking & Linting
+```bash
+npm run typecheck              # TypeScript type checking
+npm run lint                   # ESLint
+```
 
-# Lint
-npm run lint
+### Unit & Integration Tests
+```bash
+npm run test                   # Run all tests
+npm run test:ui                # Test with UI
+npm run test:coverage          # Tests with coverage report
+```
 
-# Unit tests
-npm run test
+### End-to-End Tests (Playwright)
+```bash
+npx playwright install         # Install browsers (first time)
+npx playwright test            # Run all E2E tests
+npx playwright test --headed   # Run with visible browser
+npx playwright show-report     # View HTML report
+```
 
-# Tests with coverage
-npm run test:coverage
+### Accessibility Tests
+```bash
+npx playwright test tests/e2e/accessibility.spec.ts
+```
 
-# Integration tests (Sprint 4)
-npm run test -- src/test/sprint4/integration.test.ts
+### Load/Performance Tests (k6)
+```bash
+# Install k6: https://k6.io/docs/getting-started/installation/
+k6 run scripts/load-test.js
+```
 
-# E2E tests (if Playwright configured)
-npx playwright test
+### Security Scan
+```bash
+chmod +x scripts/security-scan.sh
+./scripts/security-scan.sh
+```
 
-# Accessibility audit
-npx lighthouse http://localhost:5173 --only-categories=accessibility
-
-# Run seed script
+### Seeding Data
+```bash
 npx tsx scripts/seed-production.ts
 ```
 
@@ -143,15 +176,16 @@ npx tsx scripts/seed-production.ts
 | UC-138 | Documentation | This file | - | - | - | Complete |
 | UC-139 | Domain/DNS | - | - | - | - | Manual configuration |
 | UC-140 | Seed Data | - | - | - | seed-production.ts | Run script |
-| UC-141 | E2E Testing | - | - | - | sprint4/*.test.ts | npm run test |
-| UC-142 | Load Testing | - | - | - | - | k6 scripts (manual) |
-| UC-143 | Cross-Browser | - | - | - | - | Playwright config |
-| UC-144 | Accessibility | - | - | - | Lighthouse | Run audit |
-| UC-145 | Security Testing | - | - | - | - | OWASP ZAP (manual) |
-| UC-146 | Analytics | - | - | feature_analytics | - | Track events in code |
-| UC-147 | Bug Tracking | - | - | - | GitHub Issues | Use GitHub |
-| UC-148 | Pre-Launch | - | - | - | - | Checklist complete |
-| UC-150 | Test Suite | - | - | - | src/test/sprint4/* | npm run test |
+| UC-141 | E2E Testing | Playwright | tests/e2e/*.spec.ts | - | e2e.yml | npx playwright test |
+| UC-142 | Load Testing | k6 | scripts/load-test.js | - | - | k6 run scripts/load-test.js |
+| UC-143 | Security Testing | OWASP ZAP | scripts/security-scan.sh | - | - | ./scripts/security-scan.sh |
+| UC-144 | Unit Test Coverage | Vitest | src/test/sprint4/*.ts | - | ci.yml | npm run test:coverage |
+| UC-145 | Integration Tests | Vitest | src/test/sprint4/integration.test.ts | - | ci.yml | npm run test |
+| UC-146 | Cross-Browser | Playwright | playwright.config.ts | - | e2e.yml | chromium, firefox, webkit |
+| UC-147 | Mobile Responsive | Playwright | playwright.config.ts | - | e2e.yml | Mobile Chrome, Safari, iPad |
+| UC-148 | Accessibility | axe-core | tests/e2e/accessibility.spec.ts | - | e2e.yml | WCAG 2.1 AA compliance |
+| UC-149 | CI/CD Pipeline | GitHub Actions | .github/workflows/*.yml | - | - | Automated on push/PR |
+| UC-150 | Documentation | This file | docs/SPRINT4_IMPLEMENTATION.md | - | - | Complete |
 
 ---
 

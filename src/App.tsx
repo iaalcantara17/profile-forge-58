@@ -124,6 +124,22 @@ const App = () => (
                 } 
               />
               <Route 
+                path="/jobs/map" 
+                element={
+                  <ProtectedRoute>
+                    <JobMap />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/jobs/archive" 
+                element={
+                  <ProtectedRoute>
+                    <JobArchive />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route
                 path="/resumes" 
                 element={
                   <ProtectedRoute>
@@ -597,6 +613,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
