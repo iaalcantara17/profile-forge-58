@@ -46,13 +46,24 @@ interface InterviewResponse {
   question_type: string;
   question_text: string;
   response_text: string;
-  tags: string[] | null;
-  skills_demonstrated: string[] | null;
-  companies_used_for: any;
+  tags: unknown;
+  skills_demonstrated: unknown;
+  companies_used_for: unknown;
   is_starred: boolean;
   created_at: string;
   updated_at: string;
+  success_count: number;
+  ai_feedback: string | null;
+  ai_feedback_score: number | null;
+  experiences_referenced: unknown;
+  version: number;
 }
+
+// Helper to safely get array from Json
+const asStringArray = (val: unknown): string[] => {
+  if (Array.isArray(val)) return val.filter((v): v is string => typeof v === 'string');
+  return [];
+};
 
 const QUESTION_TYPES = [
   'Behavioral',
@@ -192,7 +203,7 @@ export default function InterviewResponseLibrary() {
 
   const exportLibrary = () => {
     const content = responses.map(r => 
-      `## ${r.question_type}: ${r.question_text}\n\n${r.response_text}\n\nTags: ${r.tags?.join(', ') || 'None'}\n\n---\n`
+      `## ${r.question_type}: ${r.question_text}\n\n${r.response_text}\n\nTags: ${asStringArray(r.tags).join(', ') || 'None'}\n\n---\n`
     ).join('\n');
     
     const blob = new Blob([content], { type: 'text/markdown' });
@@ -204,10 +215,11 @@ export default function InterviewResponseLibrary() {
   };
 
   const filteredResponses = responses.filter(r => {
+    const tagsArr = asStringArray(r.tags);
     const matchesSearch = searchQuery === '' || 
       r.question_text.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.response_text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.tags?.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      tagsArr.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesType = filterType === 'all' || r.question_type === filterType;
     
@@ -393,7 +405,7 @@ export default function InterviewResponseLibrary() {
             </Card>
             <Card>
               <CardContent className="pt-6">
-                <p className="text-3xl font-bold">{responses.filter(r => r.tags?.length > 0).length}</p>
+                <p className="text-3xl font-bold">{responses.filter(r => asStringArray(r.tags).length > 0).length}</p>
                 <p className="text-sm text-muted-foreground">Tagged Responses</p>
               </CardContent>
             </Card>
@@ -470,8 +482,8 @@ export default function InterviewResponseLibrary() {
                               question_text: response.question_text,
                               response_text: response.response_text,
                               question_type: response.question_type,
-                              tags: response.tags?.join(', ') || '',
-                              skills: response.skills?.join(', ') || ''
+                              tags: asStringArray(response.tags).join(', '),
+                              skills: asStringArray(response.skills_demonstrated).join(', ')
                             });
                             setShowAddDialog(true);
                           }}
@@ -488,9 +500,9 @@ export default function InterviewResponseLibrary() {
                     <p className="text-muted-foreground whitespace-pre-wrap line-clamp-4">
                       {response.response_text}
                     </p>
-                    {response.tags && response.tags.length > 0 && (
+                    {asStringArray(response.tags).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-3">
-                        {response.tags.map((tag, idx) => (
+                        {asStringArray(response.tags).map((tag, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs">
                             <Tag className="h-3 w-3 mr-1" />
                             {tag}
