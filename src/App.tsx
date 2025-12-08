@@ -79,6 +79,9 @@ import InterviewResponseLibrary from "./pages/InterviewResponseLibrary";
 import OfferComparisonTool from "./pages/OfferComparisonTool";
 import CareerPathSimulation from "./pages/CareerPathSimulation";
 import ApiAdminDashboard from "./pages/ApiAdminDashboard";
+import JobMap from "./pages/JobMap";
+import JobArchive from "./pages/JobArchive";
+import { CookieConsent } from "./components/sprint4/CookieConsent";
 
 const queryClient = new QueryClient();
  
