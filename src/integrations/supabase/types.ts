@@ -95,6 +95,45 @@ export type Database = {
         }
         Relationships: []
       }
+      api_rate_limits: {
+        Row: {
+          api_name: string
+          average_response_ms: number | null
+          created_at: string
+          current_usage: number
+          daily_limit: number
+          id: string
+          last_error: string | null
+          last_error_at: string | null
+          reset_at: string
+          updated_at: string
+        }
+        Insert: {
+          api_name: string
+          average_response_ms?: number | null
+          created_at?: string
+          current_usage?: number
+          daily_limit: number
+          id?: string
+          last_error?: string | null
+          last_error_at?: string | null
+          reset_at?: string
+          updated_at?: string
+        }
+        Update: {
+          api_name?: string
+          average_response_ms?: number | null
+          created_at?: string
+          current_usage?: number
+          daily_limit?: number
+          id?: string
+          last_error?: string | null
+          last_error_at?: string | null
+          reset_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       api_usage_logs: {
         Row: {
           api_name: string
@@ -271,6 +310,57 @@ export type Database = {
           },
         ]
       }
+      application_quality_assessments: {
+        Row: {
+          cover_letter_id: string | null
+          created_at: string
+          experience_alignment_score: number | null
+          formatting_score: number | null
+          id: string
+          improvement_suggestions: Json | null
+          job_id: string
+          keyword_match_score: number | null
+          missing_keywords: Json | null
+          overall_score: number | null
+          resume_id: string | null
+          strengths: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_letter_id?: string | null
+          created_at?: string
+          experience_alignment_score?: number | null
+          formatting_score?: number | null
+          id?: string
+          improvement_suggestions?: Json | null
+          job_id: string
+          keyword_match_score?: number | null
+          missing_keywords?: Json | null
+          overall_score?: number | null
+          resume_id?: string | null
+          strengths?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_letter_id?: string | null
+          created_at?: string
+          experience_alignment_score?: number | null
+          formatting_score?: number | null
+          id?: string
+          improvement_suggestions?: Json | null
+          job_id?: string
+          keyword_match_score?: number | null
+          missing_keywords?: Json | null
+          overall_score?: number | null
+          resume_id?: string | null
+          strengths?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       application_quality_scores: {
         Row: {
           consistency_score: number | null
@@ -379,7 +469,9 @@ export type Database = {
           actual_submit_at: string | null
           created_at: string
           factors: Json | null
+          historical_success_rate: number | null
           id: string
+          is_scheduled: boolean | null
           job_id: string
           recommendation_text: string | null
           recommended_day: string | null
@@ -395,7 +487,9 @@ export type Database = {
           actual_submit_at?: string | null
           created_at?: string
           factors?: Json | null
+          historical_success_rate?: number | null
           id?: string
+          is_scheduled?: boolean | null
           job_id: string
           recommendation_text?: string | null
           recommended_day?: string | null
@@ -411,7 +505,9 @@ export type Database = {
           actual_submit_at?: string | null
           created_at?: string
           factors?: Json | null
+          historical_success_rate?: number | null
           id?: string
+          is_scheduled?: boolean | null
           job_id?: string
           recommendation_text?: string | null
           recommended_day?: string | null
@@ -654,12 +750,15 @@ export type Database = {
           assumptions: Json | null
           created_at: string
           id: string
+          milestone_projections: Json | null
           paths: Json | null
+          risk_factors: Json | null
           selected_path_index: number | null
           simulation_name: string
           starting_role: string
           starting_salary: number | null
           success_criteria: Json | null
+          success_probability: number | null
           target_role: string | null
           target_salary: number | null
           time_horizon_years: number | null
@@ -670,12 +769,15 @@ export type Database = {
           assumptions?: Json | null
           created_at?: string
           id?: string
+          milestone_projections?: Json | null
           paths?: Json | null
+          risk_factors?: Json | null
           selected_path_index?: number | null
           simulation_name: string
           starting_role: string
           starting_salary?: number | null
           success_criteria?: Json | null
+          success_probability?: number | null
           target_role?: string | null
           target_salary?: number | null
           time_horizon_years?: number | null
@@ -686,12 +788,15 @@ export type Database = {
           assumptions?: Json | null
           created_at?: string
           id?: string
+          milestone_projections?: Json | null
           paths?: Json | null
+          risk_factors?: Json | null
           selected_path_index?: number | null
           simulation_name?: string
           starting_role?: string
           starting_salary?: number | null
           success_criteria?: Json | null
+          success_probability?: number | null
           target_role?: string | null
           target_salary?: number | null
           time_horizon_years?: number | null
@@ -871,46 +976,55 @@ export type Database = {
       competitive_analysis: {
         Row: {
           advantages: Json | null
+          application_velocity: number | null
           competitive_score: number | null
           created_at: string
           differentiation_strategies: Json | null
           disadvantages: Json | null
           estimated_applicants: number | null
+          estimated_time_to_fill: number | null
           id: string
           job_id: string
           likelihood_interview: string | null
           likelihood_percent: number | null
           market_position: string | null
+          unique_qualifications: Json | null
           updated_at: string
           user_id: string
         }
         Insert: {
           advantages?: Json | null
+          application_velocity?: number | null
           competitive_score?: number | null
           created_at?: string
           differentiation_strategies?: Json | null
           disadvantages?: Json | null
           estimated_applicants?: number | null
+          estimated_time_to_fill?: number | null
           id?: string
           job_id: string
           likelihood_interview?: string | null
           likelihood_percent?: number | null
           market_position?: string | null
+          unique_qualifications?: Json | null
           updated_at?: string
           user_id: string
         }
         Update: {
           advantages?: Json | null
+          application_velocity?: number | null
           competitive_score?: number | null
           created_at?: string
           differentiation_strategies?: Json | null
           disadvantages?: Json | null
           estimated_applicants?: number | null
+          estimated_time_to_fill?: number | null
           id?: string
           job_id?: string
           likelihood_interview?: string | null
           likelihood_percent?: number | null
           market_position?: string | null
+          unique_qualifications?: Json | null
           updated_at?: string
           user_id?: string
         }
@@ -1788,6 +1902,48 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_analytics: {
+        Row: {
+          browser: string | null
+          created_at: string
+          device_type: string | null
+          event_category: string | null
+          event_name: string
+          event_properties: Json | null
+          id: string
+          page_path: string | null
+          referrer: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_category?: string | null
+          event_name: string
+          event_properties?: Json | null
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_category?: string | null
+          event_name?: string
+          event_properties?: Json | null
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       follow_up_reminders: {
         Row: {
           auto_generated: boolean | null
@@ -1883,6 +2039,45 @@ export type Database = {
           prediction_value?: number
           target_date?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      geocoded_locations: {
+        Row: {
+          cached_at: string
+          city: string | null
+          country: string | null
+          formatted_address: string | null
+          id: string
+          latitude: number | null
+          location_string: string
+          longitude: number | null
+          state: string | null
+          timezone: string | null
+        }
+        Insert: {
+          cached_at?: string
+          city?: string | null
+          country?: string | null
+          formatted_address?: string | null
+          id?: string
+          latitude?: number | null
+          location_string: string
+          longitude?: number | null
+          state?: string | null
+          timezone?: string | null
+        }
+        Update: {
+          cached_at?: string
+          city?: string | null
+          country?: string | null
+          formatted_address?: string | null
+          id?: string
+          latitude?: number | null
+          location_string?: string
+          longitude?: number | null
+          state?: string | null
+          timezone?: string | null
         }
         Relationships: []
       }
@@ -2727,10 +2922,96 @@ export type Database = {
           },
         ]
       }
+      job_offers: {
+        Row: {
+          base_salary: number | null
+          bonus: number | null
+          company_name: string
+          cost_of_living_index: number | null
+          created_at: string
+          culture_score: number | null
+          deadline: string | null
+          decline_reason: string | null
+          equity_value: number | null
+          growth_score: number | null
+          health_insurance_value: number | null
+          id: string
+          job_id: string | null
+          job_title: string
+          location: string | null
+          notes: string | null
+          pto_days: number | null
+          remote_policy: string | null
+          retirement_match: number | null
+          signing_bonus: number | null
+          start_date: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          work_life_balance_score: number | null
+        }
+        Insert: {
+          base_salary?: number | null
+          bonus?: number | null
+          company_name: string
+          cost_of_living_index?: number | null
+          created_at?: string
+          culture_score?: number | null
+          deadline?: string | null
+          decline_reason?: string | null
+          equity_value?: number | null
+          growth_score?: number | null
+          health_insurance_value?: number | null
+          id?: string
+          job_id?: string | null
+          job_title: string
+          location?: string | null
+          notes?: string | null
+          pto_days?: number | null
+          remote_policy?: string | null
+          retirement_match?: number | null
+          signing_bonus?: number | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          work_life_balance_score?: number | null
+        }
+        Update: {
+          base_salary?: number | null
+          bonus?: number | null
+          company_name?: string
+          cost_of_living_index?: number | null
+          created_at?: string
+          culture_score?: number | null
+          deadline?: string | null
+          decline_reason?: string | null
+          equity_value?: number | null
+          growth_score?: number | null
+          health_insurance_value?: number | null
+          id?: string
+          job_id?: string | null
+          job_title?: string
+          location?: string | null
+          notes?: string | null
+          pto_days?: number | null
+          remote_policy?: string | null
+          retirement_match?: number | null
+          signing_bonus?: number | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          work_life_balance_score?: number | null
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           application_deadline: string | null
           archive_reason: string | null
+          commute_distance_miles: number | null
+          commute_time_minutes: number | null
           company_info: Json | null
           company_name: string
           contacts: Json | null
@@ -2744,7 +3025,9 @@ export type Database = {
           job_title: string
           job_type: string | null
           job_url: string | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
           notes: string | null
           resume_id: string | null
           salary_max: number | null
@@ -2759,6 +3042,8 @@ export type Database = {
         Insert: {
           application_deadline?: string | null
           archive_reason?: string | null
+          commute_distance_miles?: number | null
+          commute_time_minutes?: number | null
           company_info?: Json | null
           company_name: string
           contacts?: Json | null
@@ -2772,7 +3057,9 @@ export type Database = {
           job_title: string
           job_type?: string | null
           job_url?: string | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           notes?: string | null
           resume_id?: string | null
           salary_max?: number | null
@@ -2787,6 +3074,8 @@ export type Database = {
         Update: {
           application_deadline?: string | null
           archive_reason?: string | null
+          commute_distance_miles?: number | null
+          commute_time_minutes?: number | null
           company_info?: Json | null
           company_name?: string
           contacts?: Json | null
@@ -2800,7 +3089,9 @@ export type Database = {
           job_title?: string
           job_type?: string | null
           job_url?: string | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           notes?: string | null
           resume_id?: string | null
           salary_max?: number | null
