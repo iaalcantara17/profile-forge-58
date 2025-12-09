@@ -635,8 +635,6 @@ export const JobDetailsModal = ({ job, isOpen, onClose, onUpdate }: JobDetailsMo
                 coverLetterId={displayJob.cover_letter_id}
               />
             </TabsContent>
-              <ReferralRequestsSection job={displayJob} />
-            </TabsContent>
 
             <TabsContent value="history" className="space-y-3">
               {displayJob.statusHistory && displayJob.statusHistory.length > 0 ? (
