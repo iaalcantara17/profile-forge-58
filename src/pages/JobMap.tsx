@@ -493,6 +493,7 @@ const JobMap = () => {
                   </CardHeader>
                   <CardContent className="p-0 h-[540px]">
                     <MapContainer
+                      key={`map-${mapCenter[0]}-${mapCenter[1]}`}
                       center={mapCenter}
                       zoom={10}
                       style={{ height: '100%', width: '100%' }}
