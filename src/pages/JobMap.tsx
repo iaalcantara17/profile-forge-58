@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,17 +11,7 @@ import { MapPin, Search, Building2, DollarSign, Clock, Filter, List, Grid3X3, Na
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
-// Fix Leaflet marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+import { LeafletMap } from '@/components/jobs/LeafletMap';
 
 interface JobLocation {
   id: string;
@@ -60,14 +50,6 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 // Estimate commute time (assuming avg 30 mph in traffic)
 function estimateCommuteTime(distanceMiles: number): number {
   return Math.round(distanceMiles / 30 * 60); // minutes
-}
-
-function MapController({ center }: { center: [number, number] }) {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(center, 10);
-  }, [center, map]);
-  return null;
 }
 
 const JobMap = () => {
@@ -492,62 +474,23 @@ const JobMap = () => {
                     <CardTitle>Interactive Map</CardTitle>
                   </CardHeader>
                   <CardContent className="p-0 h-[540px]">
-                    <MapContainer
-                      key={`map-${mapCenter[0]}-${mapCenter[1]}`}
+                    <LeafletMap
                       center={mapCenter}
-                      zoom={10}
-                      style={{ height: '100%', width: '100%' }}
-                    >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      <MapController center={mapCenter} />
-                      
-                      {/* Home marker */}
-                      {homeLocation && (
-                        <Marker 
-                          position={[homeLocation.latitude, homeLocation.longitude]}
-                          icon={L.divIcon({
-                            className: 'custom-marker',
-                            html: '<div style="background: hsl(var(--primary)); width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
-                            iconSize: [20, 20],
-                            iconAnchor: [10, 10],
-                          })}
-                        >
-                          <Popup>
-                            <div>
-                              <div style={{ fontWeight: 'bold' }}>Home</div>
-                              <div>{homeLocation.address}</div>
-                            </div>
-                          </Popup>
-                        </Marker>
+                      jobs={jobsWithCoordinates.map(job => ({
+                        id: job.id,
+                        title: job.title,
+                        company: job.company,
+                        location: job.location,
+                        latitude: job.latitude!,
+                        longitude: job.longitude!,
+                        commute_distance: job.commute_distance,
+                        commute_time: job.commute_time,
+                      }))}
+                      homeLocation={homeLocation}
+                      onJobSelect={(job) => setSelectedJob(
+                        jobsWithCoordinates.find(j => j.id === job.id) || null
                       )}
-                      
-                      {/* Job markers */}
-                      {jobsWithCoordinates.map((job) => (
-                        <Marker
-                          key={job.id}
-                          position={[job.latitude!, job.longitude!]}
-                          eventHandlers={{
-                            click: () => setSelectedJob(job),
-                          }}
-                        >
-                          <Popup>
-                            <div style={{ minWidth: '200px' }}>
-                              <div style={{ fontWeight: 'bold' }}>{job.title}</div>
-                              <div style={{ color: '#666' }}>{job.company}</div>
-                              <div>{job.location}</div>
-                              {job.commute_distance && (
-                                <div style={{ color: 'hsl(var(--primary))' }}>
-                                  {job.commute_distance} mi • ~{job.commute_time} min
-                                </div>
-                              )}
-                            </div>
-                          </Popup>
-                        </Marker>
-                      ))}
-                    </MapContainer>
+                    />
                   </CardContent>
                 </Card>
               </div>
