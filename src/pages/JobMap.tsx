@@ -515,8 +515,10 @@ const JobMap = () => {
                           })}
                         >
                           <Popup>
-                            <strong>Home</strong><br />
-                            {homeLocation.address}
+                            <div>
+                              <div style={{ fontWeight: 'bold' }}>Home</div>
+                              <div>{homeLocation.address}</div>
+                            </div>
                           </Popup>
                         </Marker>
                       )}
@@ -531,17 +533,14 @@ const JobMap = () => {
                           }}
                         >
                           <Popup>
-                            <div className="min-w-[200px]">
-                              <strong>{job.title}</strong><br />
-                              <span className="text-muted-foreground">{job.company}</span><br />
-                              <span>{job.location}</span>
+                            <div style={{ minWidth: '200px' }}>
+                              <div style={{ fontWeight: 'bold' }}>{job.title}</div>
+                              <div style={{ color: '#666' }}>{job.company}</div>
+                              <div>{job.location}</div>
                               {job.commute_distance && (
-                                <>
-                                  <br />
-                                  <span className="text-primary">
-                                    {job.commute_distance} mi • ~{job.commute_time} min
-                                  </span>
-                                </>
+                                <div style={{ color: 'hsl(var(--primary))' }}>
+                                  {job.commute_distance} mi • ~{job.commute_time} min
+                                </div>
                               )}
                             </div>
                           </Popup>
